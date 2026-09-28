@@ -1,5 +1,4 @@
 import React from "react";
-import { logo } from "../assets";
 import { socials } from "../constants";
 
 const Footer = () => {

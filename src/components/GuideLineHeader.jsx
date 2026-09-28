@@ -1,5 +1,5 @@
 
-import logo from "../assets/svg/sliot-logo.svg";
+import { logo } from "@/assets";
 
 import { FaCircleArrowLeft } from "react-icons/fa6";
 const GuilineHeader = () => {

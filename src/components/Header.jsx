@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { navigation } from "../constants";
 import MenuSvg from "../assets/svg/MenuSvg";
 import { disablePageScroll, enablePageScroll } from "scroll-lock";
-import logo from "../assets/svg/sliot-logo.svg";
+import { logo } from "@/assets";
 import { closeMenu, openMenu } from "./animations";
 import { useNavigate, useLocation } from "react-router-dom";
 

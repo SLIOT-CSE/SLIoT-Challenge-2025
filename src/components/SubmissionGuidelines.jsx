@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from "framer-motion";
-import { idea, point } from "@/assets";
+import { point } from "@/assets";
 import { guidelines } from "@/constants";
 import { BentoGrid, BentoGridItem } from "./ui/BentoGrid";
 
