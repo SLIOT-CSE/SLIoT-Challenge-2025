@@ -1,6 +1,6 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import Header from "./components/Header";
-import Home from "./pages/Home";
+import Home from "./views/Home";
 import Footer from "./components/Footer";
 import Lenis from "@studio-freight/lenis";
 import { useEffect, useRef } from "react";
@@ -8,12 +8,12 @@ import "locomotive-scroll/dist/locomotive-scroll.css";
 import SubmissionGuidelines from "./components/SubmissionGuidelines";
 
 import FAQs from "./components/Rules";
-import SelectedTeams from "./pages/SelectedTeams";
-import InnovationTour from "./pages/InnovationTour";
+import SelectedTeams from "./views/SelectedTeams";
+import InnovationTour from "./views/InnovationTour";
 import Snowfall from "./components/Snowfall";
 import christmasImage from "./assets/christmas.avif";
 import NotFound from "./components/NotFound";
-import TechnicalWorkshop from "./pages/TechnicalWorkshop";
+import TechnicalWorkshop from "./views/TechnicalWorkshop";
 
 
 const App = () => {
