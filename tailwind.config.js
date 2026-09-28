@@ -96,12 +96,13 @@ export default {
         },
       },
       fontFamily: {
-        poppins: ["Poppins", "sans-serif"],
-        robotoMono: ["'Roboto Mono'", "monospace"],
-        nicoMoji: ["'NicoMoji'", "sans-serif"],
+        // Font variables come from next/font in src/app/fonts.js
+        poppins: ["var(--font-poppins)", "sans-serif"],
+        robotoMono: ["var(--font-roboto-mono)", "monospace"],
+        nicoMoji: ["var(--font-nicomoji)", "sans-serif"],
         sans: ['Quattrocento Sans', 'sans-serif'],
-        audiowide: ["'Audiowide'", "sans-serif"],
-        alexandria: ["'Alexandria'", "sans-serif"],
+        audiowide: ["var(--font-audiowide)", "sans-serif"],
+        alexandria: ["var(--font-alexandria)", "sans-serif"],
       },
       letterSpacing: {
         tagline: ".15em",
