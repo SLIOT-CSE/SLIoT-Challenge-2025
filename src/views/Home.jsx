@@ -8,7 +8,6 @@ import TimeLine from "@/components/design/TimeLine";
 import EventOrganizers from "@/components/EventOrganizers";
 import ContactUs from "@/components/ContactUs";
 import JoinNow from "@/components/JoinNow";
-import InnovationTourPromo from "@/components/InnovationTourPromo";
 import Details from "@/components/Details";
 import SLIoTHeroSection from "@/components/SLIoTHeroSection";
 import { SpotlightNew } from "@/components/SpotlightNew";

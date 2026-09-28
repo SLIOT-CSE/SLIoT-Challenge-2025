@@ -1,3 +1,5 @@
+"use client";
+
 import GuilineHeader from '@/components/GuideLineHeader';
 import { useState } from 'react';
 import { motion } from "framer-motion";

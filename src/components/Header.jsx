@@ -1,16 +1,18 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { navigation } from "../constants";
 import MenuSvg from "../assets/svg/MenuSvg";
 import { disablePageScroll, enablePageScroll } from "scroll-lock";
 import { logo } from "@/assets";
 import { closeMenu, openMenu } from "./animations";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useRouter, usePathname } from "next/navigation";
 
 const Header = () => {
   const [openNavigation, setOpenNavigation] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const toggleNavigation = () => {
     if (openNavigation) {
@@ -53,6 +55,15 @@ const Header = () => {
     requestAnimationFrame(animation);
   };
 
+  // After router.push("/"), wait for the section to mount before scrolling.
+  const scrollAfterNavigation = (targetId, attempts = 40) => {
+    if (document.getElementById(targetId)) {
+      smoothScroll(targetId, 1500);
+    } else if (attempts > 0) {
+      setTimeout(() => scrollAfterNavigation(targetId, attempts - 1), 50);
+    }
+  };
+
   const handleClick = (id, isExternal) => {
     if (openNavigation) {
       enablePageScroll();
@@ -62,17 +73,14 @@ const Header = () => {
 
     // If it's marked as external (like /innovation-tour), just navigate
     if (isExternal) {
-      navigate(id);
+      router.push(id);
       return;
     }
 
     // If we're not on the homepage, navigate to homepage first, then scroll
-    if (location.pathname !== '/') {
-      navigate('/');
-      // Wait for navigation to complete, then scroll
-      setTimeout(() => {
-        smoothScroll(id, 1500);
-      }, 100);
+    if (pathname !== '/') {
+      router.push('/');
+      scrollAfterNavigation(id);
       return;
     }
 
@@ -145,11 +153,9 @@ const Header = () => {
           <button
             className="hidden alexandria xl:inline-flex relative h-12 overflow-hidden rounded-2xl p-[1px] focus:outline-none"
             onClick={() => {
-              if (location.pathname !== '/') {
-                navigate('/');
-                setTimeout(() => {
-                  smoothScroll("contact", 1500);
-                }, 100);
+              if (pathname !== '/') {
+                router.push('/');
+                scrollAfterNavigation("contact");
               } else {
                 smoothScroll("contact", 1500);
               }

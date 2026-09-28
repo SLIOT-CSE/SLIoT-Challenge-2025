@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import "./prizes.scss";
 import { first, second, third } from "../../assets";
@@ -103,7 +105,7 @@ const Prizes = () => {
         }`}
       >
         <div className="order-3 md:order-3 lg:order-2">
-          <div class="image-wrapper shine scale-75 transform transition duration-80 hover:scale-90">
+          <div className="image-wrapper shine scale-75 transform transition duration-80 hover:scale-90">
             <img src={first} alt="trophy" className="h-[350px]" />
           </div>
           <span className="text-4xl font-semibold">
@@ -112,7 +114,7 @@ const Prizes = () => {
         </div>
 
         <div className="order-2 md:order-1 lg:order-1">
-          <div class="image-wrapper shine scale-75 transform transition duration-80 hover:scale-90">
+          <div className="image-wrapper shine scale-75 transform transition duration-80 hover:scale-90">
             <img src={second} alt="trophy" className="h-[335px]" />
           </div>
           <span className="text-4xl font-semibold">
@@ -121,7 +123,7 @@ const Prizes = () => {
         </div>
 
         <div className="order-1 md:order-1 lg:order-3">
-          <div class="image-wrapper shine scale-75 transform transition duration-80 hover:scale-90">
+          <div className="image-wrapper shine scale-75 transform transition duration-80 hover:scale-90">
             <img src={third} alt="trophy" className="h-[320px]" />
           </div>
           <span className="text-4xl font-bold">

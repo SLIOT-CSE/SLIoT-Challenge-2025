@@ -1,5 +1,6 @@
+"use client";
+
 import React, { useEffect } from "react";
-import { gsap } from "gsap";
 import { motion } from "framer-motion";
 import TimeLineCard from "../ui/TimeLineCard";
 export default function TimeLine() {
@@ -99,7 +100,6 @@ export default function TimeLine() {
         "Teams must submit video presentations demonstrating their project progress for evaluation by the judges.",
       imgSrc: "assets/3.png",
       isActive: true,
-      isDone:true, 
       isDone: true,
     },
 

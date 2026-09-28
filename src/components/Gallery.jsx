@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { BentoGrid, BentoGridItem } from "./ui/BentoGrid";
 import { currentSLIoTShowcases, previousSLIoTShowcases } from "@/constants";
