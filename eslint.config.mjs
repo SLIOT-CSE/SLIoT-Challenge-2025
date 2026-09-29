@@ -4,6 +4,8 @@ const eslintConfig = [
   ...nextVitals,
   { ignores: [".next/**", "out/**", "node_modules/**"] },
   {
+    // Same files as eslint-config-next, where the react/react-hooks/@next plugins are registered
+    files: ["**/*.{js,jsx,mjs,ts,tsx,mts,cts}"],
     rules: {
       "react/jsx-no-target-blank": "off",
       "react/prop-types": "off",
