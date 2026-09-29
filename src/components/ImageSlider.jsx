@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 
 const ImageSlider = ({
   images,
@@ -46,9 +47,15 @@ const ImageSlider = ({
     <div
       className={`relative ${sliderWidth} ${sliderHeight} max-w-4xl mx-auto overflow-hidden`}
     >
-      <img
+      {/* Photos vary in aspect ratio: 0x0 + width:100%/height:auto keeps the
+          natural height, as the old <img> did, while serving resized images. */}
+      <Image
         src={images[currentIndex]}
         alt={`Slide ${currentIndex}`}
+        width={0}
+        height={0}
+        sizes="(min-width: 896px) 896px, 100vw"
+        style={{ height: "auto" }}
         className={`${sliderWidth} object-cover`}
       />
       {/* Previous Button */}

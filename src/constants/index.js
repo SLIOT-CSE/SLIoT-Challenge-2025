@@ -184,6 +184,8 @@ export const previousSLIoTShowcases = [
     title: "SLIoT 2023",
     description: "",
     className: "lg:col-span-3 md:col-span-6 md:row-span-4 lg:min-h-[40vh]",
+    // next/image hint: tile width at each breakpoint
+    sizes: "(min-width: 1024px) 48vw, (min-width: 768px) 90vw, 92vw",
     imgClassName: "w-full h-full object-cover",
     titleClassName: "justify-end items-end text-end",
     img: sliot2023[0],
@@ -197,6 +199,8 @@ export const previousSLIoTShowcases = [
     title: "SLIoT 2022",
     description: "",
     className: "lg:col-span-2 md:col-span-3 md:row-span-2",
+    // next/image hint: tile width at each breakpoint
+    sizes: "(min-width: 1024px) 32vw, (min-width: 768px) 45vw, 92vw",
     imgClassName: "w-full h-full object-cover",
     titleClassName: "justify-end items-end text-end",
     img: sliot2022[0],
@@ -210,6 +214,8 @@ export const previousSLIoTShowcases = [
     title: "SLIoT 2020",
     description: "",
     className: "lg:col-span-2 md:col-span-3 md:row-span-2",
+    // next/image hint: tile width at each breakpoint
+    sizes: "(min-width: 1024px) 32vw, (min-width: 768px) 45vw, 92vw",
     imgClassName: "w-full h-full object-cover",
     titleClassName: "justify-end items-end text-end",
     img: "https://img.youtube.com/vi/HLMQvP5e98c/hqdefault.jpg",
@@ -222,6 +228,8 @@ export const previousSLIoTShowcases = [
     title: "SLIoT 2019",
     description: "",
     className: "lg:col-span-2 md:col-span-3 md:row-span-1",
+    // next/image hint: tile width at each breakpoint
+    sizes: "(min-width: 1024px) 32vw, (min-width: 768px) 45vw, 92vw",
     imgClassName: "w-full h-full object-cover",
     titleClassName: "justify-end items-end text-end",
     img: sliot2019[0],
@@ -235,6 +243,8 @@ export const previousSLIoTShowcases = [
     title: "SLIoT 2018",
     description: "",
     className: "md:col-span-3 md:row-span-2",
+    // next/image hint: tile width at each breakpoint
+    sizes: "(min-width: 1024px) 48vw, (min-width: 768px) 45vw, 92vw",
     imgClassName: "w-full h-full object-cover",
     titleClassName: "justify-end items-end text-end",
     img: "https://img.youtube.com/vi/9bpgGZMNd28/hqdefault.jpg",
@@ -247,6 +257,8 @@ export const previousSLIoTShowcases = [
     title: "SLIoT 2017",
     description: "",
     className: "lg:col-span-2 md:col-span-3 md:row-span-1",
+    // next/image hint: tile width at each breakpoint
+    sizes: "(min-width: 1024px) 32vw, (min-width: 768px) 45vw, 92vw",
     imgClassName: "w-full h-full object-cover",
     titleClassName: "justify-end items-end text-end",
     img: "https://img.youtube.com/vi/v6wOjQGANsE/hqdefault.jpg",
@@ -262,6 +274,8 @@ export const currentSLIoTShowcases = [
     title: "SLIoT 2025",
     description: "",
     className: "lg:col-span-5 md:col-span-6 md:row-span-4 lg:min-h-[40vh]",
+    // next/image hint: tile width at each breakpoint
+    sizes: "(min-width: 1024px) 80vw, (min-width: 768px) 90vw, 92vw",
     imgClassName: "w-full h-full object-cover",
     titleClassName: "justify-end items-end text-end",
     img: sliot2025[0],

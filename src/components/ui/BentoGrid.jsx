@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { GlobeDemo } from "./GridGlobe";
 import ImageSlider from "../ImageSlider";
@@ -32,6 +33,7 @@ export const BentoGridItem = ({
   link,
   imageArray,
   overlayClassName,
+  sizes,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -71,7 +73,17 @@ export const BentoGridItem = ({
         onClick={handleOpenModal}
       >
         <div className="w-full h-full absolute">
-          {img && (
+          {img && sizes && (
+            // Gallery tiles: resized WebP/AVIF, fills the tile like the old w-full h-full img
+            <Image
+              src={img}
+              alt={img}
+              fill
+              sizes={sizes}
+              className={cn(imgClassName, "object-cover object-center")}
+            />
+          )}
+          {img && !sizes && (
             <img
               src={img}
               alt={img}
