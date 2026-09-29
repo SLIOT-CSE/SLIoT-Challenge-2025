@@ -1,9 +1,0 @@
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  width="50"
-  height="50"
-  viewBox="0 0 24 24"
-  style="color: white; fill: white; margin-bottom: 10px; align-self: flex-start;"
->
-  <path d="M12 1a11 11 0 1 0 11 11A11 11 0 0 0 12 1zm0 20a9 9 0 1 1 9-9 9 9 0 0 1-9 9zm.5-15h-1v7l6 3 .5-.9-5.5-2.6z" />
-</svg>

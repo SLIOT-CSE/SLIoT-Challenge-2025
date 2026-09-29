@@ -1,19 +1,11 @@
 "use client";
 
-import React, { useEffect } from "react";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import React from "react";
 import { CardCarousel } from "./ui/CardCarousel";
 import { organizers } from "@/constants";
 import { motion } from "framer-motion";
 
 const EventOrganizers = () => {
-    useEffect(() => {
-        AOS.init({
-          duration: 1000, 
-          once: true, 
-        });
-      }, []);
     return (
         <div className="flex flex-col" id="partners">
             <hr className="border-t-2 border-gray-300 mx-[10%] mt-28 mb-10 animate-grow" />
