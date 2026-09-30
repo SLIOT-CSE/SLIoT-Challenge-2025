@@ -56,7 +56,7 @@ Between editions the site can show a single teaser page instead of the full site
 
 It is controlled by `COMING_SOON` in `src/config/site.mjs`:
 
-- `true`: `/` shows the coming-soon page (`src/views/ComingSoon.jsx`), every other page redirects to `/` with a temporary (307) redirect, unknown URLs show the teaser with a 404 status, and the full site's header and footer are hidden.
+- `true`: `/` shows the coming-soon page (`src/views/ComingSoon.jsx`, always exactly one screen tall with no scrolling: the robot scales to the space left, and very short screens drop the copyright line and the first sentence), every other page redirects to `/` with a temporary (307) redirect, unknown URLs show the teaser with a 404 status, and the full site's header and footer are hidden.
 - `false`: the full site is back exactly as before.
 
 Change the flag, commit and push; the deploy picks it up. The same file holds the edition name and year, the status text, the tagline and the social links shown on the teaser (Instagram and TikTok are placeholders marked `TODO`).

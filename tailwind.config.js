@@ -276,6 +276,11 @@ export default {
       'lg': '1024px', // Large screens and above
       'xl': '1280px', // Extra large screens and above
       '2xl': '1536px', // 2x Extra large screens and above
+      // Height-based variants (listed last so they override the width ones)
+      'short': { raw: '(max-height: 700px)' },
+      'shorter': { raw: '(max-height: 600px)' },
+      // Phones held sideways
+      'land': { raw: '(orientation: landscape) and (max-height: 500px)' },
     },
   },
   plugins: [

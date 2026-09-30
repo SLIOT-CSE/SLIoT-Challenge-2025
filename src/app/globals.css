@@ -262,6 +262,14 @@
   to   { transform: translateX(-50%); }
 }
 
+/* The coming-soon page is exactly one screen: no page scroll, no pull-to-refresh bounce.
+   Scoped with :has() so the full site scrolls normally when the flag is off. */
+html:has(.cs-page),
+html:has(.cs-page) body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 /* Staggered entrance; each element sets its own --cs-delay */
 .cs-rise {
   animation: cs-rise 0.9s var(--cs-ease-out) var(--cs-delay, 0s) both;
