@@ -37,6 +37,7 @@ src/
   views/            Full-page views used by routes (Home, InnovationTour, ...)
   components/       Page sections and UI components
     ui/             Reusable UI pieces (BentoGrid, MovingBorders, Globe, ...)
+  config/site.mjs   Coming-soon switch, edition name/year, teaser copy and social links
   constants/        Site content: navigation, socials, about, gallery, spotlight videos, partners
   assets/index.js   Image paths (files live in public/images)
   lib/utils.js      cn() class-name helper
@@ -48,6 +49,19 @@ ecosystem.config.cjs  PM2 process definition
 ```
 
 Routes: `/`, `/guidelines`, `/faqs`, `/finalists`, `/innovation-tour`, `/session_1`, and a 404 page.
+
+## Coming-soon mode
+
+Between editions the site can show a single teaser page instead of the full site.
+
+It is controlled by `COMING_SOON` in `src/config/site.mjs`:
+
+- `true`: `/` shows the coming-soon page (`src/views/ComingSoon.jsx`), every other page redirects to `/` with a temporary (307) redirect, unknown URLs show the teaser with a 404 status, and the full site's header and footer are hidden.
+- `false`: the full site is back exactly as before.
+
+Change the flag, commit and push; the deploy picks it up. The same file holds the edition name and year, the status text, the tagline and the social links shown on the teaser (Instagram and TikTok are placeholders marked `TODO`).
+
+The link-preview image for WhatsApp/Facebook is `public/images/og-coming-soon.jpg` (1200x630). Replace it when the edition or artwork changes.
 
 ## Updating content
 
@@ -67,7 +81,8 @@ Most yearly updates are data edits; no component changes are needed.
 | Contact people | `src/components/ContactUs.jsx`, photos in `public/images/people` |
 | Finalists | `teams` in `src/views/SelectedTeams.jsx` |
 | Registration / proposal links | `src/components/JoinNow.jsx`, `src/components/SubmissionGuidelines.jsx` |
-| Page title | `metadata` in `src/app/layout.jsx` |
+| Page title | `metadata` in `src/app/layout.jsx` (coming-soon title and share tags in `src/app/page.jsx`) |
+| Coming-soon page text and social links | `src/config/site.mjs` |
 
 ### Images
 
