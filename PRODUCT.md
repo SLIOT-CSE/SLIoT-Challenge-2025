@@ -31,7 +31,7 @@ Confident, tech-forward, anticipatory. Voice is direct and encouraging to young 
 2. Phone first: the essential message and the next action fit the first screen on a small phone.
 3. One clear next step per screen (register, submit, or follow).
 4. Motion builds anticipation but never hides content; everything is readable without it.
-5. Keep the established identity (navy-to-green night gradient, Audiowide display type, electric green accent); refine it rather than reinvent it each year.
+5. Keep the established identity (navy-to-green night gradient, Audiowide display type, electric green accent); refine it rather than reinvent it each year. Exception: the 2027 coming-soon page uses an aurora palette (abyss navy to mint, `cs-*` tokens in `tailwind.config.js`), Bebas Neue + Montserrat, and a frosted-glass card over a blurred mock of the full site.
 
 ## Accessibility & Inclusion
 

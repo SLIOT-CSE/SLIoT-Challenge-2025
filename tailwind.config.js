@@ -28,6 +28,18 @@ export default {
         stroke: {
           1: "#26242C",
         },
+        // Coming-soon page: sampled from the aurora reference (navy to mint)
+        cs: {
+          abyss: "#010610",
+          night: "#011225",
+          deep: "#023649",
+          ocean: "#0B5A6D",
+          teal: "#14676F",
+          lagoon: "#52BAA5",
+          mint: "#73DABE",
+          foam: "#DDF7EF",
+          mist: "#A9C7CC",
+        },
         n: {
           1: "#FFFFFF",
           2: "#CAC6DD",
@@ -103,6 +115,8 @@ export default {
         sans: ['Quattrocento Sans', 'sans-serif'],
         audiowide: ["var(--font-audiowide)", "sans-serif"],
         alexandria: ["var(--font-alexandria)", "sans-serif"],
+        bebas: ["var(--font-bebas-neue)", "Impact", "sans-serif"],
+        montserrat: ["var(--font-montserrat)", "sans-serif"],
       },
       letterSpacing: {
         tagline: ".15em",

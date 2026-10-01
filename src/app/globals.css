@@ -226,14 +226,196 @@
 /* ---------------------------------------------------------------------------
    Coming-soon page (src/views/ComingSoon.jsx)
    Motion is CSS-only so the page renders without waiting for JavaScript.
+   Colours are the cs-* tokens in tailwind.config.js (aurora reference image).
    --------------------------------------------------------------------------- */
 :root {
   --cs-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* The coming-soon page is exactly one screen: no page scroll, no pull-to-refresh bounce.
+   Scoped with :has() so the full site scrolls normally when the flag is off. */
+html:has(.cs-page),
+html:has(.cs-page) body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* Aurora: three soft lights drifting slowly (mint left, ocean top right, deep blue
+   bottom right), as in the reference image */
+.cs-aurora {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+}
+
+.cs-aurora-a {
+  left: -32vmax;
+  top: 8%;
+  width: 72vmax;
+  height: 72vmax;
+  background: radial-gradient(closest-side, rgb(115 218 190 / 0.6), rgb(82 186 165 / 0.28) 45%, transparent);
+  animation: cs-drift-a 26s ease-in-out infinite alternate;
+}
+
+.cs-aurora-b {
+  right: -26vmax;
+  top: -22vmax;
+  width: 88vmax;
+  height: 52vmax;
+  background: radial-gradient(closest-side, rgb(11 90 109 / 0.8), rgb(2 54 73 / 0.4) 55%, transparent);
+  transform: rotate(-18deg);
+  animation: cs-drift-b 32s ease-in-out infinite alternate;
+}
+
+.cs-aurora-c {
+  right: -18vmax;
+  bottom: -32vmax;
+  width: 82vmax;
+  height: 62vmax;
+  background: radial-gradient(closest-side, rgb(2 54 73 / 0.85), rgb(1 27 52 / 0.5) 50%, transparent);
+  animation: cs-drift-c 38s ease-in-out infinite alternate;
+}
+
+@keyframes cs-drift-a {
+  to { transform: translate3d(8vw, -6vh, 0) scale(1.15); }
+}
+
+@keyframes cs-drift-b {
+  from { transform: rotate(-18deg); }
+  to   { transform: translate3d(-10vw, 8vh, 0) rotate(-8deg) scale(1.1); }
+}
+
+@keyframes cs-drift-c {
+  to { transform: translate3d(-12vw, -6vh, 0) scale(1.12); }
+}
+
+/* The mock site behind the card: recognisable as a site, unreadable as text.
+   Scaled up slightly so the blur's soft edge falls outside the screen. */
+.cs-mock {
+  filter: blur(8px) saturate(1.15);
+  opacity: 0.72;
+  transform: scale(1.03);
+}
+
+.cs-vignette {
+  background:
+    radial-gradient(ellipse 72% 68% at 50% 50%, rgb(1 6 16 / 0.1), rgb(1 6 16 / 0.62) 100%),
+    linear-gradient(rgb(1 6 16 / 0.18), rgb(1 6 16 / 0.18));
+}
+
+/* Film grain like the reference; sits under the card, so the glass blurs it away */
+.cs-grain {
+  pointer-events: none;
+  background-image: url("/images/noise.png");
+  background-size: 128px;
+  opacity: 0.055;
+}
+
+/* Glass: a frosted plate (.cs-glass) in a thin, lighter tray (.cs-bezel) */
+.cs-bezel {
+  background: linear-gradient(160deg, rgb(221 247 239 / 0.11), rgb(221 247 239 / 0.02) 40%, rgb(115 218 190 / 0.07));
+  box-shadow: inset 0 0 0 1px rgb(221 247 239 / 0.1);
+}
+
+.cs-glass {
+  overflow: hidden;
+  background: linear-gradient(155deg, rgb(11 90 109 / 0.3) 0%, rgb(2 18 37 / 0.66) 42%, rgb(1 6 16 / 0.76) 100%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  backdrop-filter: blur(28px) saturate(160%);
+  box-shadow:
+    inset 0 1px 0 rgb(221 247 239 / 0.16),
+    inset 0 0 0 1px rgb(115 218 190 / 0.12);
+}
+
+/* A short run of light keeps travelling along the top edge: something is loading */
+.cs-glass::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(115 218 190 / 0.95), transparent);
+  transform: translateX(-100%);
+  animation: cs-sweep 6s var(--cs-ease-out) 1.6s infinite;
+}
+
+@keyframes cs-sweep {
+  0%        { transform: translateX(-100%); }
+  55%, 100% { transform: translateX(260%); }
+}
+
+/* No backdrop blur (old browsers): a solid plate keeps the text readable */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .cs-glass {
+    background: rgb(2 18 37 / 0.94);
+  }
+}
+
+/* Entrances. The card wrapper only moves (transform); the glass fades itself, because
+   opacity or filter on an ancestor would switch off its backdrop blur. */
+.cs-card {
+  animation: cs-card-in 1.3s var(--cs-ease-out) 0.05s both;
+}
+
+.cs-fade-in {
+  animation: cs-fade 1s var(--cs-ease-out) 0.05s both;
+}
+
+/* Staggered entrance; each element sets its own --cs-delay */
+.cs-rise {
+  animation: cs-rise 0.9s var(--cs-ease-out) var(--cs-delay, 0s) both;
+}
+
+/* Title lines slide up out of their own mask */
+.cs-line {
+  animation: cs-line 1.2s var(--cs-ease-out) var(--cs-delay, 0s) both;
+}
+
+/* Mock-site blocks rise into place one after another */
+.cs-mock-in {
+  animation: cs-mock-in 1.6s var(--cs-ease-out) var(--cs-delay, 0s) both;
+}
+
+.cs-robot {
+  animation: cs-robot-in 1.2s var(--cs-ease-out) 0.5s both;
+}
+
+.cs-float {
+  animation: cs-float 7s ease-in-out 1.7s infinite;
+}
+
+.cs-sway {
+  animation: cs-sway 3.3s ease-in-out infinite alternate;
+}
+
+.cs-ping {
+  animation: cs-ping 2s var(--cs-ease-out) infinite;
+}
+
+@keyframes cs-card-in {
+  from { transform: translateY(32px) scale(0.97); }
+  to   { transform: none; }
+}
+
+@keyframes cs-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 @keyframes cs-rise {
   from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
   to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes cs-line {
+  from { transform: translateY(108%); }
+  to   { transform: none; }
+}
+
+@keyframes cs-mock-in {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: none; }
 }
 
 @keyframes cs-robot-in {
@@ -257,58 +439,20 @@
   75%, 100% { transform: scale(2.4); opacity: 0; }
 }
 
-@keyframes cs-marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-/* The coming-soon page is exactly one screen: no page scroll, no pull-to-refresh bounce.
-   Scoped with :has() so the full site scrolls normally when the flag is off. */
-html:has(.cs-page),
-html:has(.cs-page) body {
-  overflow: hidden;
-  overscroll-behavior: none;
-}
-
-/* Staggered entrance; each element sets its own --cs-delay */
-.cs-rise {
-  animation: cs-rise 0.9s var(--cs-ease-out) var(--cs-delay, 0s) both;
-}
-
-.cs-robot {
-  animation: cs-robot-in 1.2s var(--cs-ease-out) 0.35s both;
-}
-
-.cs-float {
-  animation: cs-float 7s ease-in-out 1.6s infinite;
-}
-
-.cs-sway {
-  animation: cs-sway 3.3s ease-in-out infinite alternate;
-}
-
-.cs-ping {
-  animation: cs-ping 2s var(--cs-ease-out) infinite;
-}
-
-.cs-marquee-track {
-  animation: cs-marquee 38s linear infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .cs-rise,
-  .cs-robot {
+  .cs-line,
+  .cs-mock-in,
+  .cs-robot,
+  .cs-fade-in {
     animation: cs-fade 0.4s ease-out both;
   }
+  .cs-card,
+  .cs-aurora,
   .cs-float,
   .cs-sway,
   .cs-ping,
-  .cs-marquee-track {
+  .cs-glass::before {
     animation: none;
   }
-}
-
-@keyframes cs-fade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
 }

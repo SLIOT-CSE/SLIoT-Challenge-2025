@@ -1,99 +1,115 @@
-import { Spotlight } from "@/components/ui/Spotlight";
+import MockSite from "@/components/coming-soon/MockSite";
 import RobotStage from "@/components/coming-soon/RobotStage";
 import SocialLinks from "@/components/coming-soon/SocialLinks";
-import LaunchMarquee from "@/components/coming-soon/LaunchMarquee";
 import { logo } from "@/assets";
 import { edition } from "@/config/site.mjs";
 
 // Teaser page shown at "/" while COMING_SOON is on (src/config/site.mjs).
-// Always exactly one screen tall (never scrolls): the robot takes whatever height is
-// left, the title scales with width and height, and on short screens the copyright
+// Layers, back to front: aurora light, a blurred mock of the full site, a vignette,
+// film grain, then one frosted-glass card with everything that matters.
+// The robot stands on the card and breaks out of it:
+// - stacked (phones, tablets): above the card, taking whatever height is left and
+//   overlapping its top edge;
+// - side by side (lg, and landscape phones): stepping out past the right edge.
+// Always exactly one screen tall (never scrolls); on short screens the copyright
 // (short: < 700px tall) and the first sentence (shorter: < 600px) are dropped.
-// Phones: logo, title, robot, copy + links, banner. Desktop and landscape phones: text
-// left, robot right.
 const ComingSoon = () => {
   return (
-    <main className="cs-page relative isolate flex h-[100dvh] flex-col overflow-hidden font-alexandria">
-      {/* Same three light beams as the home hero */}
-      <div aria-hidden="true">
-        <Spotlight className="h-screen -top-40 -left-10 md:-left-32 md:-top-20" fill="white" />
-        <Spotlight className="sm:top-10 left-full h-screen sm:w-[50vw]" fill="#73C72A" />
-        <Spotlight className="sm:top-10 md:top-28 left-80 h-screen sm:w-[50vw]" fill="blue" />
+    <main className="cs-page relative isolate h-[100dvh] overflow-hidden bg-cs-abyss font-montserrat text-cs-foam">
+      {/* Aurora light, the colours of the reference image */}
+      <div aria-hidden="true" className="absolute inset-0 overflow-hidden">
+        <div className="cs-aurora cs-aurora-a" />
+        <div className="cs-aurora cs-aurora-b" />
+        <div className="cs-aurora cs-aurora-c" />
       </div>
 
-      <header className="relative z-2 mx-auto flex w-full max-w-7xl shrink-0 items-center justify-between px-5 pt-5 md:px-10 md:pt-8 short:pt-3">
-        <img
-          src={logo}
-          alt="SLIoT"
-          width={1518}
-          height={813}
-          className="cs-rise h-auto w-[92px] md:w-[116px] short:w-[84px]"
-          style={{ "--cs-delay": "0s" }}
-        />
-        <p
-          className="cs-rise inline-flex items-center gap-2 rounded-full border border-[#77FF00]/35 bg-[#77FF00]/10 px-3.5 py-1.5 text-xs text-[#d9ffb8] sm:text-sm"
-          style={{ "--cs-delay": "0.1s" }}
-        >
-          <span className="relative flex h-2 w-2" aria-hidden="true">
-            <span className="cs-ping absolute inline-flex h-full w-full rounded-full bg-[#77FF00]" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#77FF00]" />
-          </span>
-          {edition.status}
+      <MockSite />
+
+      {/* Pulls the eye to the centre and keeps the mock quiet */}
+      <div aria-hidden="true" className="cs-vignette absolute inset-0" />
+      <div aria-hidden="true" className="cs-grain absolute inset-0" />
+
+      <div className="relative z-2 mx-auto flex h-full w-full max-w-[66rem] flex-col justify-center px-4 py-4 sm:px-6 land:py-3">
+        {/* Stacked layout: the robot row absorbs the leftover height */}
+        <div className="relative z-3 -mb-14 flex min-h-[96px] max-h-[260px] flex-1 justify-end pr-1 sm:max-h-[360px] sm:pr-6 lg:hidden land:hidden">
+          <RobotStage className="relative flex h-full justify-end" />
+        </div>
+
+        {/* Only transform animates on this wrapper; opacity or filter here would
+            switch off the backdrop blur of the glass inside it */}
+        <section aria-labelledby="cs-title" className="cs-card relative shrink-0">
+          {/* Outer bezel: the tray the glass plate sits in */}
+          <div aria-hidden="true" className="cs-bezel cs-fade-in absolute -inset-1.5 rounded-[1.625rem]" />
+
+          <div className="cs-glass cs-fade-in relative grid rounded-[1.25rem] px-6 pb-6 pt-6 sm:px-10 sm:pb-10 sm:pt-9 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-8 lg:px-12 lg:pb-12 lg:pt-10 short:pt-5 short:sm:pb-8 short:sm:pt-7 land:grid-cols-[minmax(0,1fr)_12rem] land:gap-4 land:px-7 land:pb-4 land:pt-4">
+            <div>
+              <div className="lg:flex lg:items-center lg:gap-5 land:flex land:items-center land:gap-4">
+                <img
+                  src={logo}
+                  alt="SLIoT"
+                  width={1518}
+                  height={813}
+                  className="cs-rise h-auto w-[76px] sm:w-[96px] short:w-[70px] land:w-[60px]"
+                  style={{ "--cs-delay": "0.2s" }}
+                />
+
+                <p
+                  className="cs-rise mt-5 inline-flex items-center gap-2.5 rounded-full bg-cs-mint/10 py-1.5 pl-3 pr-3.5 text-xs font-medium uppercase tracking-[0.14em] text-cs-mint ring-1 ring-inset ring-cs-mint/30 sm:mt-8 short:mt-4 lg:mt-0 land:mt-0"
+                  style={{ "--cs-delay": "0.3s" }}
+                >
+                  <span className="relative flex h-2 w-2" aria-hidden="true">
+                    <span className="cs-ping absolute inline-flex h-full w-full rounded-full bg-cs-mint" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-cs-mint" />
+                  </span>
+                  {edition.status}
+                </p>
+              </div>
+
+              <h1 id="cs-title" className="mt-4 lg:mt-8 font-bebas font-normal uppercase leading-[0.88] sm:mt-5 short:mt-3 land:mt-3">
+                <span className="block overflow-hidden pt-[0.06em]">
+                  <span
+                    className="cs-line block text-[clamp(2rem,min(10.5vw,8.5dvh),4.75rem)] tracking-[0.01em] text-cs-foam"
+                    style={{ "--cs-delay": "0.35s" }}
+                  >
+                    {edition.name}
+                  </span>
+                </span>
+                <span className="block overflow-hidden pt-[0.04em]">
+                  <span
+                    className="cs-line block text-[clamp(3.25rem,min(19.5vw,15dvh),7.25rem)] tracking-[0.02em] text-cs-mint"
+                    style={{ "--cs-delay": "0.48s" }}
+                  >
+                    {edition.year}
+                  </span>
+                </span>
+              </h1>
+
+              <p
+                className="cs-rise mt-3 max-w-[44ch] text-pretty text-[0.9375rem] leading-[1.65] text-cs-mist sm:mt-5 sm:text-base short:leading-relaxed land:mt-2 land:text-sm"
+                style={{ "--cs-delay": "0.65s" }}
+              >
+                <span className="shorter:hidden">
+                  Sri Lanka&apos;s biggest IoT competition returns for school students, university
+                  undergraduates and innovators across the island.{" "}
+                </span>
+                <span className="font-medium text-cs-foam">{edition.tagline}</span>
+              </p>
+
+              <SocialLinks className="mt-5 sm:mt-8 short:mt-4 land:mt-3" />
+            </div>
+          </div>
+
+          {/* Side-by-side layout: stands on the bottom-right corner, its arm reaching past
+              the right edge and its feet below the bottom edge. --cs-rh is the robot's
+              height; the image has ~11% empty space on the right and ~4% at the bottom,
+              which the offsets subtract so the visible robot lands where intended. */}
+          <RobotStage className="absolute bottom-[calc(var(--cs-rh)*-0.041-2.75rem)] right-[calc(var(--cs-rh)*-0.11-1rem)] z-3 hidden h-[var(--cs-rh)] justify-end [--cs-rh:min(80dvh,44vw,44rem)] lg:flex xl:right-[calc(var(--cs-rh)*-0.11-5rem)] land:bottom-[calc(var(--cs-rh)*-0.041-0.75rem)] land:right-[calc(var(--cs-rh)*-0.11-0.75rem)] land:flex land:[--cs-rh:min(86dvh,32vw)]" />
+        </section>
+
+        <p className="cs-rise mt-5 shrink-0 text-center text-xs leading-relaxed text-cs-mist/75 short:hidden" style={{ "--cs-delay": "1.2s" }}>
+          &copy; {new Date().getFullYear()} SLIoT Challenge &middot; CSE, University of Moratuwa
         </p>
-      </header>
-
-      <div
-        className={[
-          "relative z-2 mx-auto grid min-h-0 w-full max-w-7xl flex-1 gap-x-10 gap-y-3 px-5 py-3 md:px-10 md:py-6 short:py-2",
-          // Stacked: the robot row absorbs the leftover height (floor 110px)
-          "grid-rows-[auto_minmax(110px,1fr)_auto] [grid-template-areas:'title''robot''rest']",
-          // Side by side: the text block is centred as one unit between two spacer rows,
-          // and the robot spans the full height of the right column
-          "lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:grid-rows-[minmax(0,1fr)_auto_auto_minmax(0,1fr)] lg:[grid-template-areas:'._robot''title_robot''rest_robot''._robot']",
-          "land:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] land:grid-rows-[minmax(0,1fr)_auto_auto_minmax(0,1fr)] land:[grid-template-areas:'._robot''title_robot''rest_robot''._robot'] land:gap-y-2",
-        ].join(" ")}
-      >
-        <h1 className="self-end font-audiowide uppercase [grid-area:title]">
-          <span
-            className="cs-rise block text-[clamp(2.25rem,min(13vw,10dvh),6rem)] leading-[0.95] tracking-wide text-neutral-200"
-            style={{ "--cs-delay": "0.15s" }}
-          >
-            SLIoT
-          </span>
-          <span
-            className="cs-rise mt-2 block text-[clamp(1.1rem,min(5.6vw,4.5dvh),3rem)] leading-tight text-[#29FF08] short:mt-1"
-            style={{ "--cs-delay": "0.28s" }}
-          >
-            Challenge {edition.year}
-          </span>
-        </h1>
-
-        <div className="min-h-0 [grid-area:robot]">
-          <RobotStage />
-        </div>
-
-        <div className="self-start [grid-area:rest] lg:mt-4 land:mt-0">
-          <p
-            className="cs-rise max-w-[44ch] text-pretty text-base leading-relaxed text-neutral-200 md:text-lg short:text-sm short:leading-normal"
-            style={{ "--cs-delay": "0.45s" }}
-          >
-            <span className="shorter:hidden">
-              Sri Lanka&apos;s biggest IoT competition returns for school students, university
-              undergraduates and innovators across the island.{" "}
-            </span>
-            <span className="text-white">{edition.tagline}</span>
-          </p>
-          <SocialLinks className="mt-5 md:mt-8 short:mt-3" />
-        </div>
       </div>
-
-      <footer className="relative z-2 mt-3 shrink-0 pb-7 md:pb-9 short:mt-1 short:pb-6">
-        <LaunchMarquee />
-        <p className="mx-auto mt-8 w-full max-w-7xl px-5 text-xs text-neutral-400 md:px-10 short:hidden">
-          &copy; {new Date().getFullYear()} SLIoT Challenge. Department of Computer Science &amp;
-          Engineering, University of Moratuwa.
-        </p>
-      </footer>
     </main>
   );
 };

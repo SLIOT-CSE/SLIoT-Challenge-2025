@@ -1,4 +1,5 @@
 import {
+  PiArrowUpRight,
   PiFacebookLogo,
   PiInstagramLogo,
   PiLinkedinLogo,
@@ -15,31 +16,57 @@ const ICONS = {
   linkedin: PiLinkedinLogo,
 };
 
-// Links with the site's green-to-teal gradient edge: round icon buttons on phones and
-// landscape phones (one row, labels kept for screen readers), labelled pills from sm up.
+const focusRing =
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-cs-mint";
+
+// The WhatsApp channel is the one main action (announcements land there first);
+// the other channels are round icon buttons beside it.
 const SocialLinks = ({ className = "" }) => {
+  const [primary, ...rest] = comingSoonSocials;
+  const PrimaryIcon = ICONS[primary.id];
+
   return (
-    <ul className={`flex flex-wrap gap-2.5 sm:gap-3 ${className}`}>
-      {comingSoonSocials.map(({ id, label, url }, i) => {
-        const Icon = ICONS[id];
-        return (
-          <li key={id} className="cs-rise" style={{ "--cs-delay": `${0.75 + i * 0.07}s` }}>
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${label} (opens in a new tab)`}
-              className="group relative inline-flex h-12 rounded-full bg-gradient-to-r from-[#46BC41] to-[#01688E] p-px transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#77FF00]"
-            >
-              <span className="inline-flex h-full w-[46px] items-center justify-center gap-2 rounded-full bg-[#060b1f] text-sm font-medium text-neutral-100 transition-colors duration-300 group-hover:bg-[#0b1733] sm:w-auto sm:px-5 land:w-[46px] land:px-0">
-                <Icon aria-hidden="true" className="h-5 w-5 text-[#77FF00]" />
-                <span className="sr-only sm:not-sr-only land:sr-only">{label}</span>
-              </span>
-            </a>
-          </li>
-        );
-      })}
-    </ul>
+    <div className={`flex flex-wrap items-center gap-x-5 gap-y-4 ${className}`}>
+      <a
+        href={primary.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`cs-rise group inline-flex h-[3.25rem] w-full items-center justify-between gap-4 rounded-full bg-cs-mint pl-5 pr-1.5 font-montserrat text-[0.9375rem] font-semibold text-cs-abyss transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-cs-foam active:scale-[0.98] xs:w-auto land:h-11 land:text-sm ${focusRing}`}
+        style={{ "--cs-delay": "0.85s" }}
+      >
+        <span className="inline-flex items-center gap-2.5">
+          <PrimaryIcon aria-hidden="true" className="h-5 w-5" />
+          Follow on WhatsApp
+          <span className="sr-only">(opens the {primary.label} in a new tab)</span>
+        </span>
+        <span
+          aria-hidden="true"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-cs-abyss/90 text-cs-mint transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-px group-hover:translate-x-0.5 group-hover:scale-105 land:h-8 land:w-8"
+        >
+          <PiArrowUpRight className="h-[1.125rem] w-[1.125rem]" />
+        </span>
+      </a>
+
+      <ul className="flex items-center gap-2.5" aria-label="More channels">
+        {rest.map(({ id, label, url }, i) => {
+          const Icon = ICONS[id];
+          return (
+            <li key={id} className="cs-rise" style={{ "--cs-delay": `${0.95 + i * 0.06}s` }}>
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${label} (opens in a new tab)`}
+                title={label}
+                className={`inline-flex h-11 w-11 items-center justify-center rounded-full bg-cs-foam/[0.07] text-cs-foam ring-1 ring-inset ring-cs-foam/15 transition-[transform,background-color,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:bg-cs-mint/15 hover:text-cs-mint active:translate-y-0 active:scale-95 land:h-10 land:w-10 ${focusRing}`}
+              >
+                <Icon aria-hidden="true" className="h-5 w-5" />
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 };
 

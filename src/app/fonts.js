@@ -1,4 +1,4 @@
-import { Alexandria, Audiowide, Poppins, Roboto_Mono } from "next/font/google";
+import { Alexandria, Audiowide, Bebas_Neue, Montserrat, Poppins, Roboto_Mono } from "next/font/google";
 import localFont from "next/font/local";
 
 // Weights match what the Vite site loaded from Google Fonts. Alexandria was
@@ -31,6 +31,21 @@ export const robotoMono = Roboto_Mono({
   variable: "--font-roboto-mono",
 });
 
+// Coming-soon page only: Bebas Neue for display, Montserrat for text
+export const bebasNeue = Bebas_Neue({
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+  variable: "--font-bebas-neue",
+});
+
+export const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+  variable: "--font-montserrat",
+});
+
 export const nicoMoji = localFont({
   src: "../assets/fonts/NicoMoji-Regular.ttf",
   weight: "400",
@@ -38,6 +53,6 @@ export const nicoMoji = localFont({
   variable: "--font-nicomoji",
 });
 
-export const fontVariables = [alexandria, audiowide, poppins, robotoMono, nicoMoji]
+export const fontVariables = [alexandria, audiowide, poppins, robotoMono, nicoMoji, bebasNeue, montserrat]
   .map((font) => font.variable)
   .join(" ");
