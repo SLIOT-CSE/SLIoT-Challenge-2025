@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CardBody, CardContainer, CardItem } from "./ui/3d-card";
-import { robot, sltLogo } from "@/assets";
+import HeroFigure from "./HeroFigure";
+import { sltLogo } from "@/assets";
 import { motion } from "framer-motion"
 import { Spotlight } from "./ui/Spotlight";
 import { TextGenerateEffect } from "./ui/TextGenerateEffect";
@@ -90,29 +90,17 @@ const SLIoTHeroSection = () => {
             </div>
           </div>
         </div>
-        <CardContainer className="relative z-10 inter-var md:-ml-72 lg:-ml-96 xl:-ml-[28rem]">
-          <CardBody className="group/card w-auto sm:w-[20rem] md:w-[22rem] lg:w-[30rem] h-auto z-10 relative">
-            <CardItem translateZ="100" className="relative z-10 w-full mt-4">
-              <motion.img
-                src={robot}
-                className="relative z-10 object-cover w-full rounded-xl"
-                alt="thumbnail"
-                loading="eager"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  duration: 0.8,
-                  ease: "easeInOut",
-                }}
-                whileHover={{
-                  scale: 1.05,
-                  rotate: 2, // Slight rotation on hover
-                  transition: { duration: 0.3 },
-                }}
-              />
-            </CardItem>
-          </CardBody>
-        </CardContainer>
+        {/* 2027 hero figure; its cut right and bottom edges fade out (fig-fade-edges) */}
+        <div className="flex items-center justify-center py-20">
+          <motion.div
+            initial={{ opacity: 0, filter: "blur(12px)" }}
+            animate={{ opacity: 1, filter: "blur(0px)" }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="relative z-10 mt-4 w-[min(20rem,85vw)] md:-ml-72 md:w-[22rem] lg:-ml-96 lg:w-[30rem] xl:-ml-[28rem]"
+          >
+            <HeroFigure className="fig-fade-edges relative w-full" sizes="(min-width: 1024px) 480px, 352px" priority />
+          </motion.div>
+        </div>
       </section>
     </div>
   );

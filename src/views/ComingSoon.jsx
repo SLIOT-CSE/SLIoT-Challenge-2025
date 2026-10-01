@@ -1,5 +1,5 @@
 import MockSite from "@/components/coming-soon/MockSite";
-import RobotStage from "@/components/coming-soon/RobotStage";
+import HeroFigure from "@/components/HeroFigure";
 import SocialLinks from "@/components/coming-soon/SocialLinks";
 import { logo } from "@/assets";
 import { edition } from "@/config/site.mjs";
@@ -7,12 +7,16 @@ import { edition } from "@/config/site.mjs";
 // Teaser page shown at "/" while COMING_SOON is on (src/config/site.mjs).
 // Layers, back to front: aurora light, a blurred mock of the full site, a vignette,
 // film grain, then one frosted-glass card with everything that matters.
-// The robot stands on the card and breaks out of it:
-// - stacked (phones, tablets): above the card, taking whatever height is left and
-//   overlapping its top edge;
-// - side by side (lg, and landscape phones): stepping out past the right edge.
+// The hero figure (cut off on its right and bottom edges) breaks out of the card:
+// - stacked (phones, tablets): above the card, taking whatever height is left; its cut
+//   right edge runs off the screen edge and its cut bottom edge fades into the card;
+// - side by side (lg, and landscape phones): in the card's bottom-right corner, cut
+//   edges flush with the card's edges, helmet rising above the card's top edge.
 // Always exactly one screen tall (never scrolls); on short screens the copyright
 // (short: < 700px tall) and the first sentence (shorter: < 600px) are dropped.
+// Same sizes on both figures, so the browser fetches one file
+const FIGURE_SIZES = "(min-width: 1024px) 820px, (max-height: 500px) 300px, 400px";
+
 const ComingSoon = () => {
   return (
     <main className="cs-page relative isolate h-[100dvh] overflow-hidden bg-cs-abyss font-montserrat text-cs-aqua">
@@ -30,17 +34,20 @@ const ComingSoon = () => {
       <div aria-hidden="true" className="cs-vignette absolute inset-0" />
       <div aria-hidden="true" className="cs-grain absolute inset-0" />
 
-      <div className="relative z-2 mx-auto flex h-full w-full max-w-[66rem] flex-col justify-center px-4 py-4 sm:px-6 land:py-3">
-        {/* Stacked layout: the robot row absorbs the leftover height */}
-        <div className="relative z-3 -mb-14 flex min-h-[96px] max-h-[260px] flex-1 justify-end pr-1 sm:max-h-[360px] sm:pr-6 lg:hidden land:hidden">
-          <RobotStage className="relative flex h-full justify-end" />
+      <div className="relative z-2 mx-auto flex h-full w-full max-w-[66rem] flex-col justify-center lg:max-w-[78rem] px-4 py-4 sm:px-6 land:py-3">
+        {/* Stacked layout: the figure row absorbs the leftover height and runs to the
+            screen's right edge (-mr matches the page padding) */}
+        <div className="relative z-3 -mb-12 -mr-4 flex max-h-[280px] min-h-[96px] flex-1 justify-end sm:-mr-6 sm:max-h-[380px] lg:hidden land:hidden">
+          <HeroFigure className="cs-figure-in cs-figure-top pointer-events-none relative h-full" sizes={FIGURE_SIZES} priority />
         </div>
 
         {/* Only transform animates on this wrapper; opacity or filter here would
             switch off the backdrop blur of the glass inside it */}
-        <section aria-labelledby="cs-title" className="cs-card relative shrink-0">
-
-          <div className="cs-glass cs-fade-in relative grid rounded-[2rem] px-6 pb-6 pt-6 sm:px-10 sm:pb-10 sm:pt-9 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-8 lg:px-12 lg:pb-12 lg:pt-10 short:pt-5 short:sm:pb-8 short:sm:pt-7 land:grid-cols-[minmax(0,1fr)_12rem] land:gap-4 land:px-7 land:pb-4 land:pt-4">
+        <section
+          aria-labelledby="cs-title"
+          className="cs-card relative shrink-0 lg:[--cs-text-w:33rem] land:[--cs-text-w:33rem]"
+        >
+          <div className="cs-glass cs-fade-in relative grid rounded-[2rem] px-6 pb-6 pt-6 sm:px-10 sm:pb-10 sm:pt-9 lg:grid-cols-[minmax(0,29rem)_1fr] lg:gap-8 lg:px-12 lg:pb-12 lg:pt-10 short:pt-5 short:sm:pb-8 short:sm:pt-7 land:grid-cols-[minmax(0,30rem)_1fr] land:gap-4 land:px-7 land:pb-4 land:pt-4">
             <div>
               <div className="lg:flex lg:items-center lg:gap-5 land:flex land:items-center land:gap-4">
                 <img
@@ -98,11 +105,12 @@ const ComingSoon = () => {
             </div>
           </div>
 
-          {/* Side-by-side layout: stands on the bottom-right corner, its arm reaching past
-              the right edge and its feet below the bottom edge. --cs-rh is the robot's
-              height; the image has ~11% empty space on the right and ~4% at the bottom,
-              which the offsets subtract so the visible robot lands where intended. */}
-          <RobotStage className="absolute bottom-[calc(var(--cs-rh)*-0.041-2.75rem)] right-[calc(var(--cs-rh)*-0.11-1rem)] z-3 hidden h-[var(--cs-rh)] justify-end [--cs-rh:min(80dvh,44vw,44rem)] lg:flex xl:right-[calc(var(--cs-rh)*-0.11-5rem)] land:bottom-[calc(var(--cs-rh)*-0.041-0.75rem)] land:right-[calc(var(--cs-rh)*-0.11-0.75rem)] land:flex land:[--cs-rh:min(86dvh,32vw)]" />
+          {/* Side-by-side layout: sits in the card's bottom-right corner (see .cs-figure-side) */}
+          <HeroFigure
+            className="cs-figure-in cs-figure-side pointer-events-none absolute bottom-px right-px z-3 hidden lg:block land:block"
+            sizes={FIGURE_SIZES}
+            priority
+          />
         </section>
 
         <p className="cs-rise mt-5 shrink-0 text-center text-xs leading-relaxed text-cs-aqua/70 short:hidden" style={{ "--cs-delay": "1.2s" }}>

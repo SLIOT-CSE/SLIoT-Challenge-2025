@@ -14,6 +14,8 @@ export const second = img("prizes/second.png");
 export const third = img("prizes/third.png");
 
 export const robot = img("robot.png");
+// 2027 hero figure; cut off on its right and bottom edges (see HeroFigure)
+export const figure = img("sliot-figure.webp");
 export const point = img("checked.png");
 
 export const sltLogo = img("partners/SLT-Mobitel.png");

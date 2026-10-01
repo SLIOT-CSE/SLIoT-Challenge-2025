@@ -375,20 +375,62 @@ html:has(.cs-page) body {
   animation: cs-mock-in 1.6s var(--cs-ease-out) var(--cs-delay, 0s) both;
 }
 
-.cs-robot {
-  animation: cs-robot-in 1.2s var(--cs-ease-out) 0.5s both;
-}
-
-.cs-float {
-  animation: cs-float 7s ease-in-out 1.7s infinite;
-}
-
-.cs-sway {
-  animation: cs-sway 3.3s ease-in-out infinite alternate;
+/* The figure fades in from a blur. No movement: moving it would pull its cut edges
+   away from the card / screen edges they are lined up with. */
+.cs-figure-in {
+  animation: cs-figure-in 1.4s var(--cs-ease-out) 0.45s both;
 }
 
 .cs-ping {
   animation: cs-ping 2s var(--cs-ease-out) infinite;
+}
+
+/* Hero figure placement (components/HeroFigure.jsx; the image is cut off on its right
+   and bottom edges). Side by side: in the card's bottom-right corner, cut edges flush
+   with the card's edges and clipped to its rounded corner; the open top and left may
+   overflow, so the helmet rises above the card. As tall as the screen allows, but
+   never wider than the room beside the text (--cs-text-w). Its open left edge fades
+   out, and so does its top-right corner: above the card the cut right edge has no
+   card edge to sit on, and inside it the corner meets the card's rounded corner. */
+.cs-figure-side {
+  --fig-h: min(84dvh, 50rem);
+  width: min(calc(var(--fig-h) * 957 / 932), calc(100% - var(--cs-text-w, 33rem)));
+  clip-path: inset(-100vh 0 0 -100vw round 0 0 calc(2rem - 1px) 0);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 14%), linear-gradient(225deg, transparent 5%, #000 20%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 14%), linear-gradient(225deg, transparent 5%, #000 20%);
+  mask-composite: intersect;
+}
+
+/* Narrow landscape phones: too little room beside the text for the figure */
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 739px) {
+  .cs-page .cs-figure-side {
+    display: none;
+  }
+}
+
+/* Stacked: the cut bottom edge fades into the card below it */
+.cs-figure-top {
+  -webkit-mask-image: linear-gradient(to bottom, #000 64%, transparent 97%);
+  mask-image: linear-gradient(to bottom, #000 64%, transparent 97%);
+}
+
+/* Full site hero: nothing to line the cut edges up with, so both fade out */
+.fig-fade-edges {
+  -webkit-mask-image: linear-gradient(to left, transparent, #000 22%), linear-gradient(to top, transparent, #000 22%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to left, transparent, #000 22%), linear-gradient(to top, transparent, #000 22%);
+  mask-composite: intersect;
+}
+
+/* Mint glow behind the figure's helmet, breathing slowly (used on both pages) */
+.fig-glow {
+  animation: fig-glow 6s ease-in-out infinite alternate;
+}
+
+@keyframes fig-glow {
+  from { opacity: 0.5; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1.06); }
 }
 
 @keyframes cs-card-in {
@@ -416,20 +458,9 @@ html:has(.cs-page) body {
   to   { opacity: 1; transform: none; }
 }
 
-@keyframes cs-robot-in {
-  from { opacity: 0; transform: translateY(24px) scale(0.94); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes cs-float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-12px); }
-}
-
-/* Same sway as the hero robot card (0 to 20deg, ~3.3s each way), without re-renders */
-@keyframes cs-sway {
-  from { transform: rotateY(0deg); }
-  to   { transform: rotateY(20deg); }
+@keyframes cs-figure-in {
+  from { opacity: 0; filter: blur(12px); }
+  to   { opacity: 1; filter: blur(0); }
 }
 
 @keyframes cs-ping {
@@ -441,15 +472,14 @@ html:has(.cs-page) body {
   .cs-rise,
   .cs-line,
   .cs-mock-in,
-  .cs-robot,
+  .cs-figure-in,
   .cs-fade-in {
     animation: cs-fade 0.4s ease-out both;
   }
   .cs-card,
   .cs-aurora,
-  .cs-float,
-  .cs-sway,
-  .cs-ping {
+  .cs-ping,
+  .fig-glow {
     animation: none;
   }
 }
