@@ -1,17 +1,11 @@
-import React, { useEffect } from "react";
-import AOS from "aos";
-import "aos/dist/aos.css";
+"use client";
+
+import React from "react";
 import { CardCarousel } from "./ui/CardCarousel";
 import { organizers } from "@/constants";
 import { motion } from "framer-motion";
 
 const EventOrganizers = () => {
-    useEffect(() => {
-        AOS.init({
-          duration: 1000, 
-          once: true, 
-        });
-      }, []);
     return (
         <div className="flex flex-col" id="partners">
             <hr className="border-t-2 border-gray-300 mx-[10%] mt-28 mb-10 animate-grow" />
@@ -34,7 +28,7 @@ const EventOrganizers = () => {
 
                         </p>
                         <p className="mt-6">
-                        University of Moratuwa is one of Sri Lanka's premier universities, recognized for excellence in education, research and innovation. The Department of Computer Science & Engineering within the Faculty of Engineering at UoM stands out as a leader in offering world-class education and producing highly skilled professionals in the field of Computer Science and Engineering.
+                        University of Moratuwa is one of Sri Lanka&apos;s premier universities, recognized for excellence in education, research and innovation. The Department of Computer Science & Engineering within the Faculty of Engineering at UoM stands out as a leader in offering world-class education and producing highly skilled professionals in the field of Computer Science and Engineering.
                         </p>
                         <p className="mt-6">
                         SLT-MOBITEL is Sri Lanka’s leading digital service provider and the nation’s top broadband and backbone infrastructure services provider. With a commitment to advancing digital transformation, SLT-MOBITEL plays a vital role in empowering the nation through innovative solutions. For more details, visit{" "}

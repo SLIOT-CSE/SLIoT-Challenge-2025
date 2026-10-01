@@ -1,6 +1,8 @@
+"use client";
+
 import React, { useState } from 'react';
 import { motion } from "framer-motion";
-import point_icon from '../assets/checked.png';
+import { point as point_icon } from "@/assets";
 
 const FAQAccordion = ({ title, content, points, link, isOpen, onClick }) => {
   return (

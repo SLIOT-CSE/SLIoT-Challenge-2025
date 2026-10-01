@@ -1,0 +1,44 @@
+# Example nginx server block for the Next.js site behind PM2.
+#
+# The Vite site was served as static files from dist/. With Next.js, nginx
+# forwards requests to the Node server started by PM2 (ecosystem.config.cjs).
+#
+# Apply it by replacing only the location that served dist/ (typically
+# `location / { try_files $uri /index.html; }`). Keep your existing TLS
+# settings and every redirect location as-is. The site links to these paths,
+# which Next.js does not define, so they must stay nginx redirects:
+#   /register  /proposal-submission  /proposal-template
+#   /sample-proposal  /proposal-submission-guidelines
+
+upstream sliot_next {
+    server 127.0.0.1:3000;   # must match PORT in ecosystem.config.cjs
+    keepalive 16;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name sliot.cse.mrt.ac.lk;
+
+    # ssl_certificate / ssl_certificate_key: keep your existing lines
+
+    # ... existing redirect locations stay here ...
+
+    # Build assets have content hashes in their names: cache them for a year
+    location /_next/static/ {
+        proxy_pass http://sliot_next;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    location / {
+        proxy_pass http://sliot_next;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 60s;
+    }
+}

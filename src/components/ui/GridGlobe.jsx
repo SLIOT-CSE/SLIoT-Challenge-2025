@@ -1,8 +1,12 @@
-import React, { Suspense } from "react";
+"use client";
 
-const World = React.lazy(() =>
-  import("./Globe").then((m) => ({ default: m.World }))
-);
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
+
+// three.js needs the browser; load the globe on the client only, as React.lazy did in Vite.
+const World = dynamic(() => import("./Globe").then((m) => m.World), {
+  ssr: false,
+});
 
 export function GlobeDemo() {
   const globeConfig = {

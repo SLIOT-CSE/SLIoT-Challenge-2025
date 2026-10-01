@@ -11,10 +11,7 @@ const {
 export default {
   darkMode: ["class"],
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-    "./public/assets/**/*.{js,ts,jsx,tsx}",
-    "./src/**/*.{ts,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -99,12 +96,13 @@ export default {
         },
       },
       fontFamily: {
-        poppins: ["Poppins", "sans-serif"],
-        robotoMono: ["'Roboto Mono'", "monospace"],
-        nicoMoji: ["'NicoMoji'", "sans-serif"],
+        // Font variables come from next/font in src/app/fonts.js
+        poppins: ["var(--font-poppins)", "sans-serif"],
+        robotoMono: ["var(--font-roboto-mono)", "monospace"],
+        nicoMoji: ["var(--font-nicomoji)", "sans-serif"],
         sans: ['Quattrocento Sans', 'sans-serif'],
-        audiowide: ["'Audiowide'", "sans-serif"],
-        alexandria: ["'Alexandria'", "sans-serif"],
+        audiowide: ["var(--font-audiowide)", "sans-serif"],
+        alexandria: ["var(--font-alexandria)", "sans-serif"],
       },
       letterSpacing: {
         tagline: ".15em",
@@ -278,6 +276,11 @@ export default {
       'lg': '1024px', // Large screens and above
       'xl': '1280px', // Extra large screens and above
       '2xl': '1536px', // 2x Extra large screens and above
+      // Height-based variants (listed last so they override the width ones)
+      'short': { raw: '(max-height: 700px)' },
+      'shorter': { raw: '(max-height: 600px)' },
+      // Phones held sideways
+      'land': { raw: '(orientation: landscape) and (max-height: 500px)' },
     },
   },
   plugins: [

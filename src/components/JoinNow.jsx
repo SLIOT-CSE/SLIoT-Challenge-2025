@@ -91,7 +91,7 @@ const JoinNow = () => {
         </div>
 
         <p className="text-neutral-400 text-lg mt-20">
-          Don't miss out on this incredible opportunity to showcase your skills and win amazing prizes!
+          Don&apos;t miss out on this incredible opportunity to showcase your skills and win amazing prizes!
         </p>
       </motion.div>
     </div>

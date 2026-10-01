@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Spotlight } from "./ui/Spotlight";
 import Header from "./Header";
@@ -44,7 +46,7 @@ const NotFound = () => {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="text-n-1 mb-10 text-base md:text-lg max-w-md mx-auto alexandria"
           >
-            Oops! The page you're looking for doesn't exist. Let's get you back on track.
+            Oops! The page you&apos;re looking for doesn&apos;t exist. Let&apos;s get you back on track.
           </motion.p>
           
           <motion.div
@@ -54,7 +56,7 @@ const NotFound = () => {
             className="relative inline-block"
           >
             <div className="absolute inset-0 translate-x-1 translate-y-1 border-2 border-gray-400 lg:translate-y-2 lg:translate-x-2 rounded-xl"></div>
-            <Link to="/">
+            <Link href="/">
               <button className="relative z-10 px-6 py-3 md:px-8 md:py-3 text-base md:text-lg text-white transition duration-300 shadow-lg font-nicoMoji rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700">
                 Back to Home
               </button>

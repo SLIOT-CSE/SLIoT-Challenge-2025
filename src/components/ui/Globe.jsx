@@ -119,7 +119,10 @@ export function Globe({ globeConfig = {}, data }) {
       .arcDashAnimateTime(() => defaultProps.arcTime);
 
     globeRef.current
-      .pointsData(data)
+      // Was pointsData(data): arc objects have no lat/lng, so every point had a NaN
+      // position (never visible, but three.js logged "Computed radius is NaN").
+      // Empty keeps the globe looking exactly as before; use globeData to show dots.
+      .pointsData([])
       .pointColor((d) => d.color)
       .pointsMerge(true)
       .pointAltitude(0.0)

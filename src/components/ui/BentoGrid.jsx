@@ -1,11 +1,9 @@
+"use client";
+
 import React, { useState } from "react";
-import { cn } from "../../../utils/cn";
-import { BackgroundGradientAnimation } from "./GradientBg";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 import { GlobeDemo } from "./GridGlobe";
-import Lottie from "react-lottie";
-import animationData from "../../constants/confetti.json";
-import MagicButton from "./MagicButton";
-import { IoCopyOutline } from "react-icons/io5";
 import ImageSlider from "../ImageSlider";
 import { point } from "@/assets";
 
@@ -35,14 +33,8 @@ export const BentoGridItem = ({
   link,
   imageArray,
   overlayClassName,
+  sizes,
 }) => {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText("iransamarasekara@gmail.com");
-    setCopied(true);
-  };
-
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {
@@ -77,11 +69,21 @@ export const BentoGridItem = ({
       }}
     >
       <div
-        className={`${id === 6 && "flex justify-center"} h-full`}
+        className="h-full"
         onClick={handleOpenModal}
       >
         <div className="w-full h-full absolute">
-          {img && (
+          {img && sizes && (
+            // Gallery tiles: resized WebP/AVIF, fills the tile like the old w-full h-full img
+            <Image
+              src={img}
+              alt={img}
+              fill
+              sizes={sizes}
+              className={cn(imgClassName, "object-cover object-center")}
+            />
+          )}
+          {img && !sizes && (
             <img
               src={img}
               alt={img}
@@ -91,9 +93,7 @@ export const BentoGridItem = ({
           <div className={cn(overlayClassName, "absolute inset-0 bg-black bg-opacity-25")} />
         </div>
         <div
-          className={`absolute right-0 -bottom-5 ${
-            id === 5 && "w-full opacity-80"
-          }`}
+          className="absolute right-0 -bottom-5"
         >
           {spareImg && (
             <img
@@ -103,10 +103,6 @@ export const BentoGridItem = ({
             />
           )}
         </div>
-        {(id === 17 || id === 18) && (
-          <BackgroundGradientAnimation />
-        )}
-
         <div
           className={cn(
             titleClassName,
@@ -132,57 +128,6 @@ export const BentoGridItem = ({
             </div>
           )}
 
-          {id === 7 && (
-            <div className="flex gap-1 lg:gap-5 w-fit absolute -right-3 lg:-right-2 lg:justify-center">
-              <div className="flex flex-col gap-3 md:gap-3 lg:gap-3">
-                {["React.js", "Next.js", "TypeScript"].map((item) => (
-                  <span
-                    key={item}
-                    className="lg:py-2 lg:px-3 py-2 px-3 text-xs lg:text-base opacity-50 lg:opacity-100 rounded-lg text-center bg-[#10132E]"
-                  >
-                    {item}
-                  </span>
-                ))}
-                <span className="py-4 px-3 rounded-lg text-center bg-[#10132E]" />
-              </div>
-              <div className="flex flex-col gap-3 md:gap-3 lg:gap-3">
-                <span className="py-4 px-3 rounded-lg text-center bg-[#10132E]" />
-                {["VueJS", "AWS", "MongoDB"].map((item) => (
-                  <span
-                    key={item}
-                    className="lg:py-2 lg:px-3 py-2 px-3 text-xs lg:text-base opacity-50 lg:opacity-100 rounded-lg text-center bg-[#10132E]"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {id === 6 && (
-            <div className="mt-5 relative">
-              <div className="absolute -bottom-5 right-0">
-                <Lottie
-                  options={{
-                    loop: copied,
-                    autoplay: copied,
-                    animationData,
-                    rendererSettings: {
-                      preserveAspectRatio: "xMidYMid slice",
-                    },
-                  }}
-                />
-              </div>
-
-              <MagicButton
-                title={copied ? "Email copied" : "Copy my email"}
-                icon={<IoCopyOutline />}
-                position="left"
-                otherClasses="!bg-[#161A31]"
-                handleClick={handleCopy}
-              />
-            </div>
-          )}
         </div>
       </div>
       {isModalOpen && link && (
