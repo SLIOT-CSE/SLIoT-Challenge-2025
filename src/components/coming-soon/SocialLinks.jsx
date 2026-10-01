@@ -17,7 +17,7 @@ const ICONS = {
 };
 
 const focusRing =
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-cs-mint";
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-cs-aqua";
 
 // The WhatsApp channel is the one main action (announcements land there first);
 // the other channels are round icon buttons beside it.
@@ -31,7 +31,7 @@ const SocialLinks = ({ className = "" }) => {
         href={primary.url}
         target="_blank"
         rel="noopener noreferrer"
-        className={`cs-rise group inline-flex h-[3.25rem] w-full items-center justify-between gap-4 rounded-full bg-cs-mint pl-5 pr-1.5 font-montserrat text-[0.9375rem] font-semibold text-cs-abyss transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-cs-foam active:scale-[0.98] xs:w-auto land:h-11 land:text-sm ${focusRing}`}
+        className={`cs-rise group inline-flex h-[3.25rem] w-full items-center justify-between gap-4 rounded-full bg-cs-aqua pl-5 pr-1.5 font-montserrat text-[0.9375rem] font-semibold text-cs-abyss transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-white active:scale-[0.98] xs:w-auto land:h-11 land:text-sm ${focusRing}`}
         style={{ "--cs-delay": "0.85s" }}
       >
         <span className="inline-flex items-center gap-2.5">
@@ -41,7 +41,7 @@ const SocialLinks = ({ className = "" }) => {
         </span>
         <span
           aria-hidden="true"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-cs-abyss/90 text-cs-mint transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-px group-hover:translate-x-0.5 group-hover:scale-105 land:h-8 land:w-8"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-cs-abyss/90 text-cs-aqua transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-px group-hover:translate-x-0.5 group-hover:scale-105 land:h-8 land:w-8"
         >
           <PiArrowUpRight className="h-[1.125rem] w-[1.125rem]" />
         </span>
@@ -58,7 +58,7 @@ const SocialLinks = ({ className = "" }) => {
                 rel="noopener noreferrer"
                 aria-label={`${label} (opens in a new tab)`}
                 title={label}
-                className={`inline-flex h-11 w-11 items-center justify-center rounded-full bg-cs-foam/[0.07] text-cs-foam ring-1 ring-inset ring-cs-foam/15 transition-[transform,background-color,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:bg-cs-mint/15 hover:text-cs-mint active:translate-y-0 active:scale-95 land:h-10 land:w-10 ${focusRing}`}
+                className={`inline-flex h-11 w-11 items-center justify-center rounded-full bg-cs-aqua/[0.08] text-cs-aqua ring-1 ring-inset ring-cs-aqua/20 transition-[transform,background-color,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:bg-cs-aqua/15 hover:text-white active:translate-y-0 active:scale-95 land:h-10 land:w-10 ${focusRing}`}
               >
                 <Icon aria-hidden="true" className="h-5 w-5" />
               </a>

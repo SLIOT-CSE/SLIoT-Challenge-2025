@@ -37,6 +37,8 @@ export default {
           teal: "#14676F",
           lagoon: "#52BAA5",
           mint: "#73DABE",
+          // Primary text colour on the coming-soon card
+          aqua: "#85FFF0",
           foam: "#DDF7EF",
           mist: "#A9C7CC",
         },
