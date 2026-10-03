@@ -93,7 +93,7 @@ export const socials = [
     id: "2",
     title: "Facebook",
     iconUrl: facebook,
-    url: "https://web.facebook.com/srilankaIoTchallenge",
+    url: "https://www.facebook.com/srilankaIoTchallenge/",
   },
   {
     id: "3",
@@ -105,7 +105,7 @@ export const socials = [
     id: "4",
     title: "LinkedIn",
     iconUrl: linkedin,
-    url: "https://www.linkedin.com/company/sliot/",
+    url: "https://www.linkedin.com/company/sliot",
   },
 ];
 

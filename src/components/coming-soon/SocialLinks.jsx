@@ -3,7 +3,6 @@ import {
   PiFacebookLogo,
   PiInstagramLogo,
   PiLinkedinLogo,
-  PiTiktokLogo,
   PiWhatsappLogo,
 } from "react-icons/pi";
 import { comingSoonSocials } from "@/config/site.mjs";
@@ -12,7 +11,6 @@ const ICONS = {
   whatsapp: PiWhatsappLogo,
   facebook: PiFacebookLogo,
   instagram: PiInstagramLogo,
-  tiktok: PiTiktokLogo,
   linkedin: PiLinkedinLogo,
 };
 

@@ -387,14 +387,27 @@ html:has(.cs-page) body {
 
 /* Hero figure placement (components/HeroFigure.jsx; the image is cut off on its right
    and bottom edges). Side by side: in the card's bottom-right corner, cut edges flush
-   with the card's edges and clipped to its rounded corner; the open top and left may
-   overflow, so the helmet rises above the card. As tall as the screen allows, but
-   never wider than the room beside the text (--cs-text-w). Its open left edge fades
-   out, and so does its top-right corner: above the card the cut right edge has no
-   card edge to sit on, and inside it the corner meets the card's rounded corner. */
+   with the card's edges and clipped to its rounded corner, helmet rising above the card.
+   The frame spans the room beside the text (--cs-text-w) from --cs-fig-rise above the
+   card down to its bottom edge, so the rise stays the same whatever the card's height;
+   the figure is the largest it can be inside the frame (container units). */
+.cs-figure-frame {
+  position: absolute;
+  top: calc(-1 * var(--cs-fig-rise, 4.5rem));
+  right: 1px;
+  bottom: 1px;
+  left: var(--cs-text-w, 33rem);
+  container-type: size;
+  justify-content: flex-end;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+/* Its open left edge fades out, and so does its top-right corner: above the card the
+   cut right edge has no card edge to sit on, and inside it the corner meets the card's
+   rounded corner. */
 .cs-figure-side {
-  --fig-h: min(84dvh, 50rem);
-  width: min(calc(var(--fig-h) * 957 / 932), calc(100% - var(--cs-text-w, 33rem)));
+  width: min(100cqw, 100cqh * 957 / 932);
   clip-path: inset(-100vh 0 0 -100vw round 0 0 calc(2rem - 1px) 0);
   -webkit-mask-image: linear-gradient(to right, transparent, #000 14%), linear-gradient(225deg, transparent 5%, #000 20%);
   -webkit-mask-composite: source-in;
@@ -404,7 +417,7 @@ html:has(.cs-page) body {
 
 /* Narrow landscape phones: too little room beside the text for the figure */
 @media (orientation: landscape) and (max-height: 500px) and (max-width: 739px) {
-  .cs-page .cs-figure-side {
+  .cs-page .cs-figure-frame {
     display: none;
   }
 }

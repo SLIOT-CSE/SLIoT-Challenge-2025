@@ -45,7 +45,7 @@ const ComingSoon = () => {
             switch off the backdrop blur of the glass inside it */}
         <section
           aria-labelledby="cs-title"
-          className="cs-card relative shrink-0 lg:[--cs-text-w:33rem] land:[--cs-text-w:33rem]"
+          className="cs-card relative shrink-0 lg:[--cs-text-w:33rem] land:[--cs-fig-rise:2rem] land:[--cs-text-w:33rem]"
         >
           <div className="cs-glass cs-fade-in relative grid rounded-[2rem] px-6 pb-6 pt-6 sm:px-10 sm:pb-10 sm:pt-9 lg:grid-cols-[minmax(0,29rem)_1fr] lg:gap-8 lg:px-12 lg:pb-12 lg:pt-10 short:pt-5 short:sm:pb-8 short:sm:pt-7 land:grid-cols-[minmax(0,30rem)_1fr] land:gap-4 land:px-7 land:pb-4 land:pt-4">
             <div>
@@ -105,12 +105,11 @@ const ComingSoon = () => {
             </div>
           </div>
 
-          {/* Side-by-side layout: sits in the card's bottom-right corner (see .cs-figure-side) */}
-          <HeroFigure
-            className="cs-figure-in cs-figure-side pointer-events-none absolute bottom-px right-px z-3 hidden lg:block land:block"
-            sizes={FIGURE_SIZES}
-            priority
-          />
+          {/* Side-by-side layout: sits in the card's bottom-right corner, inside a frame
+              that spans the room beside the text (see .cs-figure-frame) */}
+          <div className="cs-figure-frame z-3 hidden lg:flex land:flex">
+            <HeroFigure className="cs-figure-in cs-figure-side relative" sizes={FIGURE_SIZES} priority />
+          </div>
         </section>
 
         <p className="cs-rise mt-5 shrink-0 text-center text-xs leading-relaxed text-cs-aqua/70 short:hidden" style={{ "--cs-delay": "1.2s" }}>
