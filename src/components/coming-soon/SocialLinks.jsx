@@ -3,7 +3,9 @@ import {
   PiFacebookLogo,
   PiInstagramLogo,
   PiLinkedinLogo,
+  PiTiktokLogo,
   PiWhatsappLogo,
+  PiYoutubeLogo,
 } from "react-icons/pi";
 import { comingSoonSocials } from "@/config/site.mjs";
 
@@ -12,6 +14,8 @@ const ICONS = {
   facebook: PiFacebookLogo,
   instagram: PiInstagramLogo,
   linkedin: PiLinkedinLogo,
+  tiktok: PiTiktokLogo,
+  youtube: PiYoutubeLogo,
 };
 
 const focusRing =

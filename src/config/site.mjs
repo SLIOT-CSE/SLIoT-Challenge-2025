@@ -21,5 +21,7 @@ export const comingSoonSocials = [
   { id: "whatsapp", label: "WhatsApp channel", url: "https://whatsapp.com/channel/0029VbDzio19MF9AgDVNye0w" },
   { id: "facebook", label: "Facebook", url: "https://www.facebook.com/srilankaIoTchallenge/" },
   { id: "instagram", label: "Instagram", url: "https://www.instagram.com/sliot_/" },
+  { id: "tiktok", label: "TikTok", url: "https://www.tiktok.com/@sliot_challenge" },
+  { id: "youtube", label: "YouTube", url: "https://www.youtube.com/@sliot-challenge" },
   { id: "linkedin", label: "LinkedIn", url: "https://www.linkedin.com/company/sliot" },
 ];
