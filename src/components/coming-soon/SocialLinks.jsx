@@ -33,7 +33,7 @@ const SocialLinks = ({ className = "" }) => {
         href={primary.url}
         target="_blank"
         rel="noopener noreferrer"
-        className={`cs-rise group inline-flex h-[3.25rem] w-full items-center justify-between gap-4 rounded-full bg-cs-aqua pl-5 pr-1.5 font-montserrat text-[0.9375rem] font-semibold text-cs-abyss transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-white active:scale-[0.98] xs:w-auto land:h-11 land:text-sm ${focusRing}`}
+        className={`cs-rise group inline-flex h-[3.25rem] w-full items-center justify-between gap-4 rounded-full bg-cs-aqua whitespace-nowrap pl-4 pr-1.5 font-montserrat text-sm font-semibold xxs:pl-5 xxs:text-[0.9375rem] text-cs-abyss transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-white active:scale-[0.98] xs:w-auto land:h-11 land:text-sm ${focusRing}`}
         style={{ "--cs-delay": "0.85s" }}
       >
         <span className="inline-flex items-center gap-2.5">
@@ -49,7 +49,7 @@ const SocialLinks = ({ className = "" }) => {
         </span>
       </a>
 
-      <ul className="flex items-center gap-2.5" aria-label="More channels">
+      <ul className="flex items-center gap-2 xxs:gap-2.5" aria-label="More channels">
         {rest.map(({ id, label, url }, i) => {
           const Icon = ICONS[id];
           return (
@@ -60,7 +60,7 @@ const SocialLinks = ({ className = "" }) => {
                 rel="noopener noreferrer"
                 aria-label={`${label} (opens in a new tab)`}
                 title={label}
-                className={`inline-flex h-11 w-11 items-center justify-center rounded-full bg-cs-aqua/[0.08] text-cs-aqua ring-1 ring-inset ring-cs-aqua/20 transition-[transform,background-color,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:bg-cs-aqua/15 hover:text-white active:translate-y-0 active:scale-95 land:h-10 land:w-10 ${focusRing}`}
+                className={`inline-flex h-10 w-10 items-center justify-center rounded-full bg-cs-aqua/[0.08] text-cs-aqua ring-1 ring-inset ring-cs-aqua/20 transition-[transform,background-color,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:bg-cs-aqua/15 hover:text-white active:translate-y-0 active:scale-95 xxs:h-11 xxs:w-11 land:h-10 land:w-10 ${focusRing}`}
               >
                 <Icon aria-hidden="true" className="h-5 w-5" />
               </a>
