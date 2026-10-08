@@ -44,6 +44,12 @@ jobs:
 
       - name: Restart server
         run: |
+          # When a job ends, the self-hosted runner kills every process that carries this
+          # job's RUNNER_TRACKING_ID. Without clearing it, PM2 and the Next.js server get
+          # killed right after a successful deploy and nginx returns 502.
+          # (--update-env copies this shell's environment into the app, so it must be
+          # cleared before the reload as well as before a fresh start.)
+          export RUNNER_TRACKING_ID=""
           pm2 reload ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs
           pm2 save
 

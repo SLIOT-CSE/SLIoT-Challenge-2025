@@ -59,7 +59,7 @@ It is controlled by `COMING_SOON` in `src/config/site.mjs`:
 - `true`: `/` shows the coming-soon page (`src/views/ComingSoon.jsx`, always exactly one screen tall with no scrolling: the robot scales to the space left, and very short screens drop the copyright line and the first sentence), every other page redirects to `/` with a temporary (307) redirect, unknown URLs show the teaser with a 404 status, and the full site's header and footer are hidden.
 - `false`: the full site is back exactly as before.
 
-Change the flag, commit and push; the deploy picks it up. The same file holds the edition name and year, the status text, the tagline and the social links shown on the teaser (Instagram and TikTok are placeholders marked `TODO`).
+Change the flag, commit and push; the deploy picks it up. The same file holds the edition name and year, the status text, the tagline and the social links shown on the teaser.
 
 The link-preview image for WhatsApp/Facebook is `public/images/og-coming-soon.jpg` (1200x630). Replace it when the edition or artwork changes.
 
@@ -119,7 +119,9 @@ npm install -g pm2
 # In /var/www/sliot/SLIoT-Challenge-2025, after the first successful build
 pm2 start ecosystem.config.cjs
 pm2 save
-pm2 startup   # prints a command that makes PM2 start on boot
+pm2 startup   # prints a sudo command: run it so PM2 runs as a systemd service and starts on boot
 ```
+
+Start PM2 from an SSH session or systemd, never only from a workflow run. The self-hosted runner kills the processes a job started when the job ends, which takes the site down (502) right after a "successful" deploy. The workflow's restart step clears `RUNNER_TRACKING_ID` so the processes it reloads are left alone.
 
 Then update the nginx site: replace the location that served the old `dist/` folder with the proxy blocks from `deploy/nginx.conf.example`, keep the existing redirect locations, and reload nginx (`sudo nginx -t && sudo systemctl reload nginx`).
