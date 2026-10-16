@@ -18,7 +18,7 @@ export const fullSiteRoutes = ["/guidelines", "/faqs", "/finalists", "/innovatio
 
 // Links shown on the coming-soon page, in display order.
 export const comingSoonSocials = [
-  { id: "whatsapp", label: "WhatsApp channel", url: "https://whatsapp.com/channel/0029VbDzio19MF9AgDVNye0w" },
+  { id: "whatsapp", label: "WhatsApp channel", url: "https://whatsapp.com/channel/0029Vb6sCXjIXnlnXpnoqT05" },
   { id: "facebook", label: "Facebook", url: "https://www.facebook.com/srilankaIoTchallenge/" },
   { id: "instagram", label: "Instagram", url: "https://www.instagram.com/sliot_/" },
   { id: "tiktok", label: "TikTok", url: "https://www.tiktok.com/@sliot_challenge" },

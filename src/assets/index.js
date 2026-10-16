@@ -6,6 +6,8 @@ export const logo = img("sliot-logo.svg");
 
 export const facebook = img("socials/facebook.svg");
 export const youtube = img("socials/youtube.svg");
+export const instagram = img("socials/instagram.svg");
+export const tiktok = img("socials/tiktok.svg");
 export const linkedin = img("socials/linkedin.svg");
 export const whatsapp = img("socials/whatsapp.svg");
 

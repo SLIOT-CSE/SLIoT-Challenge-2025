@@ -1,6 +1,8 @@
 import {
   youtube,
   facebook,
+  instagram,
+  tiktok,
   linkedin,
   whatsapp,
   uom,
@@ -87,13 +89,25 @@ export const socials = [
     id: "1",
     title: "YouTube",
     iconUrl: youtube,
-    url: "https://www.youtube.com/@SLIOT-Challenge",
+    url: "https://www.youtube.com/@sliot-challenge",
   },
   {
     id: "2",
     title: "Facebook",
     iconUrl: facebook,
     url: "https://www.facebook.com/srilankaIoTchallenge/",
+  },
+  {
+    id: "5",
+    title: "Instagram",
+    iconUrl: instagram,
+    url: "https://www.instagram.com/sliot_/",
+  },
+  {
+    id: "6",
+    title: "TikTok",
+    iconUrl: tiktok,
+    url: "https://www.tiktok.com/@sliot_challenge",
   },
   {
     id: "3",
