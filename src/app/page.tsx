@@ -2,6 +2,9 @@ import { SiteNav } from "@/components/site/site-nav";
 import { Hero } from "@/components/site/hero";
 import { LiveCallout } from "@/components/site/live-callout";
 import { KineticBand } from "@/components/site/kinetic-band";
+import { About } from "@/components/site/about";
+import { Categories } from "@/components/site/categories";
+import { HowItWorks } from "@/components/site/how-it-works";
 import { deadlines } from "@/content/deadlines";
 import { stageAt } from "@/lib/competition";
 
@@ -26,6 +29,9 @@ export default function HomePage() {
         <Hero stage={stage} now={now} />
         <LiveCallout stage={stage} now={now} />
         <KineticBand />
+        <About />
+        <Categories />
+        <HowItWorks />
       </main>
     </>
   );

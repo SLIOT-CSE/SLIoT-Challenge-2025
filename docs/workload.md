@@ -18,8 +18,8 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | F | Tailwind CSS 4 upgrade | Done |
 | G | Design foundations | Done |
 | H | Remove coming-soon mode | Done |
-| I | Sections 1: nav, hero, live callout, kinetic band | **Built, waiting for your review** |
-| J | Sections 2: about map, categories, how to take part | To do |
+| I | Sections 1: nav, hero, live callout, kinetic band | Done |
+| J | Sections 2: about map, categories, how to take part | **Built, waiting for your review** |
 | K | Sections 3: timeline, prizes | To do |
 | L | Sections 4: memories, sponsors, FAQ, contact, footer | To do |
 | M | Sample-data layer for the app screens | To do |
@@ -102,7 +102,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 - [x] H4. `/` renders the new sections only; old 2025 components stay unused until step L deletes them; new themed 404 page
 - [x] H5. Update README and `PRODUCT.md` (no coming-soon mode any more)
 
-## I. Sections 1: nav, hero, live callout, kinetic band (waiting for review)
+## I. Sections 1: nav, hero, live callout, kinetic band
 
 - [x] I1. Content files: `src/content/site.ts` (edition, hero copy, band words), `navigation.ts`, `socials.ts`, `deadlines.ts`; stage logic in `src/lib/competition.ts`
 - [x] I2. Floating pill nav: active section indicator, Team login + Register, hide on scroll down, full-screen phone menu with focus trap
@@ -111,14 +111,14 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 - [x] I5. Kinetic band (single marquee reacting to scroll velocity)
 - [x] I6. Phone layouts (title and Register button on the first screen down to 320px), reduced-motion versions, screenshots for review
 
-## J. Sections 2: about map, categories, how to take part
+## J. Sections 2: about map, categories, how to take part (waiting for review)
 
-- [ ] J1. SVG outline of Sri Lanka with district nodes and signal lines
-- [ ] J2. About: pinned three-beat story on desktop; coastline draws, nodes light up, editions count up; phone version plays once
-- [ ] J3. Categories: sticky list + swapping card stack (School / University / Open with team rules)
-- [ ] J4. How to take part: five numbered steps on a circuit trace with a travelling pulse; proposal template download
-- [ ] J5. Remove the three.js globe and its packages (`three`, `@react-three/fiber`, `drei`, `three-globe`)
-- [ ] J6. Phone layouts, reduced-motion versions, screenshots for review
+- [x] J1. SVG outline of Sri Lanka (Natural Earth 1:10m, generated into `island-map/geometry.ts`) with 25 district nodes and signal lines to the University of Moratuwa
+- [x] J2. About: pinned three-beat story on desktop; coastline draws, nodes light up, editions count up; phone version plays once
+- [x] J3. Categories: sticky list + swapping card stack (School / University / Open with team rules)
+- [x] J4. How to take part: five numbered steps on a circuit trace with a travelling pulse; proposal template download
+- [x] J5. Remove the three.js globe and its packages (`three`, `@react-three/fiber`, `drei`, `three-globe`)
+- [x] J6. Phone layouts, reduced-motion versions, screenshots for review
 
 ## K. Sections 3: timeline, prizes
 

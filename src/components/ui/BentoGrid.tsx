@@ -3,7 +3,6 @@
 import React, { useState, type ReactNode } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { GlobeDemo } from "./GridGlobe";
 import ImageSlider from "../ImageSlider";
 import { point } from "@/assets";
 
@@ -133,7 +132,6 @@ export const BentoGridItem = ({
             {renderDescription(description)}
           </div></center>
 
-          {id === 1 && <GlobeDemo />}
           {(id === 21 || id === 22 || id === 23) && (
             <div className="font-sans font-extralight text-white text-sm md:text-xs lg:text-base z-5 mt-2">
               {descriptionItems?.map((item, index) => (
