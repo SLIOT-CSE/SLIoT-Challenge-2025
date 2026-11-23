@@ -107,7 +107,7 @@ export const BentoGridItem = ({
               className={cn(imgClassName, "object-cover object-center")}
             />
           )}
-          <div className={cn(overlayClassName, "absolute inset-0 bg-black bg-opacity-25")} />
+          <div className={cn(overlayClassName, "absolute inset-0 bg-black/25")} />
         </div>
         <div
           className="absolute right-0 -bottom-5"
@@ -126,10 +126,10 @@ export const BentoGridItem = ({
             "group-hover/bento:translate-x-2 text-center transition duration-200 relative md:h-full min-h-40  flex flex-col px-5 p-5 lg:p-10"
           )}
         >
-          <div className="font-semibold audiowave text-lg lg:text-3xl max-w-200 mb-8 z-5 ">
+          <div className="font-semibold audiowave text-lg lg:text-3xl mb-8 z-5 ">
             {title}
           </div>
-          <center><div className=" text-white text-sm md:text-base max-w-[90%] leading-loose alexandria text-center font-light lg:text-lg z-5 mt-2">
+          <center><div className=" text-white text-sm md:text-base max-w-[90%] leading-loose alexandria text-center font-light lg:text-lg z-5 mt-2 md:leading-6 lg:leading-7">
             {renderDescription(description)}
           </div></center>
 
@@ -149,7 +149,7 @@ export const BentoGridItem = ({
       </div>
       {isModalOpen && link && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="relative w-full h-full flex flex-col items-center justify-center bg-black bg-opacity-40 backdrop-blur-md backdrop-brightness-75 p-4 md:p-8 lg:p-12">
+          <div className="relative w-full h-full flex flex-col items-center justify-center bg-black/40 backdrop-blur-md backdrop-brightness-75 p-4 md:p-8 lg:p-12">
             {/* Close button */}
             <button
               className="absolute top-2 right-2 text-white hover:text-gray-400 text-4xl font-bold"
@@ -180,7 +180,7 @@ export const BentoGridItem = ({
 
       {isModalOpen && imageArray && imageArray.length > 0 && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="relative w-full h-full flex flex-col items-center justify-center bg-black bg-opacity-40 backdrop-blur-md backdrop-brightness-75">
+          <div className="relative w-full h-full flex flex-col items-center justify-center bg-black/40 backdrop-blur-md backdrop-brightness-75">
             {/* Close button */}
             <button
               className="absolute top-2 right-2 text-white hover:text-gray-400 text-4xl font-bold"

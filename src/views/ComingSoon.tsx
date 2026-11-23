@@ -91,7 +91,7 @@ const ComingSoon = () => {
               </h1>
 
               <p
-                className="cs-rise mt-3 max-w-[44ch] text-pretty text-[0.9375rem] leading-[1.65] text-cs-aqua sm:mt-5 sm:text-base short:leading-relaxed land:mt-2 land:text-sm"
+                className="cs-rise mt-3 max-w-[44ch] text-pretty text-[0.9375rem] leading-[1.65] text-cs-aqua sm:mt-5 sm:text-base short:leading-relaxed land:mt-2 land:text-sm sm:leading-6 land:leading-5"
                 style={{ "--cs-delay": "0.65s" }}
               >
                 <span className="shorter:hidden">

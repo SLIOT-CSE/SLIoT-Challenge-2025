@@ -77,7 +77,7 @@ const SubmissionGuidelines = () => {
           className="w-full max-w-4xl mb-10"
         >
           {/* Important Notice */}
-          <div className="p-6 mb-6 border-2 border-purple-500 rounded-lg bg-gradient-to-r from-purple-900/30 to-indigo-900/30 backdrop-blur-sm">
+          <div className="p-6 mb-6 border-2 border-purple-500 rounded-lg bg-gradient-to-r from-purple-900/30 to-indigo-900/30 backdrop-blur-xs">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0 mt-1">
                 <svg

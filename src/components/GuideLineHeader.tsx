@@ -25,7 +25,7 @@ const GuilineHeader = () => {
             <div    className="flex items-center justify-center gap-4">
        <a  href="/">
       <button
-              className=" inline-flex relative h-10 md:h-12 overflow-hidden rounded-2xl p-[1px] focus:outline-none"
+              className=" inline-flex relative h-10 md:h-12 overflow-hidden rounded-2xl p-[1px] focus:outline-hidden"
            
             >
               <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#2b0091_0%,#393BB2_50%,#ff00a4_100%)]" />

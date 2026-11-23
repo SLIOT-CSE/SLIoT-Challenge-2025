@@ -25,8 +25,8 @@ const eslintConfig: Linter.Config[] = [
     },
   },
   {
-    // CommonJS config files (PM2 needs .cjs; the Tailwind 3 config goes away with the Tailwind 4 upgrade)
-    files: ["**/*.cjs", "tailwind.config.js"],
+    // CommonJS config files (PM2 needs .cjs)
+    files: ["**/*.cjs"],
     rules: {
       "@typescript-eslint/no-require-imports": "off",
     },

@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" className={fontVariables}>
       <body>
         <SmoothScroll />
-        <div className="flex-grow">{children}</div>
+        <div className="grow">{children}</div>
         {/* The coming-soon page has its own footer */}
         {!COMING_SOON && <Footer />}
       </body>

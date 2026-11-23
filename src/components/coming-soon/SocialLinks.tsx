@@ -33,7 +33,7 @@ const SocialLinks = ({ className = "" }) => {
         href={primary.url}
         target="_blank"
         rel="noopener noreferrer"
-        className={`cs-rise group inline-flex h-[3.25rem] w-full items-center justify-between gap-4 rounded-full bg-cs-aqua whitespace-nowrap pl-4 pr-1.5 font-montserrat text-sm font-semibold xxs:pl-5 xxs:text-[0.9375rem] text-cs-abyss transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-white active:scale-[0.98] xs:w-auto land:h-11 land:text-sm ${focusRing}`}
+        className={`cs-rise group inline-flex h-[3.25rem] w-full items-center justify-between gap-4 rounded-full bg-cs-aqua whitespace-nowrap pl-4 pr-1.5 font-montserrat text-sm font-semibold xxs:pl-5 xxs:text-[0.9375rem] xxs:leading-5 text-cs-abyss transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-white active:scale-[0.98] xs:w-auto land:h-11 land:text-sm ${focusRing}`}
         style={{ "--cs-delay": "0.85s" }}
       >
         <span className="inline-flex items-center gap-2.5">

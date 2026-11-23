@@ -206,7 +206,7 @@ export const previousSLIoTShowcases = [
     spareImg: "",
     link: "",
     imageArray: sliot2023,
-    overlayClassName: "bg-black bg-opacity-20",
+    overlayClassName: "bg-black/20",
   },
   {
     id: 9,
@@ -221,7 +221,7 @@ export const previousSLIoTShowcases = [
     spareImg: "",
     link: "",
     imageArray: sliot2022,
-    overlayClassName: "bg-black bg-opacity-20",
+    overlayClassName: "bg-black/20",
   },
   {
     id: 10,
@@ -235,7 +235,7 @@ export const previousSLIoTShowcases = [
     img: "https://img.youtube.com/vi/HLMQvP5e98c/hqdefault.jpg",
     spareImg: "",
     link: "https://www.youtube.com/embed/HLMQvP5e98c",
-    overlayClassName: "bg-black bg-opacity-20",
+    overlayClassName: "bg-black/20",
   },
   {
     id: 11,
@@ -250,7 +250,7 @@ export const previousSLIoTShowcases = [
     spareImg: "",
     link: "",
     imageArray: sliot2019,
-    overlayClassName: "bg-black bg-opacity-20",
+    overlayClassName: "bg-black/20",
   },
   {
     id: 12,
@@ -264,7 +264,7 @@ export const previousSLIoTShowcases = [
     img: "https://img.youtube.com/vi/9bpgGZMNd28/hqdefault.jpg",
     spareImg: "",
     link: "https://www.youtube.com/embed/9bpgGZMNd28",
-    overlayClassName: "bg-black bg-opacity-20",
+    overlayClassName: "bg-black/20",
   },
   {
     id: 13,
@@ -278,7 +278,7 @@ export const previousSLIoTShowcases = [
     img: "https://img.youtube.com/vi/v6wOjQGANsE/hqdefault.jpg",
     spareImg: "",
     link: "https://www.youtube.com/embed/v6wOjQGANsE",
-    overlayClassName: "bg-black bg-opacity-20",
+    overlayClassName: "bg-black/20",
   },
 ];
 
@@ -295,7 +295,7 @@ export const currentSLIoTShowcases = [
     img: sliot2025[0],
     spareImg: "",
     imageArray: sliot2025,
-    overlayClassName: "bg-black bg-opacity-20",
+    overlayClassName: "bg-black/20",
   },
 ];
 

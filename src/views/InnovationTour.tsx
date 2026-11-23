@@ -43,7 +43,7 @@ const InnovationTour = () => {
             <section className="w-full mt-40 md:mt-8 pt-4 md:pt-[4.75rem] px-4">
                 <div className="container mx-auto max-w-xl sm:max-w-3xl">
                     <div className="bg-gradient-to-r from-red-600/15 to-red-500/15 backdrop-blur-lg rounded-3xl p-4 sm:p-6 md:p-8 border border-red-600/50 shadow-lg">
-                        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-red-200 text-center font-semibold leading-tight">
+                        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-red-200 text-center font-semibold leading-tight sm:leading-7 md:leading-7 lg:leading-8">
                             🔴 All Innovation Tour sessions are postponed due to unavoidable circumstances. We apologize for the inconvenience. We encourage all participants to focus on their project proposals and upcoming sessions. Thank you for your understanding.
                         </p>
                     </div>
@@ -67,7 +67,7 @@ const InnovationTour = () => {
                         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                             <a
                                 href="#about"
-                                className="group relative inline-flex h-14 overflow-hidden rounded-full p-[2px] focus:outline-none w-full sm:w-64"
+                                className="group relative inline-flex h-14 overflow-hidden rounded-full p-[2px] focus:outline-hidden w-full sm:w-64"
                             >
                                 <span className="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#46BC41_0%,#01688E_50%,#46BC41_100%)]" />
                                 <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-8 text-lg font-medium text-white backdrop-blur-3xl transition-all group-hover:bg-slate-900">
@@ -76,7 +76,7 @@ const InnovationTour = () => {
                             </a>
                             <a
                                 href="/"
-                                className="group relative inline-flex h-14 overflow-hidden rounded-full p-[2px] focus:outline-none w-full sm:w-64"
+                                className="group relative inline-flex h-14 overflow-hidden rounded-full p-[2px] focus:outline-hidden w-full sm:w-64"
                             >
                                 <span className="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#01688E_0%,#46BC41_50%,#01688E_100%)]" />
                                 <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-8 text-lg font-medium text-white backdrop-blur-3xl transition-all group-hover:bg-slate-900">
@@ -101,16 +101,16 @@ const InnovationTour = () => {
                             About the Innovation Tour
                         </h2>
                         <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-lg rounded-3xl p-8 md:p-12 border border-slate-700/50 shadow-2xl">
-                            <p className="text-lg md:text-xl text-gray-300 leading-relaxed mb-6">
+                            <p className="text-lg md:text-xl text-gray-300 leading-relaxed mb-6 md:leading-7">
                                 The SLIoT Innovation Tour is an island-wide awareness and engagement program conducted alongside the SLIoT Challenge and SLIoT Labs initiatives.
                             </p>
-                            <p className="text-lg md:text-xl text-gray-300 leading-relaxed mb-6">
+                            <p className="text-lg md:text-xl text-gray-300 leading-relaxed mb-6 md:leading-7">
                                 The tour aims to create awareness among school students about the Internet of Things (IoT) and emerging technologies. We plan to guide students on how to use AI in their work, with particular emphasis on providing enhanced AI-related support for rural areas.
                             </p>
-                            <p className="text-lg md:text-xl text-gray-300 leading-relaxed mb-6">
+                            <p className="text-lg md:text-xl text-gray-300 leading-relaxed mb-6 md:leading-7">
                                 Through this initiative, we intend to conduct interactive one-day workshops introducing the fundamentals of IoT, its real-world applications, and entrepreneurial opportunities within this emerging field.
                             </p>
-                            <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
+                            <p className="text-lg md:text-xl text-gray-300 leading-relaxed md:leading-7">
                                 The tour will also serve as a bridge between schools, universities, and industries, inspiring students to participate in the SLIoT Challenge and explore innovation-driven career paths.
                             </p>
                         </div>
@@ -359,7 +359,7 @@ const InnovationTour = () => {
                         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
                             <a
                                 href="#contact"
-                                className="group relative inline-flex h-16 overflow-hidden rounded-full p-[2px] focus:outline-none w-full sm:w-72"
+                                className="group relative inline-flex h-16 overflow-hidden rounded-full p-[2px] focus:outline-hidden w-full sm:w-72"
                             >
                                 <span className="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#46BC41_0%,#01688E_50%,#46BC41_100%)]" />
                                 <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-8 text-lg font-medium text-white backdrop-blur-3xl transition-all group-hover:bg-slate-900">
@@ -368,7 +368,7 @@ const InnovationTour = () => {
                             </a>
                             <a
                                 href="#contact"
-                                className="group relative inline-flex h-16 overflow-hidden rounded-full p-[2px] focus:outline-none w-full sm:w-72"
+                                className="group relative inline-flex h-16 overflow-hidden rounded-full p-[2px] focus:outline-hidden w-full sm:w-72"
                             >
                                 <span className="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#01688E_0%,#46BC41_50%,#01688E_100%)]" />
                                 <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-8 text-lg font-medium text-white backdrop-blur-3xl transition-all group-hover:bg-slate-900">
@@ -377,7 +377,7 @@ const InnovationTour = () => {
                             </a>
                             <a
                                 href="/"
-                                className="group relative inline-flex h-16 overflow-hidden rounded-full p-[2px] focus:outline-none w-full sm:w-72"
+                                className="group relative inline-flex h-16 overflow-hidden rounded-full p-[2px] focus:outline-hidden w-full sm:w-72"
                             >
                                 <span className="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#46BC41_0%,#01688E_50%,#46BC41_100%)]" />
                                 <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-8 text-lg font-medium text-white backdrop-blur-3xl transition-all group-hover:bg-slate-900">

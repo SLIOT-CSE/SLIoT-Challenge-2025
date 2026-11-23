@@ -271,7 +271,7 @@ const SelectedTeams = () => {
         {teams[activeTab].length > 0 ? splitTeams(teams[activeTab]).map((columnTeams, colIndex) => (
           <div key={colIndex} className="space-y-2">
             {columnTeams.map((team, index) => (
-              <div key={index} className="flex flex-col md:flex-row items-stretch rounded overflow-hidden shadow-sm">
+              <div key={index} className="flex flex-col md:flex-row items-stretch rounded-sm overflow-hidden shadow-xs">
                 <div 
                   className="md:w-2/5 w-full py-2 px-3 text-white font-medium text-sm text-center md:text-left"
                   style={{

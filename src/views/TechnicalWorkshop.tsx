@@ -72,11 +72,11 @@ const TechnicalWorkshop = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                     >
-                        <div className="inline-block px-4 py-1.5 mb-6 rounded-full border border-[#46BC41]/30 bg-[#46BC41]/10 backdrop-blur-sm">
+                        <div className="inline-block px-4 py-1.5 mb-6 rounded-full border border-[#46BC41]/30 bg-[#46BC41]/10 backdrop-blur-xs">
                             <span className="text-[#46BC41] font-semibold text-sm tracking-wider">TECHNICAL WORKSHOP 01</span>
                         </div>
 
-                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-400 mb-6 leading-tight">
+                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-400 mb-6 leading-tight md:leading-none lg:leading-none">
                             IoT Problem & <br /> Creates <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#46BC41] to-[#01688E]">Solving Approaches</span>
                         </h1>
 
@@ -136,7 +136,7 @@ const TechnicalWorkshop = () => {
                         {/* <div className="mt-12">
                             <a
                                 href="#"
-                                className="group relative inline-flex h-12 overflow-hidden rounded-full p-[2px] focus:outline-none w-full sm:w-64"
+                                className="group relative inline-flex h-12 overflow-hidden rounded-full p-[2px] focus:outline-hidden w-full sm:w-64"
                             >
                                 <span className="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#46BC41_0%,#01688E_50%,#46BC41_100%)]" />
                                 <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-8 text-sm font-medium text-white backdrop-blur-3xl transition-all group-hover:bg-slate-900">

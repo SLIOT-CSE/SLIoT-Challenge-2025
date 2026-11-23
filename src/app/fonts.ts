@@ -1,3 +1,4 @@
+// next/font variables are named --nf-*; the --font-* theme tokens in globals.css point at them.
 import { Alexandria, Audiowide, Bebas_Neue, Montserrat, Poppins, Roboto_Mono } from "next/font/google";
 import localFont from "next/font/local";
 
@@ -7,28 +8,28 @@ export const alexandria = Alexandria({
   subsets: ["latin"],
   weight: "400",
   display: "swap",
-  variable: "--font-alexandria",
+  variable: "--nf-alexandria",
 });
 
 export const audiowide = Audiowide({
   subsets: ["latin"],
   weight: "400",
   display: "swap",
-  variable: "--font-audiowide",
+  variable: "--nf-audiowide",
 });
 
 export const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
   display: "swap",
-  variable: "--font-poppins",
+  variable: "--nf-poppins",
 });
 
 export const robotoMono = Roboto_Mono({
   subsets: ["latin"],
   weight: "700",
   display: "swap",
-  variable: "--font-roboto-mono",
+  variable: "--nf-roboto-mono",
 });
 
 // Coming-soon page only: Bebas Neue for display, Montserrat for text
@@ -36,21 +37,21 @@ export const bebasNeue = Bebas_Neue({
   subsets: ["latin"],
   weight: "400",
   display: "swap",
-  variable: "--font-bebas-neue",
+  variable: "--nf-bebas-neue",
 });
 
 export const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   display: "swap",
-  variable: "--font-montserrat",
+  variable: "--nf-montserrat",
 });
 
 export const nicoMoji = localFont({
   src: "../assets/fonts/NicoMoji-Regular.ttf",
   weight: "400",
   style: "normal",
-  variable: "--font-nicomoji",
+  variable: "--nf-nicomoji",
 });
 
 export const fontVariables = [alexandria, audiowide, poppins, robotoMono, nicoMoji, bebasNeue, montserrat]

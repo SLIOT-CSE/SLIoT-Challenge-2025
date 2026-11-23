@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import "./prizes.scss";
+import "./prizes.css";
 import { first, second, third } from "../../assets";
 import { categories, type CategoryId } from "@/constants";
 import { Button } from "../ui/MovingBorders";
@@ -25,7 +25,7 @@ const Prizes = () => {
   }
 
   return (
-    <div className="mt-40 mb-30 w-full mx-auto text-white body-container" id="categories">
+    <div className="mt-40 w-full mx-auto text-white body-container" id="categories">
       <div className="audiowide text-4xl sm:text-5xl my-20  text-center text-[#77FF00]">PRIZES</div>
       <motion.h2
       initial={{opacity:0,y:50}}
@@ -105,7 +105,7 @@ const Prizes = () => {
         }`}
       >
         <div className="order-3 md:order-3 lg:order-2">
-          <div className="image-wrapper shine scale-75 transform transition duration-80 hover:scale-90">
+          <div className="image-wrapper shine scale-75 transform transition hover:scale-90">
             <img src={first} alt="trophy" className="h-[350px]" />
           </div>
           <span className="text-4xl font-semibold">
@@ -114,7 +114,7 @@ const Prizes = () => {
         </div>
 
         <div className="order-2 md:order-1 lg:order-1">
-          <div className="image-wrapper shine scale-75 transform transition duration-80 hover:scale-90">
+          <div className="image-wrapper shine scale-75 transform transition hover:scale-90">
             <img src={second} alt="trophy" className="h-[335px]" />
           </div>
           <span className="text-4xl font-semibold">
@@ -123,7 +123,7 @@ const Prizes = () => {
         </div>
 
         <div className="order-1 md:order-1 lg:order-3">
-          <div className="image-wrapper shine scale-75 transform transition duration-80 hover:scale-90">
+          <div className="image-wrapper shine scale-75 transform transition hover:scale-90">
             <img src={third} alt="trophy" className="h-[320px]" />
           </div>
           <span className="text-4xl font-bold">

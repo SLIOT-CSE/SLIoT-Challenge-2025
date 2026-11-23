@@ -114,7 +114,7 @@ const Header = () => {
       <div
         className={`fixed top-0 w-full px-[5%] xl:px-[6%] mx-auto z-40 shadow-xl backdrop-blur-lg backdrop-brightness-75 nav-primary`}
       >
-        <div className={`flex xl:items-center xl:justify-between px-5 lg:px-7.5 xl:px-10 max-xl:py-4 ${openNavigation ? "flex-col justify-start items-start " : "justify-between items-center"}`}>
+        <div className={`flex xl:items-center xl:justify-between px-5 lg:px-7.5 xl:px-10 ${openNavigation ? "flex-col justify-start items-start " : "justify-between items-center"}`}>
           <a
             className={`flex items-center xl:mr-8 ${openNavigation ? "" : "w-[12rem]"
               }`}
@@ -151,7 +151,7 @@ const Header = () => {
             </div>
           </nav>
           <button
-            className="hidden alexandria xl:inline-flex relative h-12 overflow-hidden rounded-2xl p-[1px] focus:outline-none"
+            className="hidden alexandria xl:inline-flex relative h-12 overflow-hidden rounded-2xl p-[1px] focus:outline-hidden"
             onClick={() => {
               if (pathname !== '/') {
                 router.push('/');

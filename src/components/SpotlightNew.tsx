@@ -52,7 +52,7 @@ export function SpotlightNew() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: id * 0.05 }}
-            className="border border-white/20 rounded-lg overflow-hidden bg-black-100/50 backdrop-blur-sm"
+            className="border border-white/20 rounded-lg overflow-hidden bg-black-100/50 backdrop-blur-xs"
           >
             {/* Question Strip - Always Visible */}
             <button
@@ -120,7 +120,7 @@ export function SpotlightNew() {
       {/* Video Modal */}
       {modalVideo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="relative w-full h-full flex flex-col items-center justify-center bg-black bg-opacity-40 backdrop-blur-md backdrop-brightness-75 p-4 md:p-8 lg:p-12">
+          <div className="relative w-full h-full flex flex-col items-center justify-center bg-black/40 backdrop-blur-md backdrop-brightness-75 p-4 md:p-8 lg:p-12">
             {/* Close button */}
             <button
               className="absolute top-2 right-2 text-white hover:text-gray-400 text-4xl font-bold z-50"

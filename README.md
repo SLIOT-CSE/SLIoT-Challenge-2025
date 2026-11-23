@@ -2,7 +2,7 @@
 
 The official website of the SLIoT Challenge, the annual IoT competition organized by the Department of Computer Science & Engineering, University of Moratuwa, with SLT-MOBITEL and IESL.
 
-Built with Next.js (App Router), React 19, Tailwind CSS 3 and Framer Motion, written in TypeScript (strict).
+Built with Next.js (App Router), React 19, Tailwind CSS 4 and Framer Motion, written in TypeScript (strict).
 
 ## Requirements
 

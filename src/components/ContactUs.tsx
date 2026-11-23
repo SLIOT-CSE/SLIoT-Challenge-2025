@@ -23,7 +23,7 @@ const ContactUs = () => {
                     <div className="w-full mt-4 mb-2 flex justify-center">
                         <img
                         src={chairman}
-                        className="h-40 w-40 md:h-48 mb-8 md:w-48 object-cover rounded-full items-center border-1 border-n-1"
+                        className="h-40 w-40 md:h-48 mb-8 md:w-48 object-cover rounded-full items-center border-n-1"
                         alt="thumbnail" />
                     </div>
                     <div className="text-lg md:text-xl text-center font-bold text-n-1 dark:text-white">
@@ -44,7 +44,7 @@ const ContactUs = () => {
                     <div className="w-full mt-4 mb-2 flex justify-center">
                         <img
                         src={viceChairman1}
-                        className="h-40 w-40 md:h-48 mb-8 md:w-48 object-cover rounded-full items-center border-1 border-n-1"
+                        className="h-40 w-40 md:h-48 mb-8 md:w-48 object-cover rounded-full items-center border-n-1"
                         alt="thumbnail" />
                     </div>
                     <div className="text-lg md:text-xl text-center font-bold text-n-1 dark:text-white">
@@ -65,7 +65,7 @@ const ContactUs = () => {
                     <div className="w-full mt-4 mb-2 flex justify-center">
                         <img
                         src={viceChairman2}
-                        className="h-40 w-40 md:h-48 md:w-48 mb-8 object-cover rounded-full items-center border-1 border-n-1"
+                        className="h-40 w-40 md:h-48 md:w-48 mb-8 object-cover rounded-full items-center border-n-1"
                         alt="thumbnail" />
                     </div>
                     <div className="text-lg md:text-xl  text-center font-bold text-n-1 dark:text-white">

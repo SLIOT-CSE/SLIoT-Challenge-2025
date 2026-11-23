@@ -24,7 +24,7 @@ const JoinNow = () => {
           delay: 0.3
         }}}
         className="max-w-4xl mx-auto mt-10 text-center">
-        <p className="text-neutral-200 text-lg md:text-lg mb-20 leading-relaxed">
+        <p className="text-neutral-200 text-lg md:text-lg mb-20 leading-relaxed md:leading-7">
           Ready to revolutionize the future with IoT? The SLIoT Challenge 2026 invites you to develop
           innovative IoT solutions that address major local and global challenges. Organized by the
           University of Moratuwa in collaboration with SLT-MOBITEL and IESL, this competition provides

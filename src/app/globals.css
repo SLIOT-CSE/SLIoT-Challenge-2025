@@ -1,7 +1,214 @@
-/* Fonts are loaded with next/font (src/app/fonts.js) */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind CSS 4. The theme lives here (CSS-first); there is no tailwind.config.js.
+   Fonts are loaded with next/font (src/app/fonts.ts), which sets the --nf-* variables
+   on <html>; the --font-* theme tokens below point at them. */
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Dark styles only apply under a .dark class (as in Tailwind 3 darkMode: "class"),
+   not from the visitor's system setting */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Height-based variants. Defined after the width breakpoints, so they override them. */
+@custom-variant short (@media (max-height: 700px));
+@custom-variant shorter (@media (max-height: 600px));
+/* Phones held sideways */
+@custom-variant land (@media (orientation: landscape) and (max-height: 500px));
+
+@theme {
+  /* Extra small breakpoints below sm (640px) */
+  --breakpoint-xxs: 25rem;
+  --breakpoint-xs: 31.25rem;
+
+  --color-color-1: #46bc41;
+  --color-color-2: #ffc876;
+  --color-color-3: #ff776f;
+  --color-color-4: #7adb78;
+  --color-color-5: #77ff00;
+  --color-color-6: #70ff50;
+
+  --color-stroke-1: #26242c;
+
+  /* 2027 aurora palette (coming-soon page and the new site), sampled from the reference image */
+  --color-cs-abyss: #010610;
+  --color-cs-night: #011225;
+  --color-cs-deep: #023649;
+  --color-cs-ocean: #0b5a6d;
+  --color-cs-teal: #14676f;
+  --color-cs-lagoon: #52baa5;
+  --color-cs-mint: #73dabe;
+  /* Primary text colour on the coming-soon card */
+  --color-cs-aqua: #85fff0;
+  --color-cs-foam: #ddf7ef;
+  --color-cs-mist: #a9c7cc;
+
+  /* Old (2025) site palette */
+  --color-n-1: #ffffff;
+  --color-n-2: #cac6dd;
+  --color-n-3: #0a4d20;
+  --color-n-4: #77ff00;
+  --color-n-5: #3f3a52;
+  --color-n-6: #252134;
+  --color-n-7: #15131d;
+  --color-n-8: #0e0c15;
+  --color-n-9: #474060;
+  --color-n-10: #43435c;
+  --color-n-11: #1b1b2e;
+  --color-n-12: #2e2a41;
+  --color-n-13: #6c7275;
+  --color-n-14: #f39314;
+  --color-n-15: #393185;
+  --color-n-16: #e7f6ec;
+  --color-n-17: #f3fbf5;
+  --color-n-18: #f0d600;
+  --color-n-19: #e7f6ec;
+  --color-n-20: #32b57a;
+  --color-n-21: #f5f5f5;
+  --color-n-22: #e8e8e8;
+  --color-n-23: rgba(10, 40, 20, 1);
+
+  --font-sans: "Quattrocento Sans", sans-serif;
+
+  --tracking-tagline: 0.15em;
+
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: linear;
+
+  --animate-pulse: pulse 2s infinite;
+  --animate-movedown: movedown 1s linear forwards;
+  --animate-bounce: bounce 1s infinite;
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-first: moveVertical 30s ease infinite;
+  --animate-second: moveInCircle 20s reverse infinite;
+  --animate-third: moveInCircle 40s linear infinite;
+  --animate-fourth: moveHorizontal 40s ease infinite;
+  --animate-fifth: moveInCircle 20s ease infinite;
+  --animate-scroll: scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite;
+  --animate-blur1: blur 1.5s 0s infinite linear alternate;
+  --animate-blur2: blur 1.5s 0.2s infinite linear alternate;
+  --animate-blur3: blur 1.5s 0.4s infinite linear alternate;
+  --animate-blur4: blur 1.5s 0.6s infinite linear alternate;
+  --animate-blur5: blur 1.5s 0.8s infinite linear alternate;
+  --animate-blur6: blur 1.5s 1s infinite linear alternate;
+  --animate-blur7: blur 1.5s 1.2s infinite linear alternate;
+  --animate-fade-up: fadeUp 0.895s linear;
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  @keyframes movedown {
+    0% { opacity: 1; transform: translateY(-30px); }
+    100% { opacity: 1; transform: translateY(0px); }
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+  @keyframes spotlight {
+    0% { opacity: 0; transform: translate(-72%, -62%) scale(0.5); }
+    100% { opacity: 1; transform: translate(-50%, -40%) scale(1); }
+  }
+  @keyframes shimmer {
+    from { background-position: 0 0; }
+    to { background-position: -200% 0; }
+  }
+  @keyframes moveHorizontal {
+    0% { transform: translateX(-50%) translateY(-10%); }
+    50% { transform: translateX(50%) translateY(10%); }
+    100% { transform: translateX(-50%) translateY(-10%); }
+  }
+  @keyframes moveInCircle {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes moveVertical {
+    0% { transform: translateY(-50%); }
+    50% { transform: translateY(50%); }
+    100% { transform: translateY(-50%); }
+  }
+  @keyframes scroll {
+    to { transform: translate(calc(-50% - 0.5rem)); }
+  }
+  @keyframes blur {
+    0% { filter: blur(0px); }
+    100% { filter: blur(4px); }
+  }
+  @keyframes fadeUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* Font tokens point at the next/font variables, so they are inlined into the utilities */
+@theme inline {
+  --font-poppins: var(--nf-poppins), sans-serif;
+  --font-robotoMono: var(--nf-roboto-mono), monospace;
+  --font-nicoMoji: var(--nf-nicomoji), sans-serif;
+  --font-audiowide: var(--nf-audiowide), sans-serif;
+  --font-alexandria: var(--nf-alexandria), sans-serif;
+  --font-bebas: var(--nf-bebas-neue), Impact, sans-serif;
+  --font-montserrat: var(--nf-montserrat), sans-serif;
+
+  /* shadcn/ui colours (HSL channels set in :root below) */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+/* The old site's container (was a plugin in tailwind.config.js): centred, capped at
+   77.5rem (87.5rem from xl), with growing side padding */
+@utility container {
+  width: 100%;
+  max-width: 77.5rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  @variant md {
+    padding-inline: 2.5rem;
+  }
+  @variant lg {
+    padding-inline: 3.75rem;
+  }
+  @variant xl {
+    max-width: 87.5rem;
+  }
+}
 
 :root {
   color-scheme: dark;
@@ -12,8 +219,13 @@
 }
 
 @layer base {
-  body {
+  /* A Tailwind 3 default that Tailwind 4 dropped: buttons show a pointer */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
 
+  body {
     @apply font-alexandria text-base text-n-8;
     background: linear-gradient(
       90deg,
@@ -82,73 +294,7 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
-}
 
-.rotate-45 {
-  @apply rotate-[45deg];
-}
-
-.rotate-90 {
-  @apply rotate-[90deg];
-}
-
-.rotate-135 {
-  @apply rotate-[135deg];
-}
-
-.rotate-180 {
-  @apply rotate-[180deg];
-}
-
-.rotate-225 {
-  @apply rotate-[225deg];
-}
-
-.rotate-270 {
-  @apply rotate-[270deg];
-}
-
-.rotate-315 {
-  @apply rotate-[315deg];
-}
-
-.rotate-360 {
-  @apply rotate-[360deg];
-}
-
-.-rotate-45 {
-  @apply rotate-[-45deg];
-}
-
-.-rotate-90 {
-  @apply rotate-[-90deg];
-}
-
-.-rotate-135 {
-  @apply rotate-[-135deg];
-}
-
-.-rotate-180 {
-  @apply rotate-[-180deg];
-}
-
-.-rotate-225 {
-  @apply rotate-[-225deg];
-}
-
-.-rotate-270 {
-  @apply rotate-[-270deg];
-}
-
-.-rotate-315 {
-  @apply rotate-[-315deg];
-}
-
-.-rotate-360 {
-  @apply rotate-[-360deg];
-}
-
-@layer base {
   * {
     @apply border-border;
   }
@@ -158,38 +304,6 @@
   }
 }
 
-@layer components {
-  /* SHADCN COMPONENTS */
-  /* Form */
-  .shad-form_label {
-    @apply text-n-4 !important;
-  }
-
-  .shad-form_message {
-    @apply text-red !important;
-  }
-
-  .shad-input {
-    @apply h-12 bg-n-1 border border-n-2 placeholder:text-n-4 focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-n-3 !important;
-  }
-
-  .shad-textarea {
-    @apply h-36 bg-n-1 border border-n-2 rounded-xl focus-visible:ring-1 focus-visible:ring-n-1 ring-offset-n-3 !important;
-  }
-
-  /* Button */
-  .shad-button_primary {
-    @apply bg-n-20 hover:bg-n-14 text-n-1 flex gap-2 !important;
-  }
-
-  .shad-button_dark_4 {
-    @apply h-12 bg-dark-4 px-5 text-light-1 flex gap-2 !important;
-  }
-
-  .shad-button_ghost {
-    @apply flex gap-4 items-center justify-start hover:bg-transparent hover:text-white !important;
-  }
-}
 /* WebKit Browsers (Chrome, Edge, Safari) */
 ::-webkit-scrollbar {
   width: 12px; /* Width of the scrollbar */
@@ -217,16 +331,16 @@
 
 
 .alexandria{
-  font-family: var(--font-alexandria);
+  font-family: var(--nf-alexandria);
 }
 
 .audiowide{
-  font-family: var(--font-audiowide);
+  font-family: var(--nf-audiowide);
 }
 /* ---------------------------------------------------------------------------
-   Coming-soon page (src/views/ComingSoon.jsx)
+   Coming-soon page (src/views/ComingSoon.tsx)
    Motion is CSS-only so the page renders without waiting for JavaScript.
-   Colours are the cs-* tokens in tailwind.config.js (aurora reference image).
+   Colours are the cs-* tokens in @theme above (aurora reference image).
    --------------------------------------------------------------------------- */
 :root {
   --cs-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -385,7 +499,7 @@ html:has(.cs-page) body {
   animation: cs-ping 2s var(--cs-ease-out) infinite;
 }
 
-/* Hero figure placement (components/HeroFigure.jsx; the image is cut off on its right
+/* Hero figure placement (components/HeroFigure.tsx; the image is cut off on its right
    and bottom edges). Side by side: in the card's bottom-right corner, cut edges flush
    with the card's edges and clipped to its rounded corner, helmet rising above the card.
    The frame spans the room beside the text (--cs-text-w) from --cs-fig-rise above the

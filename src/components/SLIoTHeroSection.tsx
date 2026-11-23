@@ -30,7 +30,7 @@ const SLIoTHeroSection = () => {
       </div>
       <section
         className="flex flex-col md:flex-row items-center justify-center px-4 md:px-6 lg:px-[6%] md:gap-0 relative antialiased"
-        style={{ fontFamily: "var(--font-alexandria), sans-serif" }}
+        style={{ fontFamily: "var(--nf-alexandria), sans-serif" }}
       >
         <div className="container flex flex-col items-center mx-auto md:flex-row">
           <div className="text-center md:text-left">
@@ -52,7 +52,7 @@ const SLIoTHeroSection = () => {
                 initial={{ y: 40, opacity: 0 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 3, ease: 'easeInOut' }}
-                className="relative mt-4 md:mt-6 text-xs xs:text-sm lg:text-xl text-n-1 leading-relaxed mb-6 md:mb-10 max-w-full md:max-w-[540px] z-10 text-justify xs:text-center md:text-left alexandria">
+                className="relative mt-4 md:mt-6 text-xs xs:text-sm lg:text-xl text-n-1 leading-relaxed mb-6 md:mb-10 max-w-full md:max-w-[540px] z-10 text-justify xs:text-center md:text-left alexandria xs:leading-5 lg:leading-7">
 
 
                 Welcome to the biggest IoT competition in Sri Lanka, <br></br>Open to school students, university undergraduates and innovators across the island.

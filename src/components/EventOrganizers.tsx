@@ -18,7 +18,7 @@ const EventOrganizers = () => {
                         transition: {
                             duration: 2 
                         }}} 
-                        className="mb-6 text-3xl text-left text-white leading-loose uppercase sm:text-5xl audiowide">
+                        className="mb-6 text-3xl text-left text-white leading-loose uppercase sm:text-5xl audiowide sm:leading-none">
                             Meet the  <br></br><span className="py-10 text-[#77FF00]">Organizers</span> 
                         </motion.h2>
                     </div>
