@@ -32,7 +32,7 @@ export const robotoMono = Roboto_Mono({
   variable: "--nf-roboto-mono",
 });
 
-// 2027 site and coming-soon page: Bebas Neue for display, Montserrat for text
+// 2027 site: Bebas Neue for display, Montserrat for text
 export const bebasNeue = Bebas_Neue({
   subsets: ["latin"],
   weight: "400",

@@ -28,19 +28,6 @@
 
   --color-stroke-1: #26242c;
 
-  /* Coming-soon page names for the 2027 palette (values come from the tokens below) */
-  --color-cs-abyss: var(--color-abyss);
-  --color-cs-night: var(--color-night);
-  --color-cs-deep: var(--color-deep);
-  --color-cs-ocean: var(--color-ocean);
-  --color-cs-teal: var(--color-reef);
-  --color-cs-lagoon: var(--color-lagoon);
-  --color-cs-mint: var(--color-mint);
-  /* Primary text colour on the coming-soon card */
-  --color-cs-aqua: var(--color-aqua);
-  --color-cs-foam: var(--color-foam);
-  --color-cs-mist: var(--color-haze);
-
   /* Old (2025) site palette */
   --color-n-1: #ffffff;
   --color-n-2: #cac6dd;
@@ -153,7 +140,7 @@
 
 /* ---------------------------------------------------------------------------
    2027 design system (docs/frontend-plan.md, section 3). Aurora palette sampled
-   from the coming-soon reference image. "static" keeps every variable on :root,
+   from the 2027 aurora reference image. "static" keeps every variable on :root,
    so the tokens page and inline styles can read them even when no class uses them.
    teal and mist are Tailwind default scales, so those two roles are reef and haze.
    --------------------------------------------------------------------------- */
@@ -297,10 +284,6 @@
   color-scheme: dark;
 }
 
-* {
-  scroll-behavior: true;
-}
-
 @layer base {
   /* A Tailwind 3 default that Tailwind 4 dropped: buttons show a pointer */
   button:not(:disabled),
@@ -314,19 +297,23 @@
     outline-offset: 2px;
   }
 
+  /* 2027 site: abyss background, Montserrat, foam text */
+  html {
+    background: var(--color-abyss);
+  }
+
   body {
-    @apply font-alexandria text-base text-n-8;
-    background: linear-gradient(
-      90deg,
-      rgba(8, 15, 35, 1) 0%,
-      rgba(12, 18, 52, 1) 15%,
-      rgba(10, 12, 40, 1) 30%,
-      rgba(6, 10, 30, 1) 45%,
-      rgba(4, 8, 28, 1) 60%,
-      rgba(5, 12, 25, 1) 75%,
-      rgba(10, 50, 30, 1) 100%
-    );
-    background-attachment: fixed;
+    @apply bg-abyss font-body text-body text-foam antialiased;
+  }
+
+  /* Anchored sections clear the floating nav */
+  section[id] {
+    scroll-margin-top: 6rem;
+  }
+
+  ::selection {
+    background: rgb(133 255 240 / 0.3);
+    color: var(--color-foam);
   }
 
   :root {
@@ -384,12 +371,9 @@
     --chart-5: 340 75% 55%;
   }
 
+  /* Default border colour: decorative ocean (controls use the stronger edge token) */
   * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
+    border-color: var(--color-ocean);
   }
 }
 
@@ -403,19 +387,19 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.5); /* Semi-transparent thumb */
-  border: 2px solid #1a1a2e; /* Your website's background color */
-  border-radius: 10px; /* Rounded thumb */
+  background: var(--color-reef);
+  border: 3px solid var(--color-abyss);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.8); /* Brighter thumb on hover */
+  background: var(--color-lagoon);
 }
 
 /* For Firefox */
 * {
-  scrollbar-width: thin; /* Thin scrollbar */
-  scrollbar-color: rgba(255, 255, 255, 0.5) rgba(10, 15, 30, 1); /* Thumb visible, track transparent */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-reef) var(--color-abyss);
 }
 
 
@@ -427,211 +411,10 @@
   font-family: var(--nf-audiowide);
 }
 /* ---------------------------------------------------------------------------
-   Coming-soon page (src/views/ComingSoon.tsx)
-   Motion is CSS-only so the page renders without waiting for JavaScript.
-   Colours are the cs-* tokens in @theme above (aurora reference image).
+   Hero figure helpers (components/HeroFigure.tsx; the image is cut off on its
+   right and bottom edges, so those edges must sit on a screen edge or fade out)
    --------------------------------------------------------------------------- */
-:root {
-  --cs-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* The coming-soon page is exactly one screen: no page scroll, no pull-to-refresh bounce.
-   Scoped with :has() so the full site scrolls normally when the flag is off. */
-html:has(.cs-page),
-html:has(.cs-page) body {
-  overflow: hidden;
-  overscroll-behavior: none;
-}
-
-/* Aurora, laid out like the reference image: a mint glow on the left edge, a teal
-   band sweeping across the top, an ocean-blue band running down to the bottom
-   right, with deep navy left between them. The bands cross behind the card so its
-   glass shows separate colours, not one flat tint. */
-.cs-aurora {
-  position: absolute;
-  border-radius: 9999px;
-  will-change: transform;
-}
-
-.cs-aurora-a {
-  left: -24vmax;
-  top: 6%;
-  width: 62vmax;
-  height: 62vmax;
-  background: radial-gradient(closest-side, rgb(115 218 190 / 0.6), rgb(82 186 165 / 0.3) 42%, transparent);
-  animation: cs-drift-a 26s ease-in-out infinite alternate;
-}
-
-.cs-aurora-b {
-  left: 8vw;
-  top: -6vh;
-  width: 110vw;
-  height: 34vh;
-  background: radial-gradient(closest-side, rgb(31 150 150 / 0.75), rgb(11 90 109 / 0.45) 55%, transparent);
-  transform: rotate(-12deg);
-  animation: cs-drift-b 32s ease-in-out infinite alternate;
-}
-
-.cs-aurora-c {
-  left: 18vw;
-  top: 48vh;
-  width: 105vw;
-  height: 40vh;
-  background: radial-gradient(closest-side, rgb(16 82 140 / 0.8), rgb(2 54 96 / 0.45) 55%, transparent);
-  transform: rotate(16deg);
-  animation: cs-drift-c 38s ease-in-out infinite alternate;
-}
-
-.cs-aurora-d {
-  left: -10vw;
-  bottom: -22vh;
-  width: 60vw;
-  height: 48vh;
-  background: radial-gradient(closest-side, rgb(20 103 111 / 0.6), transparent);
-  animation: cs-drift-a 30s ease-in-out infinite alternate-reverse;
-}
-
-@keyframes cs-drift-a {
-  to { transform: translate3d(6vw, -5vh, 0) scale(1.12); }
-}
-
-@keyframes cs-drift-b {
-  from { transform: rotate(-12deg); }
-  to   { transform: translate3d(-8vw, 6vh, 0) rotate(-5deg) scale(1.08); }
-}
-
-@keyframes cs-drift-c {
-  from { transform: rotate(16deg); }
-  to   { transform: translate3d(-10vw, -5vh, 0) rotate(9deg) scale(1.1); }
-}
-
-/* The mock site behind the card: recognisable as a site, unreadable as text.
-   Scaled up slightly so the blur's soft edge falls outside the screen. */
-.cs-mock {
-  filter: blur(8px) saturate(1.15);
-  opacity: 0.5;
-  transform: scale(1.03);
-}
-
-/* Darkens the screen edges, and the centre a little, so text on the clear glass
-   stays readable over whatever the aurora and the mock put behind it */
-.cs-vignette {
-  background:
-    radial-gradient(ellipse 80% 75% at 50% 50%, transparent 40%, rgb(1 6 16 / 0.6) 100%),
-    linear-gradient(rgb(1 6 16 / 0.2), rgb(1 6 16 / 0.2));
-}
-
-/* Film grain like the reference; sits under the card, so the glass blurs it away */
-.cs-grain {
-  pointer-events: none;
-  background-image: url("/images/noise.png");
-  background-size: 128px;
-  opacity: 0.055;
-}
-
-/* Glass, as in the Bento card design: a fully transparent panel that only blurs what
-   is behind it (backdrop-blur-xl, no tint), a 1px white/10 border plus a white/10
-   ring, and a soft inner glow rising from the bottom edge (aqua here, not lavender,
-   to stay in the palette). */
-.cs-glass {
-  overflow: hidden;
-  background: transparent;
-  border: 1px solid rgb(255 255 255 / 0.1);
-  -webkit-backdrop-filter: blur(24px);
-  backdrop-filter: blur(24px);
-  box-shadow:
-    inset 0 -20px 80px -20px rgb(133 255 240 / 0.12),
-    0 0 0 1px rgb(255 255 255 / 0.1),
-    0 1px 2px 0 rgb(0 0 0 / 0.05);
-  transform: translateZ(0);
-}
-
-/* No backdrop blur (old browsers): a solid plate keeps the text readable */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .cs-glass {
-    background: rgb(2 18 37 / 0.94);
-  }
-}
-
-/* Entrances. The card wrapper only moves (transform); the glass fades itself, because
-   opacity or filter on an ancestor would switch off its backdrop blur. */
-.cs-card {
-  animation: cs-card-in 1.3s var(--cs-ease-out) 0.05s both;
-}
-
-.cs-fade-in {
-  animation: cs-fade 1s var(--cs-ease-out) 0.05s both;
-}
-
-/* Staggered entrance; each element sets its own --cs-delay */
-.cs-rise {
-  animation: cs-rise 0.9s var(--cs-ease-out) var(--cs-delay, 0s) both;
-}
-
-/* Title lines slide up out of their own mask */
-.cs-line {
-  animation: cs-line 1.2s var(--cs-ease-out) var(--cs-delay, 0s) both;
-}
-
-/* Mock-site blocks rise into place one after another */
-.cs-mock-in {
-  animation: cs-mock-in 1.6s var(--cs-ease-out) var(--cs-delay, 0s) both;
-}
-
-/* The figure fades in from a blur. No movement: moving it would pull its cut edges
-   away from the card / screen edges they are lined up with. */
-.cs-figure-in {
-  animation: cs-figure-in 1.4s var(--cs-ease-out) 0.45s both;
-}
-
-.cs-ping {
-  animation: cs-ping 2s var(--cs-ease-out) infinite;
-}
-
-/* Hero figure placement (components/HeroFigure.tsx; the image is cut off on its right
-   and bottom edges). Side by side: in the card's bottom-right corner, cut edges flush
-   with the card's edges and clipped to its rounded corner, helmet rising above the card.
-   The frame spans the room beside the text (--cs-text-w) from --cs-fig-rise above the
-   card down to its bottom edge, so the rise stays the same whatever the card's height;
-   the figure is the largest it can be inside the frame (container units). */
-.cs-figure-frame {
-  position: absolute;
-  top: calc(-1 * var(--cs-fig-rise, 4.5rem));
-  right: 1px;
-  bottom: 1px;
-  left: var(--cs-text-w, 33rem);
-  container-type: size;
-  justify-content: flex-end;
-  align-items: flex-end;
-  pointer-events: none;
-}
-
-/* Its open left edge fades out, and so does its top-right corner: above the card the
-   cut right edge has no card edge to sit on, and inside it the corner meets the card's
-   rounded corner. */
-.cs-figure-side {
-  width: min(100cqw, 100cqh * 957 / 932);
-  clip-path: inset(-100vh 0 0 -100vw round 0 0 calc(2rem - 1px) 0);
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 14%), linear-gradient(225deg, transparent 5%, #000 20%);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, transparent, #000 14%), linear-gradient(225deg, transparent 5%, #000 20%);
-  mask-composite: intersect;
-}
-
-/* Narrow landscape phones: too little room beside the text for the figure */
-@media (orientation: landscape) and (max-height: 500px) and (max-width: 739px) {
-  .cs-page .cs-figure-frame {
-    display: none;
-  }
-}
-
-/* Stacked: the cut bottom edge fades into the card below it */
-.cs-figure-top {
-  -webkit-mask-image: linear-gradient(to bottom, #000 64%, transparent 97%);
-  mask-image: linear-gradient(to bottom, #000 64%, transparent 97%);
-}
-
-/* Full site hero: nothing to line the cut edges up with, so both fade out */
+/* Both cut edges fade out (when nothing lines up with them) */
 .fig-fade-edges {
   -webkit-mask-image: linear-gradient(to left, transparent, #000 22%), linear-gradient(to top, transparent, #000 22%);
   -webkit-mask-composite: source-in;
@@ -639,7 +422,7 @@ html:has(.cs-page) body {
   mask-composite: intersect;
 }
 
-/* Mint glow behind the figure's helmet, breathing slowly (used on both pages) */
+/* Mint glow behind the figure's helmet, breathing slowly */
 .fig-glow {
   animation: fig-glow 6s ease-in-out infinite alternate;
 }
@@ -649,53 +432,156 @@ html:has(.cs-page) body {
   to   { opacity: 1; transform: scale(1.06); }
 }
 
-@keyframes cs-card-in {
-  from { transform: translateY(32px) scale(0.97); }
-  to   { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .fig-glow {
+    animation: none;
+  }
 }
 
-@keyframes cs-fade {
+/* ---------------------------------------------------------------------------
+   2027 site motion that runs before JavaScript (CSS only)
+   Every element reads correctly without these; reduced motion gets a short fade.
+   --------------------------------------------------------------------------- */
+
+/* Hero title lines rise out of their own mask, one after another (each sets --delay) */
+.intro-line {
+  animation: intro-line 1.15s var(--ease-out-expo) var(--delay, 0s) both;
+}
+
+/* Hero copy, chip and buttons rise in after the title */
+.intro-rise {
+  animation: intro-rise 0.9s var(--ease-out-expo) var(--delay, 0s) both;
+}
+
+/* The figure resolves from a blur; it never moves, so its cut edges stay put */
+.intro-figure {
+  animation: intro-figure 1.4s var(--ease-out-expo) 0.35s both;
+}
+
+.intro-fade {
+  animation: intro-fade 1.2s var(--ease-out-expo) var(--delay, 0s) both;
+}
+
+@keyframes intro-line {
+  from { transform: translateY(105%); }
+  to { transform: none; }
+}
+
+@keyframes intro-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes intro-figure {
+  from { opacity: 0; filter: blur(14px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+@keyframes intro-fade {
   from { opacity: 0; }
-  to   { opacity: 1; }
+  to { opacity: 1; }
 }
 
-@keyframes cs-rise {
-  from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
-  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+/* Aurora behind the hero: three slow bands (mint, teal, ocean) */
+.aurora-band {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
 }
 
-@keyframes cs-line {
-  from { transform: translateY(108%); }
-  to   { transform: none; }
+.aurora-a {
+  left: -22vmax;
+  top: 4%;
+  width: 60vmax;
+  height: 60vmax;
+  background: radial-gradient(closest-side, rgb(115 218 190 / 0.42), rgb(82 186 165 / 0.18) 45%, transparent);
+  animation: aurora-a 26s ease-in-out infinite alternate;
 }
 
-@keyframes cs-mock-in {
-  from { opacity: 0; transform: translateY(40px); }
-  to   { opacity: 1; transform: none; }
+.aurora-b {
+  left: 12vw;
+  top: -10vh;
+  width: 105vw;
+  height: 36vh;
+  background: radial-gradient(closest-side, rgb(31 150 150 / 0.55), rgb(11 90 109 / 0.3) 55%, transparent);
+  transform: rotate(-12deg);
+  animation: aurora-b 32s ease-in-out infinite alternate;
 }
 
-@keyframes cs-figure-in {
-  from { opacity: 0; filter: blur(12px); }
-  to   { opacity: 1; filter: blur(0); }
+.aurora-c {
+  left: 30vw;
+  top: 46%;
+  width: 90vw;
+  height: 44vh;
+  background: radial-gradient(closest-side, rgb(16 82 140 / 0.55), rgb(2 54 96 / 0.3) 55%, transparent);
+  transform: rotate(16deg);
+  animation: aurora-c 38s ease-in-out infinite alternate;
 }
 
-@keyframes cs-ping {
-  0%        { transform: scale(1); opacity: 0.7; }
-  75%, 100% { transform: scale(2.4); opacity: 0; }
+@keyframes aurora-a {
+  to { transform: translate3d(6vw, -5vh, 0) scale(1.12); }
+}
+
+@keyframes aurora-b {
+  from { transform: rotate(-12deg); }
+  to { transform: translate3d(-8vw, 6vh, 0) rotate(-5deg) scale(1.08); }
+}
+
+@keyframes aurora-c {
+  from { transform: rotate(16deg); }
+  to { transform: translate3d(-10vw, -5vh, 0) rotate(9deg) scale(1.1); }
+}
+
+/* Film grain over the aurora */
+.grain {
+  pointer-events: none;
+  background-image: url("/images/noise.png");
+  background-size: 128px;
+  opacity: 0.05;
+}
+
+/* Sensor nodes blinking in sequence (each sets --delay) */
+.signal-node {
+  animation: signal-node 4.8s ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes signal-node {
+  0%, 70%, 100% { opacity: 0.25; }
+  78% { opacity: 1; }
+}
+
+/* Live indicator: a ring expanding from a dot */
+.live-ping {
+  animation: live-ping 2s var(--ease-out-expo) infinite;
+}
+
+@keyframes live-ping {
+  0% { transform: scale(1); opacity: 0.75; }
+  75%, 100% { transform: scale(2.6); opacity: 0; }
+}
+
+/* Figure: bottom cut edge fades into the next section (right edge sits on the screen edge) */
+.fig-fade-bottom {
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 96%);
+  mask-image: linear-gradient(to bottom, #000 62%, transparent 96%);
+}
+
+/* Outlined display text (kinetic band) */
+@utility text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgb(221 247 239 / 0.4);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cs-rise,
-  .cs-line,
-  .cs-mock-in,
-  .cs-figure-in,
-  .cs-fade-in {
-    animation: cs-fade 0.4s ease-out both;
+  .intro-line,
+  .intro-rise,
+  .intro-figure,
+  .intro-fade {
+    animation: intro-fade 0.3s ease-out both;
   }
-  .cs-card,
-  .cs-aurora,
-  .cs-ping,
-  .fig-glow {
+  .aurora-band,
+  .signal-node,
+  .live-ping {
     animation: none;
   }
 }

@@ -1,25 +1,28 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { fontVariables } from "./fonts";
 import { SmoothScrollProvider } from "@/lib/motion/smooth-scroll";
-import Footer from "@/components/Footer";
-import { COMING_SOON } from "@/config/site";
+import { site } from "@/content/site";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sliot.cse.mrt.ac.lk"),
-  title: "SLIoT Challenge 2026",
+  metadataBase: new URL(site.url),
+  title: { default: site.title, template: `%s · ${site.title}` },
+  description: site.description,
+  openGraph: { title: site.title, description: site.description, url: site.url, siteName: site.title, type: "website" },
+  twitter: { card: "summary_large_image" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#010610",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={fontVariables}>
       <body>
-        <SmoothScrollProvider>
-          <div className="grow">{children}</div>
-          {/* The coming-soon page has its own footer */}
-          {!COMING_SOON && <Footer />}
-        </SmoothScrollProvider>
+        <SmoothScrollProvider>{children}</SmoothScrollProvider>
       </body>
     </html>
   );

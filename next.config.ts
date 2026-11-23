@@ -1,18 +1,12 @@
 import type { NextConfig } from "next";
-import { COMING_SOON, fullSiteRoutes } from "./src/config/site";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
-    // Gallery photos are served resized; AVIF first, WebP fallback.
+    // Photos are served resized; AVIF first, WebP fallback.
     formats: ["image/avif", "image/webp"],
-    // YouTube thumbnails used by the gallery video tiles
+    // YouTube thumbnails (gallery video tiles, prototype previews)
     remotePatterns: [{ protocol: "https", hostname: "img.youtube.com" }],
-  },
-  async redirects() {
-    if (!COMING_SOON) return [];
-    // Temporary (307) so browsers don't cache them once the full site is back
-    return fullSiteRoutes.map((source) => ({ source, destination: "/", permanent: false }));
   },
 };
 

@@ -1,23 +1,32 @@
-import Home from "@/views/Home";
-import ComingSoon from "@/views/ComingSoon";
-import { COMING_SOON, edition } from "@/config/site";
+import { SiteNav } from "@/components/site/site-nav";
+import { Hero } from "@/components/site/hero";
+import { LiveCallout } from "@/components/site/live-callout";
+import { KineticBand } from "@/components/site/kinetic-band";
+import { deadlines } from "@/content/deadlines";
+import { stageAt } from "@/lib/competition";
 
-const comingSoonTitle = `${edition.name} ${edition.year} · ${edition.status}`;
-const comingSoonDescription = `Sri Lanka's biggest IoT competition returns in ${edition.year}. ${edition.tagline}`;
+// The stage, countdowns and "days to go" are worked out on the server. Regenerating the
+// page every hour keeps them current without making every request dynamic.
+export const revalidate = 3600;
 
-export const metadata = COMING_SOON
-  ? {
-      title: comingSoonTitle,
-      description: comingSoonDescription,
-      openGraph: {
-        title: comingSoonTitle,
-        description: comingSoonDescription,
-        images: [{ url: "/images/og-coming-soon.jpg", width: 1200, height: 630, alt: `${edition.name} ${edition.year}` }],
-      },
-      twitter: { card: "summary_large_image", images: ["/images/og-coming-soon.jpg"] },
-    }
-  : {};
+export default function HomePage() {
+  const now = new Date();
+  const stage = stageAt(now, deadlines);
 
-export default function Page() {
-  return COMING_SOON ? <ComingSoon /> : <Home />;
+  return (
+    <>
+      <a
+        href="#main"
+        className="sr-only z-tooltip rounded-full bg-mint px-5 py-3 font-semibold text-abyss focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+      >
+        Skip to content
+      </a>
+      <SiteNav />
+      <main id="main">
+        <Hero stage={stage} now={now} />
+        <LiveCallout stage={stage} now={now} />
+        <KineticBand />
+      </main>
+    </>
+  );
 }

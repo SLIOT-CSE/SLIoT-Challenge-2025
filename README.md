@@ -29,67 +29,52 @@ Other scripts:
 
 ## Project layout
 
+The 2027 site is being rebuilt as a single page (see `docs/workload.md` for progress). The old 2025 components are still in the repository until their replacements land; they are no longer rendered on `/`.
+
 ```
 src/
-  app/              Routes (App Router). Each page.tsx renders a view.
-    layout.tsx      Root layout: fonts, metadata, smooth scroll, footer
-    fonts.ts        next/font setup (Alexandria, Audiowide, Poppins, Roboto Mono, NicoMoji)
-    icon.png        Favicon
-  views/            Full-page views used by routes (Home, InnovationTour, ...)
-  components/       Page sections and UI components
-    ui/             Reusable UI pieces (BentoGrid, MovingBorders, Globe, ...)
-  config/site.ts    Coming-soon switch, edition name/year, teaser copy and social links
-  constants/        Site content: navigation, socials, about, gallery, spotlight videos, partners
-  assets/index.ts   Image paths (files live in public/images)
-  lib/utils.ts      cn() class-name helper
-public/
-  images/           All site images, served as-is
-  *.pdf, *.docx     Downloadable documents
-deploy/             Server configuration examples
+  app/                Routes (App Router)
+    layout.tsx        Root layout: fonts, metadata, smooth scroll
+    page.tsx          The one-page site (new 2027 sections)
+    globals.css       Tailwind 4 theme (2027 tokens in @theme) and site-wide CSS
+    fonts.ts          next/font setup (Bebas Neue + Montserrat for 2027; old fonts until step L)
+    design-system/    Dev-only reference pages (tokens, contrast, callout states); 404 in production
+  components/
+    site/             2027 sections (nav, hero, live callout, kinetic band, ...)
+    ui/               Primitives (button, field, input) and old 2025 UI pieces
+  content/            2027 copy and data: site, navigation, socials, deadlines
+  lib/
+    competition.ts    Competition stage and countdowns from the key dates
+    motion/           GSAP + ScrollTrigger, Lenis provider, reduced-motion hook, eases
+    utils.ts          cn() class-name helper (knows the custom token names)
+  views/, constants/  Old 2025 site (removed in step L)
+public/images/        All site images, served as-is
+docs/                 architecture.md, frontend-plan.md, workload.md
+deploy/               Server configuration examples
 ecosystem.config.cjs  PM2 process definition
 ```
 
-Routes: `/`, `/guidelines`, `/faqs`, `/finalists`, `/innovation-tour`, `/session_1`, and a 404 page.
+## Branches and deploys
 
-## Coming-soon mode
-
-Between editions the site can show a single teaser page instead of the full site.
-
-It is controlled by `COMING_SOON` in `src/config/site.ts`:
-
-- `true`: `/` shows the coming-soon page (`src/views/ComingSoon.tsx`, always exactly one screen tall with no scrolling: the robot scales to the space left, and very short screens drop the copyright line and the first sentence), every other page redirects to `/` with a temporary (307) redirect, unknown URLs show the teaser with a 404 status, and the full site's header and footer are hidden.
-- `false`: the full site is back exactly as before.
-
-Change the flag, commit and push; the deploy picks it up. The same file holds the edition name and year, the status text, the tagline and the social links shown on the teaser.
-
-The link-preview image for WhatsApp/Facebook is `public/images/og-coming-soon.jpg` (1200x630). Replace it when the edition or artwork changes.
+Every push to `main` deploys to sliot.cse.mrt.ac.lk. The rebuild happens on the `full-site` branch, which must not be merged into `main` until launch (step Y in `docs/workload.md`).
 
 ## Updating content
 
-Most yearly updates are data edits; no component changes are needed.
-
 | What | Where |
 |---|---|
-| Navigation items | `navigation` in `src/constants/index.ts` |
-| Social links (footer) | `socials` in `src/constants/index.ts` |
-| About text | `aboutGridItems` in `src/constants/index.ts` |
-| Proposal guideline cards | `guidelines` in `src/constants/index.ts` |
-| Spotlight videos | `spotlight` in `src/constants/index.ts` (YouTube embed links) |
-| Partner logos | `organizers` in `src/constants/index.ts` + `src/assets/index.js` |
-| Timeline | `events` in `src/components/design/TimeLine.tsx` |
-| Prizes | `prizes` in `src/components/section/Prizes.tsx` |
-| FAQs | `faqData` in `src/components/Rules.tsx` |
-| Contact people | `src/components/ContactUs.tsx`, photos in `public/images/people` |
-| Finalists | `teams` in `src/views/SelectedTeams.tsx` |
-| Registration / proposal links | `src/components/JoinNow.tsx`, `src/components/SubmissionGuidelines.tsx` |
-| Page title | `metadata` in `src/app/layout.tsx` (coming-soon title and share tags in `src/app/page.tsx`) |
-| Coming-soon page text and social links | `src/config/site.ts` |
+| Edition name, site title, description, hero copy, kinetic band words | `src/content/site.ts` |
+| Navigation sections | `src/content/navigation.ts` |
+| Social channels (WhatsApp first) | `src/content/socials.ts` |
+| Key dates (drive the live callout, hero chip and countdowns) | `src/content/deadlines.ts` |
+| Colours, type scale, motion tokens | `@theme` blocks in `src/app/globals.css` (check `/design-system` in development) |
+
+Placeholders that still need real 2027 content are marked `TODO(2027)` in the code.
 
 ### Images
 
-Put image files in `public/images/` and reference them by path (for example `/images/robot.png`), usually through an export in `src/assets/index.js`. Components use plain `<img>` tags, except the gallery.
+Put image files in `public/images/` and reference them by path, usually through an export in `src/assets/index.ts`.
 
-### Gallery
+### Gallery (old 2025 site, replaced by Memories in step L)
 
 Gallery photos live in `public/images/gallery/<folder>/` and are numbered `1.jpg`, `2.jpg`, ... with no gaps. To add an event:
 
