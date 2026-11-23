@@ -3,7 +3,7 @@
 import React from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import ContactUs from "../components/ContactUs";
 
 const InnovationTour = () => {

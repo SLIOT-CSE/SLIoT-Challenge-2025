@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { point } from "@/assets";
 import { guidelines } from "@/constants";
 import { BentoGrid, BentoGridItem } from "./ui/BentoGrid";

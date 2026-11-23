@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import HeroFigure from "./HeroFigure";
 import { sltLogo } from "@/assets";
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import { Spotlight } from "./ui/Spotlight";
 import { TextGenerateEffect } from "./ui/TextGenerateEffect";
 

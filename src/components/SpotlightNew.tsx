@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { spotlight } from "@/constants";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { ChevronDown } from "lucide-react";
 
 type SpotlightVideo = { title: string; link: string };

@@ -45,15 +45,16 @@ Defined once in `globals.css` under `@theme` (Tailwind 4), shared by the site, t
 | `abyss` | `#010610` | Page background |
 | `night` | `#011225` | Raised surfaces, app background |
 | `deep` | `#023649` | Panels, table header, input background |
-| `ocean` | `#0B5A6D` | Borders on dark, hover surfaces |
-| `teal` | `#14676F` | Secondary fills |
+| `ocean` | `#0B5A6D` | Decorative borders and dividers, hover surfaces (below 3:1, so never the only edge of a control) |
+| `reef` | `#14676F` | Secondary fills (named reef because Tailwind 4.3 ships a default `teal` scale) |
+| `edge` | `#3A8F97` | Input and control borders: at least 3:1 on every surface (added after the contrast check) |
 | `lagoon` | `#52BAA5` | Secondary text accents, inactive nodes |
 | `mint` | `#73DABE` | Primary accent: CTAs, active states, links |
 | `aqua` | `#85FFF0` | Live signal: countdown, glowing nodes, focus ring |
 | `foam` | `#DDF7EF` | Primary text |
-| `mist` | `#A9C7CC` | Secondary text (checked ≥ 4.5:1 on `abyss` and `night`) |
+| `haze` | `#A9C7CC` | Secondary text (named haze because Tailwind 4.3 ships a default `mist` scale) |
 
-Added semantic tokens: `success` (mint), `warning` (a muted amber used only for form warnings in the app, never as decoration), `danger` (a soft red for errors and destructive buttons). Every text/background pair is measured for WCAG AA before use.
+Added semantic tokens: `success` (`#73DABE`), `warning` (`#F2C46D`, used only for form warnings in the app, never as decoration), `danger` (`#FF9B9B`, errors and destructive buttons). Every text/background pair is measured on the development page `/design-system`, which reads the values straight from the CSS; all 26 pairs pass WCAG 2.2 AA. The coming-soon `cs-*` names now point at these tokens.
 
 ### Type
 
@@ -62,14 +63,14 @@ Added semantic tokens: `success` (mint), `warning` (a muted amber used only for 
 | Display (hero, section titles, big dates, prize amounts) | **Bebas Neue** | Already the 2027 display face. Condensed, so the hero title can go to `clamp(3.5rem, 10vw, 7.5rem)` with the visual weight of a 6rem grotesk. Letter-spacing 0 to 0.01em |
 | Text (body, UI, forms, tables) | **Montserrat** 400 / 500 / 600 / 700 | 700 added for buttons and table headers. Body 16–18px, line-height 1.6 (light-on-dark gets extra room), max 65ch |
 
-Scale: modular, ratio 1.333, fluid `clamp()` for headings. `text-wrap: balance` on headings, `pretty` on paragraphs. Audiowide, Alexandria, Poppins, Roboto Mono and Nico Moji are removed with the old site.
+Scale: modular, ratio 1.333, fluid `clamp()` for headings. `text-wrap: balance` on headings, `pretty` on paragraphs. Utilities: `font-display`, `font-body`, `text-display-xl/lg/md`, `text-title`, `text-body-lg`, `text-body`, `text-small`, `text-caption`. Audiowide, Alexandria, Poppins, Roboto Mono and Nico Moji are removed together with the last old-site component that uses them.
 
 ### Space, radius, depth, motion
 
 - **Section rhythm:** varied on purpose: big scenes get `min-h-[100dvh]` or pinned scroll lengths, calm sections `py-20 md:py-28`.
 - **Radius:** buttons and chips full pill; panels 12–16px; photos 8–12px. No 24px+ cards.
 - **Depth:** either a solid 1px `ocean` border or a tinted shadow of at most 8px blur, never both. Glass (`backdrop-filter`) only on the fixed nav and dialogs.
-- **Z-index scale:** `nav 40 → dropdown 50 → overlay 60 → dialog 70 → toast 80 → tooltip 90`.
+- **Z-index scale:** utilities `z-nav` (40), `z-dropdown` (50), `z-overlay` (60), `z-dialog` (70), `z-toast` (80), `z-tooltip` (90).
 - **Easing:** `--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1)` for entrances, `--ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1)` for UI. No bounce or elastic.
 - **Durations:** UI feedback 150–250ms, reveals 600–900ms, scroll scenes follow the scroll.
 
@@ -322,7 +323,7 @@ Prerequisites from [architecture.md](architecture.md): **step 1, TypeScript migr
 
 | # | Step | Done when |
 |---|---|---|
-| 1 | **Foundations:** tokens in `@theme`, fonts (drop the old five), motion helpers (`useGSAP`, Lenis provider, reduced-motion hook), `Button`/`Field` primitives, rename `framer-motion` → `motion` and `@studio-freight/lenis` → `lenis`, remove three.js packages | Lint, typecheck and build pass; a tokens test page shows every colour pair passing contrast |
+| 1 | **Foundations** (done): tokens in `@theme static`, Montserrat 700, motion helpers in `src/lib/motion/` (`gsap.ts` with `useGSAP`, `smooth-scroll.tsx` Lenis provider synced to ScrollTrigger, `use-reduced-motion.ts`, `ease.ts`), `Button`/`Field`/`Input` primitives in `src/components/ui/`, `framer-motion` → `motion`, `@studio-freight/lenis` → `lenis`, `cn()` taught the custom token names. The old fonts and the three.js packages stay until the old components using them are replaced (steps 4–6), so the old site keeps working meanwhile | Lint, typecheck and build pass; `/design-system` shows every colour pair passing contrast |
 | 2 | **Content and data layer:** `src/content/*.ts`, zod schemas, sample-data generator, data-access functions, demo state switcher | Sample teams cover every stage; schemas have unit tests |
 | 3 | **Nav + Hero + Live callout + Kinetic band** | Load sequence smooth on a throttled phone profile; every callout state previewable |
 | 4 | **About island map + Categories + How to take part** | Map draws and nodes connect on scroll; phone and reduced-motion versions checked |

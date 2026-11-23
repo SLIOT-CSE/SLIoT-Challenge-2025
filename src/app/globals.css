@@ -28,18 +28,18 @@
 
   --color-stroke-1: #26242c;
 
-  /* 2027 aurora palette (coming-soon page and the new site), sampled from the reference image */
-  --color-cs-abyss: #010610;
-  --color-cs-night: #011225;
-  --color-cs-deep: #023649;
-  --color-cs-ocean: #0b5a6d;
-  --color-cs-teal: #14676f;
-  --color-cs-lagoon: #52baa5;
-  --color-cs-mint: #73dabe;
+  /* Coming-soon page names for the 2027 palette (values come from the tokens below) */
+  --color-cs-abyss: var(--color-abyss);
+  --color-cs-night: var(--color-night);
+  --color-cs-deep: var(--color-deep);
+  --color-cs-ocean: var(--color-ocean);
+  --color-cs-teal: var(--color-reef);
+  --color-cs-lagoon: var(--color-lagoon);
+  --color-cs-mint: var(--color-mint);
   /* Primary text colour on the coming-soon card */
-  --color-cs-aqua: #85fff0;
-  --color-cs-foam: #ddf7ef;
-  --color-cs-mist: #a9c7cc;
+  --color-cs-aqua: var(--color-aqua);
+  --color-cs-foam: var(--color-foam);
+  --color-cs-mist: var(--color-haze);
 
   /* Old (2025) site palette */
   --color-n-1: #ffffff;
@@ -151,8 +151,71 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+   2027 design system (docs/frontend-plan.md, section 3). Aurora palette sampled
+   from the coming-soon reference image. "static" keeps every variable on :root,
+   so the tokens page and inline styles can read them even when no class uses them.
+   teal and mist are Tailwind default scales, so those two roles are reef and haze.
+   --------------------------------------------------------------------------- */
+@theme static {
+  /* Surfaces, darkest first */
+  --color-abyss: #010610; /* page background */
+  --color-night: #011225; /* raised surfaces, app background */
+  --color-deep: #023649; /* panels, inputs, table header */
+  --color-ocean: #0b5a6d; /* decorative borders and dividers, hover surfaces */
+  --color-reef: #14676f; /* secondary fills */
+  /* Edges people must see (input and control borders): at least 3:1 on every surface */
+  --color-edge: #3a8f97;
+  /* Accents */
+  --color-lagoon: #52baa5; /* inactive nodes, secondary accents */
+  --color-mint: #73dabe; /* primary accent: CTAs, active states, links */
+  --color-aqua: #85fff0; /* live signal: countdown, glowing nodes, focus ring */
+  /* Text */
+  --color-foam: #ddf7ef; /* primary text */
+  --color-haze: #a9c7cc; /* secondary text */
+  /* Feedback (app screens) */
+  --color-success: #73dabe;
+  --color-warning: #f2c46d;
+  --color-danger: #ff9b9b;
+
+  /* Type scale: ratio about 1.333, fluid display sizes (Bebas Neue is condensed,
+     so 7.5rem reads like a 6rem grotesk) */
+  --text-display-xl: clamp(3.5rem, 10vw, 7.5rem);
+  --text-display-xl--line-height: 0.9;
+  --text-display-lg: clamp(2.75rem, 7vw, 5rem);
+  --text-display-lg--line-height: 0.92;
+  --text-display-md: clamp(2.125rem, 4.6vw, 3.5rem);
+  --text-display-md--line-height: 0.95;
+  --text-title: 1.375rem;
+  --text-title--line-height: 1.3;
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.7;
+  --text-body: 1rem;
+  --text-body--line-height: 1.65;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.55;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.45;
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); /* entrances */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1); /* UI feedback */
+
+  /* Shape and depth: panels 12-16px, photos 8-12px; a border or a small shadow, never both */
+  --radius-panel: 0.875rem;
+  --radius-photo: 0.625rem;
+  --radius-control: 0.625rem; /* inputs, selects */
+  --shadow-lift: 0 6px 8px -2px rgb(1 6 16 / 0.6);
+  /* Glow reserved for live things (countdown, "you are here", active step) */
+  --shadow-signal: 0 0 0 1px rgb(133 255 240 / 0.35), 0 0 22px rgb(133 255 240 / 0.28);
+}
+
 /* Font tokens point at the next/font variables, so they are inlined into the utilities */
 @theme inline {
+  /* 2027 site: Bebas Neue display, Montserrat text */
+  --font-display: var(--nf-bebas-neue), Impact, "Arial Narrow", sans-serif;
+  --font-body: var(--nf-montserrat), system-ui, sans-serif;
+
   --font-poppins: var(--nf-poppins), sans-serif;
   --font-robotoMono: var(--nf-roboto-mono), monospace;
   --font-nicoMoji: var(--nf-nicomoji), sans-serif;
@@ -192,6 +255,26 @@
   --radius-sm: calc(var(--radius) - 4px);
 }
 
+/* Layer order for the 2027 site (no arbitrary z-index values) */
+@utility z-nav {
+  z-index: 40;
+}
+@utility z-dropdown {
+  z-index: 50;
+}
+@utility z-overlay {
+  z-index: 60;
+}
+@utility z-dialog {
+  z-index: 70;
+}
+@utility z-toast {
+  z-index: 80;
+}
+@utility z-tooltip {
+  z-index: 90;
+}
+
 /* The old site's container (was a plugin in tailwind.config.js): centred, capped at
    77.5rem (87.5rem from xl), with growing side padding */
 @utility container {
@@ -223,6 +306,12 @@
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+  }
+
+  /* Visible keyboard focus everywhere: a 2px aqua ring */
+  :focus-visible {
+    outline: 2px solid var(--color-aqua);
+    outline-offset: 2px;
   }
 
   body {

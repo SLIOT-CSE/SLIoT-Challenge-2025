@@ -3,7 +3,7 @@
 import React from "react";
 import { BentoGrid, BentoGridItem } from "./ui/BentoGrid";
 import { aboutGridItems } from "../constants";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 const About = () => {
   return (

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { chairman, uom, viceChairman1, viceChairman2 } from "@/assets";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 const ContactUs = () => {
   return (

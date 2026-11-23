@@ -5,7 +5,7 @@ import "./prizes.css";
 import { first, second, third } from "../../assets";
 import { categories, type CategoryId } from "@/constants";
 import { Button } from "../ui/MovingBorders";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 const Prizes = () => {
   const [category, setCategory] = React.useState<CategoryId>("university");

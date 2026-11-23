@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { BentoGrid, BentoGridItem } from "./ui/BentoGrid";
 import { currentSLIoTShowcases, previousSLIoTShowcases } from "@/constants";
 import MagicButton from "./ui/MagicButton";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 const Gallery = () => {
   const [showAll, setShowAll] = useState(false);

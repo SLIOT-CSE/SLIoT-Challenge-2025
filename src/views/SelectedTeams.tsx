@@ -2,7 +2,7 @@
 
 import GuilineHeader from '@/components/GuideLineHeader';
 import { useState } from 'react';
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 const SelectedTeams = () => {
   const [activeTab, setActiveTab] = useState<'school' | 'university' | 'open'>('school');

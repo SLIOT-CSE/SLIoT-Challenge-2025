@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react'
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { FaCalendarAlt, FaCheckCircle } from "react-icons/fa";
 export default function TimeLineCard({ event, index }: { event: { date: string; title: string; isDone?: boolean }; index: number }) {
   return (

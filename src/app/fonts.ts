@@ -32,7 +32,7 @@ export const robotoMono = Roboto_Mono({
   variable: "--nf-roboto-mono",
 });
 
-// Coming-soon page only: Bebas Neue for display, Montserrat for text
+// 2027 site and coming-soon page: Bebas Neue for display, Montserrat for text
 export const bebasNeue = Bebas_Neue({
   subsets: ["latin"],
   weight: "400",
@@ -42,7 +42,7 @@ export const bebasNeue = Bebas_Neue({
 
 export const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--nf-montserrat",
 });
