@@ -14,6 +14,10 @@
 /* Phones held sideways */
 @custom-variant land (@media (orientation: landscape) and (max-height: 500px));
 
+/* Desktop scroll scenes (from lg, full motion): layouts that only make sense while a scene
+   drives them, e.g. the sideways timeline. Everyone else gets the plain layout. */
+@custom-variant scene (@media (min-width: 64rem) and (prefers-reduced-motion: no-preference));
+
 @theme {
   /* Extra small breakpoints below sm (640px) */
   --breakpoint-xxs: 25rem;

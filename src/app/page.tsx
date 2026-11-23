@@ -5,6 +5,8 @@ import { KineticBand } from "@/components/site/kinetic-band";
 import { About } from "@/components/site/about";
 import { Categories } from "@/components/site/categories";
 import { HowItWorks } from "@/components/site/how-it-works";
+import { Timeline } from "@/components/site/timeline";
+import { Prizes } from "@/components/site/prizes";
 import { deadlines } from "@/content/deadlines";
 import { stageAt } from "@/lib/competition";
 
@@ -32,6 +34,8 @@ export default function HomePage() {
         <About />
         <Categories />
         <HowItWorks />
+        <Timeline now={now} />
+        <Prizes />
       </main>
     </>
   );

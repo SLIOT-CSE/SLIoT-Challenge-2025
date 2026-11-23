@@ -19,8 +19,8 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | G | Design foundations | Done |
 | H | Remove coming-soon mode | Done |
 | I | Sections 1: nav, hero, live callout, kinetic band | Done |
-| J | Sections 2: about map, categories, how to take part | **Built, waiting for your review** |
-| K | Sections 3: timeline, prizes | To do |
+| J | Sections 2: about map, categories, how to take part | Done |
+| K | Sections 3: timeline, prizes | **Built, waiting for your review** |
 | L | Sections 4: memories, sponsors, FAQ, contact, footer | To do |
 | M | Sample-data layer for the app screens | To do |
 | N | Registration screen (`/register`) | To do |
@@ -111,7 +111,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 - [x] I5. Kinetic band (single marquee reacting to scroll velocity)
 - [x] I6. Phone layouts (title and Register button on the first screen down to 320px), reduced-motion versions, screenshots for review
 
-## J. Sections 2: about map, categories, how to take part (waiting for review)
+## J. Sections 2: about map, categories, how to take part
 
 - [x] J1. SVG outline of Sri Lanka (Natural Earth 1:10m, generated into `island-map/geometry.ts`) with 25 district nodes and signal lines to the University of Moratuwa
 - [x] J2. About: pinned three-beat story on desktop; coastline draws, nodes light up, editions count up; phone version plays once
@@ -120,12 +120,12 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 - [x] J5. Remove the three.js globe and its packages (`three`, `@react-three/fiber`, `drei`, `three-globe`)
 - [x] J6. Phone layouts, reduced-motion versions, screenshots for review
 
-## K. Sections 3: timeline, prizes
+## K. Sections 3: timeline, prizes (waiting for review)
 
-- [ ] K1. Timeline: pinned sideways scroll on desktop with huge dates, progress rail and "You are here"; vertical on phones; skip link
-- [ ] K2. Timeline dates for registration, proposal and prototype read from the deadline settings
-- [ ] K3. Prizes: podium (2nd, 1st raised, 3rd), counting-up amounts, other awards row
-- [ ] K4. Phone layouts, reduced-motion versions, screenshots for review
+- [x] K1. Timeline: pinned sideways scroll on desktop with huge dates, rail, scroll progress bar and "You are here"; vertical on phones and with reduced motion; skip link
+- [x] K2. Timeline key dates read from `src/content/deadlines.ts` (sessions and workshops are sample dates, `TODO(2027)`)
+- [x] K3. Prizes: category tabs, podium (2nd, 1st raised, 3rd) rising in, counting-up amounts ("TBA" until set; preview with sample figures at `/design-system/prizes`), special awards row (hidden while empty)
+- [x] K4. Phone layouts, reduced-motion versions, screenshots for review
 
 ## L. Sections 4: memories, sponsors, FAQ, contact, footer
 
