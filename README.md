@@ -2,7 +2,7 @@
 
 The official website of the SLIoT Challenge, the annual IoT competition organized by the Department of Computer Science & Engineering, University of Moratuwa, with SLT-MOBITEL and IESL.
 
-Built with Next.js (App Router), React 19, Tailwind CSS 3 and Framer Motion. JavaScript only.
+Built with Next.js (App Router), React 19, Tailwind CSS 3 and Framer Motion, written in TypeScript (strict).
 
 ## Requirements
 
@@ -24,23 +24,24 @@ Other scripts:
 |---|---|
 | `pnpm build` | Production build into `.next/` |
 | `pnpm start` | Serve the production build (port 3000, or `PORT`) |
-| `pnpm lint` | ESLint (Next.js rules) |
+| `pnpm lint` | ESLint (Next.js + TypeScript rules) |
+| `pnpm typecheck` | TypeScript check without building (`tsc --noEmit`) |
 
 ## Project layout
 
 ```
 src/
-  app/              Routes (App Router). Each page.jsx renders a view.
-    layout.jsx      Root layout: fonts, metadata, smooth scroll, footer
-    fonts.js        next/font setup (Alexandria, Audiowide, Poppins, Roboto Mono, NicoMoji)
+  app/              Routes (App Router). Each page.tsx renders a view.
+    layout.tsx      Root layout: fonts, metadata, smooth scroll, footer
+    fonts.ts        next/font setup (Alexandria, Audiowide, Poppins, Roboto Mono, NicoMoji)
     icon.png        Favicon
   views/            Full-page views used by routes (Home, InnovationTour, ...)
   components/       Page sections and UI components
     ui/             Reusable UI pieces (BentoGrid, MovingBorders, Globe, ...)
-  config/site.mjs   Coming-soon switch, edition name/year, teaser copy and social links
+  config/site.ts    Coming-soon switch, edition name/year, teaser copy and social links
   constants/        Site content: navigation, socials, about, gallery, spotlight videos, partners
-  assets/index.js   Image paths (files live in public/images)
-  lib/utils.js      cn() class-name helper
+  assets/index.ts   Image paths (files live in public/images)
+  lib/utils.ts      cn() class-name helper
 public/
   images/           All site images, served as-is
   *.pdf, *.docx     Downloadable documents
@@ -54,9 +55,9 @@ Routes: `/`, `/guidelines`, `/faqs`, `/finalists`, `/innovation-tour`, `/session
 
 Between editions the site can show a single teaser page instead of the full site.
 
-It is controlled by `COMING_SOON` in `src/config/site.mjs`:
+It is controlled by `COMING_SOON` in `src/config/site.ts`:
 
-- `true`: `/` shows the coming-soon page (`src/views/ComingSoon.jsx`, always exactly one screen tall with no scrolling: the robot scales to the space left, and very short screens drop the copyright line and the first sentence), every other page redirects to `/` with a temporary (307) redirect, unknown URLs show the teaser with a 404 status, and the full site's header and footer are hidden.
+- `true`: `/` shows the coming-soon page (`src/views/ComingSoon.tsx`, always exactly one screen tall with no scrolling: the robot scales to the space left, and very short screens drop the copyright line and the first sentence), every other page redirects to `/` with a temporary (307) redirect, unknown URLs show the teaser with a 404 status, and the full site's header and footer are hidden.
 - `false`: the full site is back exactly as before.
 
 Change the flag, commit and push; the deploy picks it up. The same file holds the edition name and year, the status text, the tagline and the social links shown on the teaser.
@@ -69,20 +70,20 @@ Most yearly updates are data edits; no component changes are needed.
 
 | What | Where |
 |---|---|
-| Navigation items | `navigation` in `src/constants/index.js` |
-| Social links (footer) | `socials` in `src/constants/index.js` |
-| About text | `aboutGridItems` in `src/constants/index.js` |
-| Proposal guideline cards | `guidelines` in `src/constants/index.js` |
-| Spotlight videos | `spotlight` in `src/constants/index.js` (YouTube embed links) |
-| Partner logos | `organizers` in `src/constants/index.js` + `src/assets/index.js` |
-| Timeline | `events` in `src/components/design/TimeLine.jsx` |
-| Prizes | `prizes` in `src/components/section/Prizes.jsx` |
-| FAQs | `faqData` in `src/components/Rules.jsx` |
-| Contact people | `src/components/ContactUs.jsx`, photos in `public/images/people` |
-| Finalists | `teams` in `src/views/SelectedTeams.jsx` |
-| Registration / proposal links | `src/components/JoinNow.jsx`, `src/components/SubmissionGuidelines.jsx` |
-| Page title | `metadata` in `src/app/layout.jsx` (coming-soon title and share tags in `src/app/page.jsx`) |
-| Coming-soon page text and social links | `src/config/site.mjs` |
+| Navigation items | `navigation` in `src/constants/index.ts` |
+| Social links (footer) | `socials` in `src/constants/index.ts` |
+| About text | `aboutGridItems` in `src/constants/index.ts` |
+| Proposal guideline cards | `guidelines` in `src/constants/index.ts` |
+| Spotlight videos | `spotlight` in `src/constants/index.ts` (YouTube embed links) |
+| Partner logos | `organizers` in `src/constants/index.ts` + `src/assets/index.js` |
+| Timeline | `events` in `src/components/design/TimeLine.tsx` |
+| Prizes | `prizes` in `src/components/section/Prizes.tsx` |
+| FAQs | `faqData` in `src/components/Rules.tsx` |
+| Contact people | `src/components/ContactUs.tsx`, photos in `public/images/people` |
+| Finalists | `teams` in `src/views/SelectedTeams.tsx` |
+| Registration / proposal links | `src/components/JoinNow.tsx`, `src/components/SubmissionGuidelines.tsx` |
+| Page title | `metadata` in `src/app/layout.tsx` (coming-soon title and share tags in `src/app/page.tsx`) |
+| Coming-soon page text and social links | `src/config/site.ts` |
 
 ### Images
 
@@ -93,7 +94,7 @@ Put image files in `public/images/` and reference them by path (for example `/im
 Gallery photos live in `public/images/gallery/<folder>/` and are numbered `1.jpg`, `2.jpg`, ... with no gaps. To add an event:
 
 1. Copy the photos into a new folder, numbered from 1.
-2. In `src/constants/index.js`, build the list with `galleryImages("<folder>", <count>)` (pass `"jpeg"` as a third argument if the files are `.jpeg`).
+2. In `src/constants/index.ts`, build the list with `galleryImages("<folder>", <count>)` (pass `"jpeg"` as a third argument if the files are `.jpeg`).
 3. Add an entry to `currentSLIoTShowcases` or `previousSLIoTShowcases` with `img`, `imageArray` and a `sizes` hint matching the tile's grid span (see the existing entries).
 
 Gallery tiles and the lightbox use `next/image`, so visitors get resized AVIF/WebP versions automatically. Large originals are fine.

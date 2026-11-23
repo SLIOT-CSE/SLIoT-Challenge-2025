@@ -67,8 +67,8 @@ Tailwind 4 trade-off: it needs Safari 16.4+ (iPhones updated since 2023), Chrome
 | Next.js 16 (App Router, Turbopack) | Pages, server rendering, route handlers, server actions |
 | React 19 | UI |
 | Tailwind CSS (upgraded to 4) + `tw-animate-css` | Styling |
-| framer-motion, GSAP, Lenis | Section animation and smooth scrolling |
-| three.js, `@react-three/fiber`, `drei`, `three-globe` | The globe in the About section |
+| GSAP + ScrollTrigger (`@gsap/react`), Lenis (renamed from `@studio-freight/lenis` to `lenis`), Motion (renamed from `framer-motion` to `motion`) | Scroll scenes, smooth scrolling, component animation. See [frontend-plan.md](frontend-plan.md) section 4 |
+| ~~three.js, `@react-three/fiber`, `drei`, `three-globe`~~ | Removed: the About globe is replaced by an animated SVG map of Sri Lanka (lighter on phones) |
 | lucide-react, react-icons | Icons |
 | pnpm 11 | Package manager (only one) |
 | PM2 + nginx on the department VPS | Process manager and reverse proxy with HTTPS |
@@ -580,7 +580,7 @@ The existing pipeline (push to `main` → self-hosted runner → install → bui
    - Run `npx @tailwindcss/upgrade`, then move the theme into `@theme` in `globals.css`, the height breakpoints into `@custom-variant`, and swap `tailwindcss-animate` for `tw-animate-css`.
    - Update shadcn/ui for Tailwind 4, convert `prizes.scss` to CSS and remove `sass`.
    - Done when the coming-soon page and the current full site match their before screenshots at all 11 viewports.
-3. **One-page site:** restructure `/` into the sections above with anchor navigation, move content into `src/content/`, remove the old pages and their routes from `site.ts`.
+3. **Frontend (all screens on sample data):** the one-page site, `/register`, `/team` and `/admin`, built against a typed sample-data layer, as detailed in [frontend-plan.md](frontend-plan.md). Old pages and their routes are removed from `site.ts`. Steps 4–9 then replace the sample-data layer with the real backend.
 4. **Data layer:** add Drizzle + better-sqlite3, write the schema and first migration, the database client (WAL mode, foreign keys on), the settings helpers and `pnpm admin:create`.
 5. **Email:** outbox table, worker in `instrumentation.ts`, React Email templates and preview server, nodemailer transport (console transport in development).
 6. **Registration:** `/register` form, Turnstile, team code generator, confirmation email and screen.
