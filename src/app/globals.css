@@ -4,16 +4,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* Dark styles only apply under a .dark class (as in Tailwind 3 darkMode: "class"),
-   not from the visitor's system setting */
-@custom-variant dark (&:where(.dark, .dark *));
-
-/* Height-based variants. Defined after the width breakpoints, so they override them. */
-@custom-variant short (@media (max-height: 700px));
-@custom-variant shorter (@media (max-height: 600px));
-/* Phones held sideways */
-@custom-variant land (@media (orientation: landscape) and (max-height: 500px));
-
 /* Desktop scroll scenes (from lg, full motion): layouts that only make sense while a scene
    drives them, e.g. the sideways timeline. Everyone else gets the plain layout. */
 @custom-variant scene (@media (min-width: 64rem) and (prefers-reduced-motion: no-preference));
@@ -23,123 +13,9 @@
   --breakpoint-xxs: 25rem;
   --breakpoint-xs: 31.25rem;
 
-  --color-color-1: #46bc41;
-  --color-color-2: #ffc876;
-  --color-color-3: #ff776f;
-  --color-color-4: #7adb78;
-  --color-color-5: #77ff00;
-  --color-color-6: #70ff50;
-
-  --color-stroke-1: #26242c;
-
-  /* Old (2025) site palette */
-  --color-n-1: #ffffff;
-  --color-n-2: #cac6dd;
-  --color-n-3: #0a4d20;
-  --color-n-4: #77ff00;
-  --color-n-5: #3f3a52;
-  --color-n-6: #252134;
-  --color-n-7: #15131d;
-  --color-n-8: #0e0c15;
-  --color-n-9: #474060;
-  --color-n-10: #43435c;
-  --color-n-11: #1b1b2e;
-  --color-n-12: #2e2a41;
-  --color-n-13: #6c7275;
-  --color-n-14: #f39314;
-  --color-n-15: #393185;
-  --color-n-16: #e7f6ec;
-  --color-n-17: #f3fbf5;
-  --color-n-18: #f0d600;
-  --color-n-19: #e7f6ec;
-  --color-n-20: #32b57a;
-  --color-n-21: #f5f5f5;
-  --color-n-22: #e8e8e8;
-  --color-n-23: rgba(10, 40, 20, 1);
-
-  --font-sans: "Quattrocento Sans", sans-serif;
-
-  --tracking-tagline: 0.15em;
-
+  /* transition-* utilities without an explicit duration or easing */
   --default-transition-duration: 200ms;
-  --default-transition-timing-function: linear;
-
-  --animate-pulse: pulse 2s infinite;
-  --animate-movedown: movedown 1s linear forwards;
-  --animate-bounce: bounce 1s infinite;
-  --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up 0.2s ease-out;
-  --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
-  --animate-shimmer: shimmer 2s linear infinite;
-  --animate-first: moveVertical 30s ease infinite;
-  --animate-second: moveInCircle 20s reverse infinite;
-  --animate-third: moveInCircle 40s linear infinite;
-  --animate-fourth: moveHorizontal 40s ease infinite;
-  --animate-fifth: moveInCircle 20s ease infinite;
-  --animate-scroll: scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite;
-  --animate-blur1: blur 1.5s 0s infinite linear alternate;
-  --animate-blur2: blur 1.5s 0.2s infinite linear alternate;
-  --animate-blur3: blur 1.5s 0.4s infinite linear alternate;
-  --animate-blur4: blur 1.5s 0.6s infinite linear alternate;
-  --animate-blur5: blur 1.5s 0.8s infinite linear alternate;
-  --animate-blur6: blur 1.5s 1s infinite linear alternate;
-  --animate-blur7: blur 1.5s 1.2s infinite linear alternate;
-  --animate-fade-up: fadeUp 0.895s linear;
-
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-  }
-  @keyframes movedown {
-    0% { opacity: 1; transform: translateY(-30px); }
-    100% { opacity: 1; transform: translateY(0px); }
-  }
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-  }
-  @keyframes accordion-down {
-    from { height: 0; }
-    to { height: var(--radix-accordion-content-height); }
-  }
-  @keyframes accordion-up {
-    from { height: var(--radix-accordion-content-height); }
-    to { height: 0; }
-  }
-  @keyframes spotlight {
-    0% { opacity: 0; transform: translate(-72%, -62%) scale(0.5); }
-    100% { opacity: 1; transform: translate(-50%, -40%) scale(1); }
-  }
-  @keyframes shimmer {
-    from { background-position: 0 0; }
-    to { background-position: -200% 0; }
-  }
-  @keyframes moveHorizontal {
-    0% { transform: translateX(-50%) translateY(-10%); }
-    50% { transform: translateX(50%) translateY(10%); }
-    100% { transform: translateX(-50%) translateY(-10%); }
-  }
-  @keyframes moveInCircle {
-    0% { transform: rotate(0deg); }
-    50% { transform: rotate(180deg); }
-    100% { transform: rotate(360deg); }
-  }
-  @keyframes moveVertical {
-    0% { transform: translateY(-50%); }
-    50% { transform: translateY(50%); }
-    100% { transform: translateY(-50%); }
-  }
-  @keyframes scroll {
-    to { transform: translate(calc(-50% - 0.5rem)); }
-  }
-  @keyframes blur {
-    0% { filter: blur(0px); }
-    100% { filter: blur(4px); }
-  }
-  @keyframes fadeUp {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
+  --default-transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* ---------------------------------------------------------------------------
@@ -203,47 +79,9 @@
 
 /* Font tokens point at the next/font variables, so they are inlined into the utilities */
 @theme inline {
-  /* 2027 site: Bebas Neue display, Montserrat text */
+  /* Bebas Neue display, Montserrat text */
   --font-display: var(--nf-bebas-neue), Impact, "Arial Narrow", sans-serif;
   --font-body: var(--nf-montserrat), system-ui, sans-serif;
-
-  --font-poppins: var(--nf-poppins), sans-serif;
-  --font-robotoMono: var(--nf-roboto-mono), monospace;
-  --font-nicoMoji: var(--nf-nicomoji), sans-serif;
-  --font-audiowide: var(--nf-audiowide), sans-serif;
-  --font-alexandria: var(--nf-alexandria), sans-serif;
-  --font-bebas: var(--nf-bebas-neue), Impact, sans-serif;
-  --font-montserrat: var(--nf-montserrat), sans-serif;
-
-  /* shadcn/ui colours (HSL channels set in :root below) */
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-  --color-chart-1: hsl(var(--chart-1));
-  --color-chart-2: hsl(var(--chart-2));
-  --color-chart-3: hsl(var(--chart-3));
-  --color-chart-4: hsl(var(--chart-4));
-  --color-chart-5: hsl(var(--chart-5));
-
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
 }
 
 /* Layer order for the 2027 site (no arbitrary z-index values) */
@@ -264,24 +102,6 @@
 }
 @utility z-tooltip {
   z-index: 90;
-}
-
-/* The old site's container (was a plugin in tailwind.config.js): centred, capped at
-   77.5rem (87.5rem from xl), with growing side padding */
-@utility container {
-  width: 100%;
-  max-width: 77.5rem;
-  margin-inline: auto;
-  padding-inline: 1.25rem;
-  @variant md {
-    padding-inline: 2.5rem;
-  }
-  @variant lg {
-    padding-inline: 3.75rem;
-  }
-  @variant xl {
-    max-width: 87.5rem;
-  }
 }
 
 :root {
@@ -306,8 +126,10 @@
     background: var(--color-abyss);
   }
 
+  /* clip (not hidden) so sticky elements keep working; stops sub-pixel sideways scroll on phones */
   body {
     @apply bg-abyss font-body text-body text-foam antialiased;
+    overflow-x: clip;
   }
 
   /* Anchored sections clear the floating nav */
@@ -320,74 +142,19 @@
     color: var(--color-foam);
   }
 
-  :root {
-    /* --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%; */
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    /* --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%; */
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
-
   /* Default border colour: decorative ocean (controls use the stronger edge token) */
   * {
     border-color: var(--color-ocean);
   }
 }
 
-/* WebKit Browsers (Chrome, Edge, Safari) */
+/* Scrollbars in the aurora palette (WebKit/Blink) */
 ::-webkit-scrollbar {
-  width: 12px; /* Width of the scrollbar */
+  width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent; /* Fully transparent track */
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -400,20 +167,14 @@
   background: var(--color-lagoon);
 }
 
-/* For Firefox */
+/* Firefox */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--color-reef) var(--color-abyss);
 }
 
 
-.alexandria{
-  font-family: var(--nf-alexandria);
-}
 
-.audiowide{
-  font-family: var(--nf-audiowide);
-}
 /* ---------------------------------------------------------------------------
    Hero figure helpers (components/HeroFigure.tsx; the image is cut off on its
    right and bottom edges, so those edges must sit on a screen edge or fade out)
@@ -568,6 +329,27 @@
 .fig-fade-bottom {
   -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 96%);
   mask-image: linear-gradient(to bottom, #000 62%, transparent 96%);
+}
+
+/* FAQ answers open and close smoothly where the browser supports animating details */
+.faq-item {
+  interpolate-size: allow-keywords;
+}
+
+.faq-item::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition: block-size 0.35s var(--ease-out-quart), content-visibility 0.35s allow-discrete;
+}
+
+.faq-item[open]::details-content {
+  block-size: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-item::details-content {
+    transition: none;
+  }
 }
 
 /* Outlined display text (kinetic band) */

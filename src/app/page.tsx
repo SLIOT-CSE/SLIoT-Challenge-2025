@@ -7,6 +7,11 @@ import { Categories } from "@/components/site/categories";
 import { HowItWorks } from "@/components/site/how-it-works";
 import { Timeline } from "@/components/site/timeline";
 import { Prizes } from "@/components/site/prizes";
+import { Memories } from "@/components/site/memories";
+import { Sponsors } from "@/components/site/sponsors";
+import { Faq } from "@/components/site/faq";
+import { Contact } from "@/components/site/contact";
+import { SiteFooter } from "@/components/site/site-footer";
 import { deadlines } from "@/content/deadlines";
 import { stageAt } from "@/lib/competition";
 
@@ -27,7 +32,7 @@ export default function HomePage() {
         Skip to content
       </a>
       <SiteNav />
-      <main id="main">
+      <main id="main" tabIndex={-1} className="outline-hidden">
         <Hero stage={stage} now={now} />
         <LiveCallout stage={stage} now={now} />
         <KineticBand />
@@ -36,7 +41,12 @@ export default function HomePage() {
         <HowItWorks />
         <Timeline now={now} />
         <Prizes />
+        <Memories />
+        <Sponsors />
+        <Faq />
+        <Contact />
       </main>
+      <SiteFooter />
     </>
   );
 }

@@ -20,8 +20,8 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | H | Remove coming-soon mode | Done |
 | I | Sections 1: nav, hero, live callout, kinetic band | Done |
 | J | Sections 2: about map, categories, how to take part | Done |
-| K | Sections 3: timeline, prizes | **Built, waiting for your review** |
-| L | Sections 4: memories, sponsors, FAQ, contact, footer | To do |
+| K | Sections 3: timeline, prizes | Done |
+| L | Sections 4: memories, sponsors, FAQ, contact, footer | **Built, waiting for your review** |
 | M | Sample-data layer for the app screens | To do |
 | N | Registration screen (`/register`) | To do |
 | O | Team portal screens (`/team`) | To do |
@@ -120,22 +120,22 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 - [x] J5. Remove the three.js globe and its packages (`three`, `@react-three/fiber`, `drei`, `three-globe`)
 - [x] J6. Phone layouts, reduced-motion versions, screenshots for review
 
-## K. Sections 3: timeline, prizes (waiting for review)
+## K. Sections 3: timeline, prizes
 
 - [x] K1. Timeline: pinned sideways scroll on desktop with huge dates, rail, scroll progress bar and "You are here"; vertical on phones and with reduced motion; skip link
 - [x] K2. Timeline key dates read from `src/content/deadlines.ts` (sessions and workshops are sample dates, `TODO(2027)`)
 - [x] K3. Prizes: category tabs, podium (2nd, 1st raised, 3rd) rising in, counting-up amounts ("TBA" until set; preview with sample figures at `/design-system/prizes`), special awards row (hidden while empty)
 - [x] K4. Phone layouts, reduced-motion versions, screenshots for review
 
-## L. Sections 4: memories, sponsors, FAQ, contact, footer
+## L. Sections 4: memories, sponsors, FAQ, contact, footer (waiting for review)
 
-- [ ] L1. Memories: tilted photo wall that straightens on scroll, edition tabs, full-screen photo viewer (keyboard and swipe); phone strips
-- [ ] L2. Sponsors: organizers then partner tiers, logos in their own colours
-- [ ] L3. FAQ: grouped accordion with the figure; answers searchable with Ctrl+F
-- [ ] L4. Contact: organizer cards (photo or initials), email, WhatsApp, address, socials
-- [ ] L5. Footer: description, credit, socials, privacy link, back to top with progress ring
-- [ ] L6. Delete the old pages (`/guidelines`, `/faqs`, `/finalists`, `/innovation-tour`, `/session_1`), the old components, `robot.png`, `ui/3d-card` leftovers and the five old fonts
-- [ ] L7. Full-page screenshots at all sizes for review
+- [x] L1. Memories: tilted photo wall that straightens on scroll, edition tabs, full-screen photo viewer (keyboard and swipe); phone strips
+- [x] L2. Sponsors: organizers then partner tiers, logos in their own colours
+- [x] L3. FAQ: grouped accordion with the figure; answers searchable with Ctrl+F
+- [x] L4. Contact: organizer cards (photo or initials), email, WhatsApp, address, socials
+- [x] L5. Footer: description, credit, socials, section links, back to top with progress ring (privacy link added with the privacy notice in Y4)
+- [x] L6. Deleted the old pages (`/guidelines`, `/faqs`, `/finalists`, `/innovation-tour`, `/session_1`), old components, views and constants, `robot.png`, the old theme colours and the five old fonts; removed `scroll-lock`
+- [x] L7. Full-page screenshots at all sizes for review
 
 ## M. Sample-data layer for the app screens
 

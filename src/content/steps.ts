@@ -1,4 +1,4 @@
-import type { Deadlines } from "@/content/deadlines";
+import { proposalTemplateUrl, type Deadlines } from "@/content/deadlines";
 
 // "How to take part": the five stages of the competition, in order.
 
@@ -21,7 +21,7 @@ export const steps: Step[] = [
     title: "Submit your proposal",
     body: "Describe the problem and your IoT solution in the proposal template, then upload it as a PDF from the team portal.",
     date: { key: "proposalDue", label: "Due" },
-    link: { label: "Proposal template", href: "/downloads/sliot-2027-proposal-template.docx", download: true },
+    link: { label: "Proposal template", href: proposalTemplateUrl, download: true },
   },
   {
     title: "Get shortlisted",

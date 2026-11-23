@@ -29,7 +29,7 @@ Other scripts:
 
 ## Project layout
 
-The 2027 site is being rebuilt as a single page (see `docs/workload.md` for progress). The old 2025 components are still in the repository until their replacements land; they are no longer rendered on `/`.
+The 2027 site is a single scrolling page (see `docs/workload.md` for progress). Registration, the team portal and the admin dashboard come next.
 
 ```
 src/
@@ -37,17 +37,17 @@ src/
     layout.tsx        Root layout: fonts, metadata, smooth scroll
     page.tsx          The one-page site (new 2027 sections)
     globals.css       Tailwind 4 theme (2027 tokens in @theme) and site-wide CSS
-    fonts.ts          next/font setup (Bebas Neue + Montserrat for 2027; old fonts until step L)
-    design-system/    Dev-only reference pages (tokens, contrast, callout states); 404 in production
+    fonts.ts          next/font setup (Bebas Neue + Montserrat)
+    design-system/    Dev-only reference pages (tokens, contrast, callout states, prizes preview); 404 in production
   components/
-    site/             2027 sections (nav, hero, live callout, kinetic band, ...)
-    ui/               Primitives (button, field, input) and old 2025 UI pieces
-  content/            2027 copy and data: site, navigation, socials, deadlines
+    site/             The page's sections (nav, hero, callout, about, categories, timeline, prizes, memories, partners, FAQ, contact, footer)
+    ui/               Primitives (button, field, input)
+    HeroFigure.tsx    The SLIoT figure (cut edges must sit on an edge or fade out)
+  content/            All copy and data for the page (see the table below)
   lib/
     competition.ts    Competition stage and countdowns from the key dates
     motion/           GSAP + ScrollTrigger, Lenis provider, reduced-motion hook, eases
     utils.ts          cn() class-name helper (knows the custom token names)
-  views/, constants/  Old 2025 site (removed in step L)
 public/images/        All site images, served as-is
 docs/                 architecture.md, frontend-plan.md, workload.md
 deploy/               Server configuration examples
@@ -65,7 +65,15 @@ Every push to `main` deploys to sliot.cse.mrt.ac.lk. The rebuild happens on the 
 | Edition name, site title, description, hero copy, kinetic band words | `src/content/site.ts` |
 | Navigation sections | `src/content/navigation.ts` |
 | Social channels (WhatsApp first) | `src/content/socials.ts` |
-| Key dates (drive the live callout, hero chip and countdowns) | `src/content/deadlines.ts` |
+| Key dates (live callout, hero chip, timeline, FAQ) and the proposal template link | `src/content/deadlines.ts` |
+| Timeline events (sessions, workshops) | `src/content/timeline.ts` |
+| About beats | `src/content/about.ts` |
+| Categories and team rules | `src/content/categories.ts`, `src/lib/team-rules.ts` |
+| "How to take part" steps | `src/content/steps.ts` |
+| Prize amounts (null shows "TBA") and special awards | `src/content/prizes.ts` |
+| Photo albums for Memories | `src/content/memories.ts` (files in `public/images/gallery/<folder>/`, numbered 1..n) |
+| FAQ | `src/content/faq.ts` |
+| Contact people, address, partners and tiers | `src/content/people.ts` |
 | Colours, type scale, motion tokens | `@theme` blocks in `src/app/globals.css` (check `/design-system` in development) |
 
 Placeholders that still need real 2027 content are marked `TODO(2027)` in the code.
@@ -74,15 +82,9 @@ Placeholders that still need real 2027 content are marked `TODO(2027)` in the co
 
 Put image files in `public/images/` and reference them by path, usually through an export in `src/assets/index.ts`.
 
-### Gallery (old 2025 site, replaced by Memories in step L)
+### Memories photos
 
-Gallery photos live in `public/images/gallery/<folder>/` and are numbered `1.jpg`, `2.jpg`, ... with no gaps. To add an event:
-
-1. Copy the photos into a new folder, numbered from 1.
-2. In `src/constants/index.ts`, build the list with `galleryImages("<folder>", <count>)` (pass `"jpeg"` as a third argument if the files are `.jpeg`).
-3. Add an entry to `currentSLIoTShowcases` or `previousSLIoTShowcases` with `img`, `imageArray` and a `sizes` hint matching the tile's grid span (see the existing entries).
-
-Gallery tiles and the lightbox use `next/image`, so visitors get resized AVIF/WebP versions automatically. Large originals are fine.
+Copy an event's photos into `public/images/gallery/<folder>/`, numbered `1.jpg`, `2.jpg`, ... with no gaps, then add an album (event name, folder, count, extension) to the right edition in `src/content/memories.ts`.
 
 ## Deployment
 

@@ -14,5 +14,6 @@ export const deadlines = {
 
 export type Deadlines = { [K in keyof typeof deadlines]: string };
 
-/** The proposal template offered from the callout and "How to take part". TODO(2027): real file */
-export const proposalTemplateUrl = "/downloads/sliot-2027-proposal-template.docx";
+/** The proposal template offered from the callout, "How to take part" and the FAQ.
+ *  TODO(2027): points at the 2025 template until the 2027 one is ready. */
+export const proposalTemplateUrl = "/SLIoT%20Challenge%20-%202025%20Project%20Proposal%20Template.docx";
