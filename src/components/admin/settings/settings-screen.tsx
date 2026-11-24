@@ -7,7 +7,7 @@ import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/toast";
-import { getSettings, store, updateSettings, type DeadlineSettings } from "@/lib/data";
+import { getSettings, dataVersion, updateSettings, type DeadlineSettings } from "@/lib/data";
 import { useAdminSession } from "../admin-session";
 import { errorText } from "../errors";
 import { PageHeader } from "../super-only";
@@ -37,9 +37,11 @@ const toValues = (d: DeadlineSettings): Values => ({
 export function SettingsScreen() {
   const { actor } = useAdminSession();
   const toast = useToast();
-  const storeVersion = useSyncExternalStore(store.subscribe, store.getVersion, () => 0);
+  const storeVersion = useSyncExternalStore(dataVersion.subscribe, dataVersion.get, () => 0);
 
   const [saved, setSaved] = useState<DeadlineSettings | null>(null);
+  /** The server's "now" (the dev clock in development), for the "in 3 days" hints */
+  const [serverNow, setServerNow] = useState<number | null>(null);
   const [offline, setOffline] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [values, setValues] = useState<Values | null>(null);
@@ -58,6 +60,7 @@ export function SettingsScreen() {
           prototypeDue: s.deadlines.prototypeDue,
         };
         setSaved(d);
+        setServerNow(s.now ?? Date.now());
         // Fill the form once; later refreshes must not overwrite what is being typed
         setValues((current) => current ?? toValues(d));
         setOffline(false);
@@ -93,7 +96,7 @@ export function SettingsScreen() {
 
   const savedValues = toValues(saved);
   const dirty = FIELDS.some((f) => values[f.key] !== savedValues[f.key]);
-  const now = store.now();
+  const now = serverNow ?? 0;
 
   async function save(event: FormEvent) {
     event.preventDefault();

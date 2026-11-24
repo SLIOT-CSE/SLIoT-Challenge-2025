@@ -12,7 +12,7 @@ import {
   AUDIT_ACTION_GROUPS,
   listAdmins,
   listAuditLog,
-  store,
+  dataVersion,
   type AdminAccount,
   type AuditActionGroup,
   type AuditEntryView,
@@ -50,7 +50,7 @@ function who(e: AuditEntryView): string {
 export function AuditScreen() {
   const { actor } = useAdminSession();
   const toast = useToast();
-  const storeVersion = useSyncExternalStore(store.subscribe, store.getVersion, () => 0);
+  const storeVersion = useSyncExternalStore(dataVersion.subscribe, dataVersion.get, () => 0);
 
   const [controls, setControls] = useState<AuditControls>(NO_CONTROLS);
   const [admins, setAdmins] = useState<AdminAccount[]>([]);

@@ -14,7 +14,7 @@ import {
   exportToSheets,
   getSettings,
   listTeams,
-  store,
+  dataVersion,
   type TeamRow,
 } from "@/lib/data";
 import { CATEGORY_LABELS, TEAM_STAGES, TEAM_STAGE_LABELS, type CategoryId, type TeamStage } from "@/lib/team-rules";
@@ -53,7 +53,7 @@ export function TeamsScreen() {
   const [lastSheetExportAt, setLastSheetExportAt] = useState<number | null>(null);
   const [offline, setOffline] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
-  const storeVersion = useSyncExternalStore(store.subscribe, store.getVersion, () => 0);
+  const storeVersion = useSyncExternalStore(dataVersion.subscribe, dataVersion.get, () => 0);
 
   useEffect(() => {
     let cancelled = false;

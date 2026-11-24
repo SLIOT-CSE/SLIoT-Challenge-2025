@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
-import { adminLogout, getCurrentAdmin, store, type AdminAccount, type AdminActor } from "@/lib/data";
+import { adminLogout, getCurrentAdmin, dataVersion, type AdminAccount, type AdminActor } from "@/lib/data";
 
 export type AdminSessionStatus = "checking" | "signed-out" | "signed-in" | "offline";
 
@@ -29,7 +29,7 @@ export function AdminSessionProvider({ children }: { children: ReactNode }) {
     admin: null,
   });
   const [reloadKey, setReloadKey] = useState(0);
-  const storeVersion = useSyncExternalStore(store.subscribe, store.getVersion, () => 0);
+  const storeVersion = useSyncExternalStore(dataVersion.subscribe, dataVersion.get, () => 0);
 
   useEffect(() => {
     let cancelled = false;

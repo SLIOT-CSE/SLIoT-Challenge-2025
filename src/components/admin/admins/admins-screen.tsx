@@ -17,7 +17,7 @@ import {
   resetAdminPassword,
   setAdminDisabled,
   setAdminRole,
-  store,
+  dataVersion,
   type AdminAccount,
   type AdminRole,
 } from "@/lib/data";
@@ -37,7 +37,7 @@ type Confirm = { kind: "reset" | "disable" | "enable" | "role"; admin: AdminAcco
 export function AdminsScreen() {
   const { actor } = useAdminSession();
   const toast = useToast();
-  const storeVersion = useSyncExternalStore(store.subscribe, store.getVersion, () => 0);
+  const storeVersion = useSyncExternalStore(dataVersion.subscribe, dataVersion.get, () => 0);
 
   const [admins, setAdmins] = useState<AdminAccount[] | null>(null);
   const [offline, setOffline] = useState(false);

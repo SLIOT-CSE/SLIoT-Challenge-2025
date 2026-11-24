@@ -8,7 +8,7 @@ import {
   NetworkError,
   getCompetitionState,
   registerTeam,
-  store,
+  dataVersion,
   type CompetitionState,
 } from "@/lib/data";
 import { generateTeamCode } from "@/lib/team-code";
@@ -88,7 +88,7 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
 
   // Keep the competition state fresh: on load, and whenever the sample store changes (the dev
   // switcher moves the clock). A refresh that fails never takes the form away once it's showing.
-  const storeVersion = useSyncExternalStore(store.subscribe, store.getVersion, () => 0);
+  const storeVersion = useSyncExternalStore(dataVersion.subscribe, dataVersion.get, () => 0);
   const done = phase.kind === "success";
   useEffect(() => {
     if (done) return;

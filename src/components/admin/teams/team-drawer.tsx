@@ -13,7 +13,7 @@ import {
   getAuditLog,
   getTeam,
   resendCode,
-  store,
+  dataVersion,
   updateTeam,
   type AuditEntryView,
   type TeamDetail,
@@ -49,7 +49,7 @@ export function TeamDrawer({ team, onClose }: { team: TeamRow | null; onClose: (
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [failed, setFailed] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
-  const storeVersion = useSyncExternalStore(store.subscribe, store.getVersion, () => 0);
+  const storeVersion = useSyncExternalStore(dataVersion.subscribe, dataVersion.get, () => 0);
 
   useEffect(() => {
     if (!open || teamId === undefined) return;

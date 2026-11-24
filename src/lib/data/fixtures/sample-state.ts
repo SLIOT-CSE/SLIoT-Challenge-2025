@@ -2,9 +2,7 @@ import { deadlines } from "@/content/deadlines";
 import { universities } from "@/content/universities";
 import { generateTeamCode } from "@/lib/team-code";
 import type { CategoryId, InstitutionType, TeamStage } from "@/lib/team-rules";
-import { sampleTimeForStage } from "./clock";
-import type { StoreState } from "./store";
-import { sampleHash } from "./sample-auth";
+import { sampleTimeForStage } from "../clock";
 import type {
   Admin,
   AdminActor,
@@ -14,9 +12,14 @@ import type {
   OutboxEmail,
   ShortlistFinalisation,
   Submission,
+  Settings,
   Team,
-} from "./types";
+} from "../types";
 
+// Test fixture: the 20 teams of the old browser-side sample store, kept so the pure screen logic
+// tests (shortlist, filters, edit form) have stable data. The app itself reads the database;
+// development data comes from `pnpm db:seed` (src/server/db/seed-data.ts).
+//
 // The sample teams. Fixed seed, so the same 20 teams appear every time.
 // Every name, email, NIC and number here is invented: emails end in @example.lk, NICs
 // start with 2099 (not a possible birth year) and WhatsApp numbers are 070 0xx xxxx.
@@ -111,7 +114,19 @@ const PLANS: TeamPlan[] = [
 
 const SAMPLE_VIDEO_IDS = ["aqz-KE-bpKQ", "jNQXAC9IVRw", "9bZkp7q19f0", "kJQP7kiw5Fk", "M7lc1UVf-VE"];
 
-export function generateSampleState(): StoreState {
+export interface SampleState {
+  nextId: number;
+  teams: Team[];
+  admins: Admin[];
+  members: Member[];
+  submissions: Submission[];
+  settings: Settings;
+  finalisations: ShortlistFinalisation[];
+  outbox: OutboxEmail[];
+  audit: AuditEntry[];
+}
+
+export function generateSampleState(): SampleState {
   const rng = createRng(SAMPLE_SEED);
   const d = deadlines;
   const t = (iso: string) => Date.parse(iso);
@@ -220,6 +235,9 @@ export function generateSampleState(): StoreState {
       template: "registration_confirmed",
       props: { code, teamName: plan.name },
       status: "sent",
+      attempts: 1,
+      lastError: null,
+      sentAt: null,
       createdAt,
     });
 
@@ -251,6 +269,9 @@ export function generateSampleState(): StoreState {
         template: "proposal_received",
         props: { teamName: plan.name },
         status: "sent",
+        attempts: 1,
+        lastError: null,
+        sentAt: null,
         createdAt: createdAt + 1000,
       });
     }
@@ -280,6 +301,9 @@ export function generateSampleState(): StoreState {
         template: "shortlisted",
         props: { teamName: plan.name },
         status: "sent",
+        attempts: 1,
+        lastError: null,
+        sentAt: null,
         createdAt: finalisedAt,
       });
     }
@@ -292,6 +316,9 @@ export function generateSampleState(): StoreState {
         template: "finalist",
         props: { teamName: plan.name },
         status: "sent",
+        attempts: 1,
+        lastError: null,
+        sentAt: null,
         createdAt: finalistsAnnouncedAt,
       });
     }
@@ -336,14 +363,13 @@ export function generateSampleState(): StoreState {
     displayName: a.displayName,
     role: a.role,
     disabled: false,
-    passwordHash: sampleHash(a.password),
+    passwordHash: "fixture",
     // Accounts were made before registration opened; the super admin logged in most recently
     createdAt: t(d.registrationOpens) - (10 - i) * 24 * 3600 * 1000,
     lastLoginAt: i === 0 ? t(d.prototypeDue) + 25 * 3600 * 1000 : null,
   }));
 
   return {
-    schemaVersion: 3,
     nextId: id,
     teams,
     admins,
@@ -359,140 +385,5 @@ export function generateSampleState(): StoreState {
     finalisations: [finalisation],
     outbox,
     audit,
-    session: null,
-    adminSession: null,
   };
-}
-
-const TEAM_WORDS_A = [
-  "Solar", "Lotus", "Spice", "Tidal", "Cobra", "Rain", "Jungle", "Lagoon", "Ceylon", "Kandy",
-  "Galle", "Pearl", "Cinnamon", "Coconut", "Elephant", "Leopard", "Blue", "Amber", "Quantum", "Pixel",
-];
-const TEAM_WORDS_B = [
-  "Makers", "Labs", "Squad", "Works", "Crew", "Circuit", "Drift", "Forge", "Beacon", "Nodes",
-  "Sparks", "Rangers", "Wired", "Relay", "Grid", "Loop", "Pulse", "Mesh", "Bytes", "Tech",
-];
-
-/**
- * Development only: adds invented teams until the store holds `total`, to try the Teams table
- * with a few hundred rows. Fixed seed, so the same extra teams appear every time. Stages are
- * consistent with the rest of the sample data (shortlist ticks, proposals, prototypes).
- */
-export function appendSampleTeams(state: StoreState, total: number): number {
-  const rng = createRng(SAMPLE_SEED + 1);
-  const d = deadlines;
-  const t = (iso: string) => Date.parse(iso);
-  const usedCodes = new Set(state.teams.map((x) => x.code));
-  const usedNames = new Set(state.teams.map((x) => x.name));
-  let personNumber = state.members.length + 1000;
-  const stages: TeamStage[] = [
-    "registered", "registered", "registered", "proposal_submitted", "proposal_submitted", "proposal_submitted",
-    "shortlisted", "not_shortlisted", "prototype_submitted", "finalist",
-  ];
-  const categories: CategoryId[] = ["school", "university", "open"];
-  const start = state.teams.length;
-  let added = 0;
-
-  for (let i = start; i < total; i++) {
-    const category = categories[i % 3];
-    const stage = stages[rng.int(stages.length)];
-    let name = `${rng.pick(TEAM_WORDS_A)} ${rng.pick(TEAM_WORDS_B)}`;
-    while (usedNames.has(name)) name = `${rng.pick(TEAM_WORDS_A)} ${rng.pick(TEAM_WORDS_B)} ${rng.int(99) + 1}`;
-    usedNames.add(name);
-    let code = generateTeamCode(rng.byte);
-    while (usedCodes.has(code)) code = generateTeamCode(rng.byte);
-    usedCodes.add(code);
-
-    const teamId = state.nextId++;
-    const createdAt = Math.round(
-      t(d.registrationOpens) + ((i + 1) / (total + 1)) * (t(d.registrationCloses) - t(d.registrationOpens)),
-    );
-    const shortlisted = stage === "shortlisted" || stage === "prototype_submitted" || stage === "finalist";
-    const institution =
-      category === "school" ? rng.pick(SCHOOLS) : category === "university" ? rng.pick(universities) : null;
-
-    state.teams.push({
-      id: teamId,
-      code,
-      name,
-      category,
-      institutionName: institution,
-      institutionIsOther: false,
-      stage,
-      shortlistMark: shortlisted,
-      shortlistEmailedAt: shortlisted ? t(d.shortlistAnnounced) - 3600 * 1000 : null,
-      finalistEmailedAt: stage === "finalist" ? t(d.prototypeDue) + 24 * 3600 * 1000 : null,
-      createdAt,
-      updatedAt: createdAt,
-    });
-
-    const size = 1 + rng.int(5);
-    for (let position = 1; position <= size; position++) {
-      personNumber++;
-      const first = rng.pick(FIRST_NAMES);
-      const last = rng.pick(LAST_NAMES);
-      const type: InstitutionType =
-        category === "open" ? (rng.next() < 0.5 ? "university" : "school") : (category as InstitutionType);
-      const memberInstitution =
-        category === "open" ? (type === "university" ? rng.pick(universities) : rng.pick(SCHOOLS)) : (institution as string);
-      state.members.push({
-        id: state.nextId++,
-        teamId,
-        position,
-        fullName: `${first} ${last}`,
-        whatsapp: `+94700${String(personNumber).padStart(6, "0")}`,
-        email: `${first}.${last}.${personNumber}@example.lk`.toLowerCase(),
-        institutionType: type,
-        institutionName: memberInstitution,
-        institutionIsOther: false,
-        nic: type === "university" ? `2099${String(personNumber).padStart(8, "0")}` : null,
-      });
-    }
-
-    state.audit.push({
-      id: state.nextId++,
-      actorType: "anonymous",
-      actorId: null,
-      action: "team.registered",
-      targetType: "team",
-      targetId: String(teamId),
-      details: { code },
-      createdAt,
-    });
-
-    if (stage !== "registered") {
-      state.submissions.push({
-        id: state.nextId++,
-        teamId,
-        kind: "proposal",
-        version: 1,
-        isCurrent: true,
-        submittedAt: Math.max(createdAt, t(d.registrationCloses) + rng.int(5) * 3600 * 1000),
-        fileName: `${code} – ${name} – v1.pdf`,
-        sizeBytes: 400_000 + rng.int(4_000_000),
-        driveUrl: `https://drive.google.com/sample/${code}-v1`,
-        youtubeId: null,
-        youtubeUrl: null,
-      });
-    }
-    if (stage === "prototype_submitted" || stage === "finalist") {
-      const videoId = SAMPLE_VIDEO_IDS[i % SAMPLE_VIDEO_IDS.length];
-      state.submissions.push({
-        id: state.nextId++,
-        teamId,
-        kind: "prototype",
-        version: 1,
-        isCurrent: true,
-        submittedAt: Math.round(t(d.shortlistAnnounced) + 0.5 * (t(d.prototypeDue) - t(d.shortlistAnnounced))),
-        fileName: null,
-        sizeBytes: null,
-        driveUrl: null,
-        youtubeId: videoId,
-        youtubeUrl: `https://www.youtube.com/watch?v=${videoId}`,
-      });
-    }
-    added++;
-  }
-  state.audit.sort((a, b) => a.createdAt - b.createdAt || a.id - b.id);
-  return added;
 }

@@ -34,7 +34,7 @@ export function ProposalPanel({ state, now }: { state: ProposalPanelState; now: 
     setUpload({ kind: "uploading", file, progress: 0 });
     try {
       const result = await uploadProposal(
-        { fileName: file.name, sizeBytes: file.size, header: await readHeader(file) },
+        { file },
         {
           signal: abort.signal,
           onProgress: (progress) => setUpload((u) => (u.kind === "uploading" ? { ...u, progress } : u)),

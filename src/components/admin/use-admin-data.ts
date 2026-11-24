@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { getSettings, listShortlistFinalisations, listTeams, store, type Settings, type ShortlistFinalisation, type TeamRow } from "@/lib/data";
+import { getSettings, listShortlistFinalisations, listTeams, dataVersion, type Settings, type ShortlistFinalisation, type TeamRow } from "@/lib/data";
 
 export interface AdminData {
   teams: TeamRow[];
@@ -18,7 +18,7 @@ export function useAdminData(): { data: AdminData | null; offline: boolean; retr
   const [data, setData] = useState<AdminData | null>(null);
   const [offline, setOffline] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
-  const storeVersion = useSyncExternalStore(store.subscribe, store.getVersion, () => 0);
+  const storeVersion = useSyncExternalStore(dataVersion.subscribe, dataVersion.get, () => 0);
 
   useEffect(() => {
     let cancelled = false;

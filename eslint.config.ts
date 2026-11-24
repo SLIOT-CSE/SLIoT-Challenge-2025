@@ -22,6 +22,8 @@ const eslintConfig: Linter.Config[] = [
       "react-hooks/purity": "warn",
       "react-hooks/refs": "warn",
       "react-hooks/immutability": "warn",
+      // Arguments kept for the call signature but not used start with _
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
     },
   },
   {

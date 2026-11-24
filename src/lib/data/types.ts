@@ -1,4 +1,5 @@
 import type { Deadlines } from "@/content/deadlines";
+import type { Stage } from "@/lib/competition";
 import type { CategoryId, InstitutionType, SubmissionKind, TeamStage } from "@/lib/team-rules";
 // Records and results of the data layer. Shapes follow docs/architecture.md, section 5,
 // with times as Unix milliseconds. The backend returns the same shapes.
@@ -53,14 +54,12 @@ export interface Submission {
 export type ShortlistState = "draft" | "finalised";
 
 export interface Settings {
-  /** The sample clock. null means the real clock. Set from the dev switcher */
+  /** The dev clock (`dev_now`). null means the real clock; always null in production */
   now: number | null;
   shortlistState: ShortlistState;
   deadlines: Deadlines;
   /** When "Export to Sheets" last ran (architecture: `last_sheet_export_at`) */
   lastSheetExportAt: number | null;
-  /** Sample only: when on, every data call fails with a NetworkError. Set from the dev switcher */
-  simulateNetworkError?: boolean;
 }
 
 export interface ShortlistFinalisation {
@@ -87,8 +86,12 @@ export interface OutboxEmail {
   toEmail: string;
   template: EmailTemplate;
   props: Record<string, string>;
-  status: "pending" | "sent";
+  /** `failed` after the last retry; shown in the dashboard */
+  status: "pending" | "sent" | "failed";
+  attempts: number;
+  lastError: string | null;
   createdAt: number;
+  sentAt: number | null;
 }
 
 export type ActorType = "team" | "admin" | "system" | "anonymous";
@@ -228,7 +231,15 @@ export type ErrorCode =
   | "duplicate_username"
   | "last_super_admin"
   | "own_account"
-  | "not_found";
+  | "not_found"
+  /** An outside service (Drive, Sheets) isn't set up yet: its env variables are missing */
+  | "not_configured"
+  /** An outside service refused or failed; nothing was saved */
+  | "upload_failed"
+  /** The YouTube video doesn't exist or is private */
+  | "video_unavailable"
+  /** Someone else changed the record since it was loaded */
+  | "edit_conflict";
 
 export interface FieldIssue {
   /** e.g. `members.2.email` */
@@ -252,3 +263,24 @@ export interface DataError {
 }
 
 export type Result<T> = { ok: true; data: T } | { ok: false; error: DataError };
+
+// Calls
+
+export interface CompetitionState {
+  now: number;
+  stage: Stage;
+  shortlistState: ShortlistState;
+  deadlines: Deadlines;
+}
+
+export interface ProposalUpload {
+  /** The PDF. Sent to POST /api/team/proposal */
+  file: File;
+}
+
+export interface UploadOptions {
+  /** Called with 0 to 1 as the upload goes */
+  onProgress?: (fraction: number) => void;
+  /** Aborting rejects the call with an AbortError and leaves the previous version current */
+  signal?: AbortSignal;
+}

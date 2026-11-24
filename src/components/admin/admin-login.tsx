@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle, ArrowLeft, Eye, EyeOff } from "lucide-react";
@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { NetworkError, adminLogin, getCurrentAdmin, listSampleAdminLogins } from "@/lib/data";
+import { NetworkError, adminLogin, getCurrentAdmin, type AdminRole } from "@/lib/data";
+import { listDevAdminLogins } from "@/server/dev-actions";
 import { formatWait } from "@/components/team/portal";
 import { useSecondsLeft } from "@/components/team/use-seconds-left";
 import { ADMIN_HOME, ROLE_LABEL } from "./nav";
@@ -157,12 +158,16 @@ export function AdminLogin() {
   );
 }
 
-const noopSubscribe = () => () => undefined;
+type DevLogin = Awaited<ReturnType<typeof listDevAdminLogins>>[number];
 
-/** Development only: the invented organizer logins, so nobody has to remember them */
+/** Development only: the seeded organizer logins (`pnpm db:seed`), so nobody has to remember them */
 function SampleLogins({ onFill }: { onFill: (username: string, password: string) => void }) {
-  const mounted = useSyncExternalStore(noopSubscribe, () => true, () => false);
-  if (process.env.NODE_ENV === "production" || !mounted) return null;
+  const [logins, setLogins] = useState<DevLogin[]>([]);
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
+    listDevAdminLogins().then(setLogins, () => undefined);
+  }, []);
+  if (process.env.NODE_ENV === "production" || logins.length === 0) return null;
   return (
     <section aria-label="Sample organizer logins" className="flex flex-col gap-3 rounded-panel border border-dashed border-warning/50 p-4">
       <div className="flex items-center gap-2">
@@ -170,13 +175,12 @@ function SampleLogins({ onFill }: { onFill: (username: string, password: string)
         <h2 className="text-small font-semibold text-foam">Sample organizers</h2>
       </div>
       <ul className="flex flex-col gap-2">
-        {listSampleAdminLogins().map((a) => (
-          <li key={a.id} className="flex items-center justify-between gap-3">
+        {logins.map((a) => (
+          <li key={a.username} className="flex items-center justify-between gap-3">
             <span className="min-w-0 text-small">
               <span className="block truncate font-semibold text-foam">{a.displayName}</span>
               <span className="block text-caption text-haze">
-                {ROLE_LABEL[a.role]} · <code className="font-mono">{a.username}</code>
-                {a.disabled && " · disabled"}
+                {ROLE_LABEL[a.role as AdminRole]} · <code className="font-mono">{a.username}</code>
               </span>
             </span>
             <Button variant="secondary" size="sm" onClick={() => onFill(a.username, a.password)}>

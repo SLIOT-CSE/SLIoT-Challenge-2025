@@ -1,27 +1,24 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
-import {
-  addSampleTeams,
-  adminLogout,
-  listSampleAdminLogins,
-  listSampleTeamLogins,
-  loginAsSampleAdmin,
-  loginWithCode,
-  logout,
-  resetSampleData,
-  setSampleNetworkError,
-  setSampleShortlistState,
-  setSampleStage,
-  store,
-  type ShortlistState,
-} from "@/lib/data";
-import { STAGES, TIME_ZONE, stageAt, type Stage } from "@/lib/competition";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { adminLogout, dataVersion, logout, type ShortlistState } from "@/lib/data";
+import { STAGES, TIME_ZONE, type Stage } from "@/lib/competition";
 import { cn } from "@/lib/utils";
+import {
+  getDevState,
+  loginAsDevAdmin,
+  loginAsDevTeam,
+  resetDevData,
+  setDevShortlistState,
+  setDevStage,
+  switchToRealClock,
+  type DevState,
+} from "@/server/dev-actions";
 
-// Development-only panel for the app screens (/register, /team, /admin): moves the sample
-// clock between competition stages, flips the shortlist between draft and finalised, logs in
-// as any sample team or organizer and resets the 20 sample teams. It renders nothing in production.
+// Development-only panel for the app screens (/register, /team, /admin), working on the local
+// SQLite database: moves the dev clock between competition stages, flips the shortlist between
+// draft and finalised, signs in as any team or organizer and reseeds the 20 test teams
+// (same as `pnpm db:seed`). It renders nothing in production, and the server refuses its calls there.
 
 const STAGE_LABEL: Record<Stage, string> = {
   "before-registration": "Before registration",
@@ -42,26 +39,43 @@ const dateTime = new Intl.DateTimeFormat("en-GB", {
   timeZone: TIME_ZONE,
 });
 
-const noopSubscribe = () => () => undefined;
-
 export function SampleSwitcher() {
   if (process.env.NODE_ENV === "production") return null;
   return <Panel />;
 }
 
+/** Runs a dev action, then tells every open screen to read its data again */
+async function run(action: () => Promise<unknown>) {
+  try {
+    await action();
+  } finally {
+    dataVersion.bump();
+  }
+}
+
 function Panel() {
-  // Reading the store only after mount keeps the first client render equal to the server's
-  const mounted = useSyncExternalStore(noopSubscribe, () => true, () => false);
-  useSyncExternalStore(store.subscribe, store.getVersion, () => 0);
+  const version = useSyncExternalStore(dataVersion.subscribe, dataVersion.get, () => 0);
+  const [state, setState] = useState<DevState | null>(null);
   const [open, setOpen] = useState(false);
 
-  if (!mounted) return null;
+  useEffect(() => {
+    let cancelled = false;
+    getDevState().then(
+      (next) => {
+        if (!cancelled) setState(next);
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [version]);
 
-  const { settings, teams, session, admins, adminSession } = store.state;
-  const now = store.now();
-  const stage = stageAt(new Date(now), settings.deadlines);
-  const loggedIn = teams.find((t) => t.id === session?.teamId);
-  const organizer = admins.find((a) => a.id === adminSession?.adminId);
+  if (!state) return null;
+
+  const { now, stage, teams, admins } = state;
+  const loggedIn = teams.find((t) => t.id === state.teamId);
+  const organizer = admins.find((a) => a.id === state.adminId);
 
   return (
     <aside
@@ -75,7 +89,7 @@ function Panel() {
         className="flex min-h-11 w-full items-center justify-between gap-3 px-4 text-left"
       >
         <span className="flex items-center gap-2">
-          <span className="rounded-full bg-warning px-2 py-0.5 text-caption font-semibold text-abyss">Sample data</span>
+          <span className="rounded-full bg-warning px-2 py-0.5 text-caption font-semibold text-abyss">Test data</span>
           <span className="text-haze">{STAGE_LABEL[stage]}</span>
         </span>
         <span aria-hidden="true" className="text-haze">
@@ -85,12 +99,18 @@ function Panel() {
 
       {open && (
         <div className="flex flex-col gap-4 border-t border-edge p-4">
-          <Field label="Competition stage" hint={`Clock: ${dateTime.format(now)} (Sri Lanka time)`}>
+          <Field
+            label="Competition stage"
+            hint={`${state.devClock ? "Dev clock" : "Real clock"}: ${dateTime.format(now)} (Sri Lanka time)`}
+          >
             <select
               className={selectClass}
-              value={stage}
-              onChange={(e) => setSampleStage(e.target.value as Stage)}
+              value={state.devClock ? stage : "real"}
+              onChange={(e) =>
+                void run(() => (e.target.value === "real" ? switchToRealClock() : setDevStage(e.target.value as Stage)))
+              }
             >
+              <option value="real">Real clock ({STAGE_LABEL[stage]})</option>
               {STAGES.map((s) => (
                 <option key={s} value={s}>
                   {STAGE_LABEL[s]}
@@ -107,15 +127,15 @@ function Panel() {
                   key={value}
                   className={cn(
                     "flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-control border px-3 capitalize has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-mint",
-                    settings.shortlistState === value ? "border-mint bg-mint/15 text-mint" : "border-edge text-haze",
+                    state.shortlistState === value ? "border-mint bg-mint/15 text-mint" : "border-edge text-haze",
                   )}
                 >
                   <input
                     type="radio"
                     name="sample-shortlist"
                     className="sr-only"
-                    checked={settings.shortlistState === value}
-                    onChange={() => setSampleShortlistState(value)}
+                    checked={state.shortlistState === value}
+                    onChange={() => void run(() => setDevShortlistState(value))}
                   />
                   {value}
                 </label>
@@ -128,14 +148,14 @@ function Panel() {
               <select
                 className={selectClass}
                 value=""
-                aria-label="Log in as a sample team"
+                aria-label="Log in as a test team"
                 onChange={(e) => {
-                  if (e.target.value) void loginWithCode(e.target.value);
+                  if (e.target.value) void run(() => loginAsDevTeam(Number(e.target.value)));
                 }}
               >
                 <option value="">Log in as…</option>
-                {listSampleTeamLogins().map((t) => (
-                  <option key={t.code} value={t.code}>
+                {teams.map((t) => (
+                  <option key={t.id} value={t.id}>
                     {t.name} · {t.category} · {t.stage.replace("_", " ")}
                   </option>
                 ))}
@@ -160,13 +180,13 @@ function Panel() {
               <select
                 className={selectClass}
                 value=""
-                aria-label="Sign in as a sample organizer"
+                aria-label="Sign in as a test organizer"
                 onChange={(e) => {
-                  if (e.target.value) loginAsSampleAdmin(Number(e.target.value));
+                  if (e.target.value) void run(() => loginAsDevAdmin(Number(e.target.value)));
                 }}
               >
                 <option value="">Sign in as…</option>
-                {listSampleAdminLogins()
+                {admins
                   .filter((a) => !a.disabled)
                   .map((a) => (
                     <option key={a.id} value={a.id}>
@@ -182,27 +202,17 @@ function Panel() {
             </div>
           </Field>
 
-          <label className="flex min-h-11 cursor-pointer items-center gap-3">
-            <input
-              type="checkbox"
-              className="size-5 accent-mint"
-              checked={Boolean(settings.simulateNetworkError)}
-              onChange={(e) => setSampleNetworkError(e.target.checked)}
-            />
-            <span>
-              <span className="block font-semibold">Simulate network errors</span>
-              <span className="block text-caption text-haze">Every data call fails until you turn this off</span>
-            </span>
-          </label>
-
-          <div className="flex gap-2">
-            <button type="button" onClick={() => addSampleTeams(200)} className={cn(smallButton, "flex-1")}>
-              Add teams (200)
-            </button>
-            <button type="button" onClick={resetSampleData} className={cn(smallButton, "flex-1")}>
-              Reset sample data
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm("Wipe the local database and write the 20 test teams again? Everyone is signed out.")) {
+                void run(resetDevData);
+              }
+            }}
+            className={smallButton}
+          >
+            Reset test data (pnpm db:seed)
+          </button>
         </div>
       )}
     </aside>

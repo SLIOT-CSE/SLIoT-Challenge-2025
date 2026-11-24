@@ -37,6 +37,17 @@ const envSchema = z.object({
   GOOGLE_OAUTH_CLIENT_SECRET: optional,
   GOOGLE_OAUTH_REFRESH_TOKEN: optional,
   GOOGLE_DRIVE_FOLDER_ID: optional,
+
+  // Sheets export through the service account (workload R2, R4)
+  /** Path to the service account's JSON key file, e.g. /etc/sliot/google-sa.json */
+  GOOGLE_SERVICE_ACCOUNT_KEY_FILE: optional,
+  /** The master spreadsheet's ID (from its URL) */
+  GOOGLE_SHEET_ID: optional,
+
+  // Cloudflare Turnstile on the registration form (workload R5)
+  TURNSTILE_SECRET_KEY: optional,
+  /** Public; read by the browser */
+  NEXT_PUBLIC_TURNSTILE_SITE_KEY: optional,
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -124,6 +135,23 @@ export function driveConfig(env: Env = getEnv()): FeatureConfig<DriveConfig> {
   };
 }
 
+export interface SheetsConfig {
+  keyFile: string;
+  sheetId: string;
+}
+
+export function sheetsConfig(env: Env = getEnv()): FeatureConfig<SheetsConfig> {
+  const result = pick(env, ["GOOGLE_SERVICE_ACCOUNT_KEY_FILE", "GOOGLE_SHEET_ID"] as const);
+  if (!result.ok) return result;
+  return { ok: true, config: { keyFile: result.config.GOOGLE_SERVICE_ACCOUNT_KEY_FILE, sheetId: result.config.GOOGLE_SHEET_ID } };
+}
+
+export function turnstileConfig(env: Env = getEnv()): FeatureConfig<{ secretKey: string; siteKey: string }> {
+  const result = pick(env, ["TURNSTILE_SECRET_KEY", "NEXT_PUBLIC_TURNSTILE_SITE_KEY"] as const);
+  if (!result.ok) return result;
+  return { ok: true, config: { secretKey: result.config.TURNSTILE_SECRET_KEY, siteKey: result.config.NEXT_PUBLIC_TURNSTILE_SITE_KEY } };
+}
+
 /** Every variable production needs that isn't set. The server refuses to start unless this is empty */
 export function missingProductionEnv(env: Env = getEnv()): string[] {
   const missing: string[] = [];
@@ -133,5 +161,8 @@ export function missingProductionEnv(env: Env = getEnv()): string[] {
   if (!email.ok) missing.push(...email.missing);
   const drive = driveConfig(env);
   if (!drive.ok) missing.push(...drive.missing);
+  const turnstile = turnstileConfig(env);
+  if (!turnstile.ok) missing.push(...turnstile.missing);
+  // The Sheets export is optional: without it the button explains and the CSV download still works
   return missing;
 }

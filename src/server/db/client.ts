@@ -3,7 +3,7 @@ import path from "node:path";
 import Database from "better-sqlite3";
 import { drizzle, type BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
-import { databasePath } from "../env";
+import { databasePath, getEnv } from "../env";
 import * as schema from "./schema";
 
 // One SQLite file, one connection per process (docs/architecture.md section 4).
@@ -41,8 +41,15 @@ export function openTestDatabase(): Db {
 // Kept on globalThis so Next's hot reload in development doesn't open a new connection per edit
 const globalForDb = globalThis as typeof globalThis & { __sliotDb?: Db };
 
-/** The app's database. Opened on first use */
+/**
+ * The app's database. Opened on first use. Development databases are migrated here so a fresh
+ * checkout just works; production runs `pnpm db:migrate` as a deploy step instead.
+ */
 export function getDb(): Db {
-  globalForDb.__sliotDb ??= openDatabase(databasePath());
+  if (!globalForDb.__sliotDb) {
+    const db = openDatabase(databasePath());
+    if (getEnv().NODE_ENV !== "production") runMigrations(db);
+    globalForDb.__sliotDb = db;
+  }
   return globalForDb.__sliotDb;
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateSampleState } from "@/lib/data/sample";
+import { generateSampleState } from "@/lib/data/fixtures/sample-state";
 import type { TeamRow } from "@/lib/data";
 import { EMPTY_VIEW, filterTeams, hasFilters, institutionOptions, institutionsOf, parseView, viewToSearch } from "./teams-view";
 

@@ -40,6 +40,8 @@ describe("env", () => {
       "GOOGLE_OAUTH_CLIENT_SECRET",
       "GOOGLE_OAUTH_REFRESH_TOKEN",
       "GOOGLE_DRIVE_FOLDER_ID",
+      "TURNSTILE_SECRET_KEY",
+      "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
     ]);
   });
 });

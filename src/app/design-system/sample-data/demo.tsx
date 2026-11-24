@@ -4,14 +4,14 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import {
   getCompetitionState,
   listTeams,
-  store,
+  dataVersion,
   type CompetitionState,
   type TeamRow,
 } from "@/lib/data";
 
 // Reads through the data-access functions, as the real screens will
 export function SampleDataDemo() {
-  const version = useSyncExternalStore(store.subscribe, store.getVersion, () => 0);
+  const version = useSyncExternalStore(dataVersion.subscribe, dataVersion.get, () => 0);
   const [state, setState] = useState<CompetitionState | null>(null);
   const [teams, setTeams] = useState<TeamRow[] | null>(null);
 
@@ -27,12 +27,13 @@ export function SampleDataDemo() {
     };
   }, [version]);
 
-  if (!state || !teams) return <p className="text-haze">Loading sample data…</p>;
+  if (!state || !teams) return <p className="text-haze">Loading test data…</p>;
 
   return (
     <>
       <p data-testid="state" className="text-body-lg">
         Stage: <strong>{state.stage}</strong> · Shortlist: <strong>{state.shortlistState}</strong> · {teams.length} teams
+        {teams.length === 0 && " (sign in as an organizer from the switcher to see them)"}
       </p>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[40rem] text-left text-small">

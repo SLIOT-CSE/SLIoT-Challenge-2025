@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateSampleState } from "@/lib/data/sample";
+import { generateSampleState } from "@/lib/data/fixtures/sample-state";
 import type { TeamDetail } from "@/lib/data";
 import { editErrors, isDirty, toEditInput, toFormValues } from "./team-edit";
 

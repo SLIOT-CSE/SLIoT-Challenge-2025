@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { TeamRow } from "@/lib/data";
-import { generateSampleState } from "@/lib/data/sample";
+import { generateSampleState } from "@/lib/data/fixtures/sample-state";
 import { candidatesOf, currentFinalists, finalisePreview, plural, readyForFinals, summarise } from "./shortlist-logic";
 
 function rows(): TeamRow[] {

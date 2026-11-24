@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   getCompetitionState,
   getCurrentTeam,
-  store,
+  dataVersion,
   type CompetitionState,
   type TeamDetail,
 } from "@/lib/data";
@@ -23,7 +23,7 @@ export function TeamPortal() {
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [offline, setOffline] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
-  const storeVersion = useSyncExternalStore(store.subscribe, store.getVersion, () => 0);
+  const storeVersion = useSyncExternalStore(dataVersion.subscribe, dataVersion.get, () => 0);
 
   useEffect(() => {
     let cancelled = false;

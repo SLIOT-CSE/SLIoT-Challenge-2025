@@ -5,8 +5,8 @@ import { SampleSwitcher } from "@/components/dev/sample-switcher";
 
 export const metadata: Metadata = { title: "Sample data", robots: { index: false, follow: false } };
 
-// Dev-only: a live readout of the sample store beside the switcher, to check the data layer
-// before the app screens exist.
+// Dev-only: a live readout of the local database (through the same calls the screens use)
+// beside the switcher. Teams are listed once an organizer is signed in.
 export default function SampleDataPage() {
   if (process.env.NODE_ENV === "production") notFound();
 

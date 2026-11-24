@@ -38,7 +38,8 @@ export function shortlistResult(team: Pick<TeamRow, "stage">): string {
   return "";
 }
 
-export function buildTeamsCsv(teams: TeamRow[], { shortlistState }: TeamsCsvOptions): string {
+/** The export as plain rows, header first. Shared by the CSV download and the Sheets export */
+export function buildTeamsTable(teams: TeamRow[], { shortlistState }: TeamsCsvOptions): string[][] {
   const withResult = shortlistState === "finalised";
 
   const header = [
@@ -58,7 +59,7 @@ export function buildTeamsCsv(teams: TeamRow[], { shortlistState }: TeamsCsvOpti
     header.push(`M${m} name`, `M${m} WhatsApp`, `M${m} email`, `M${m} institution`, `M${m} NIC`);
   }
 
-  const lines = [header.map(csvCell).join(",")];
+  const rows: string[][] = [header];
   for (const t of teams) {
     const cells: (string | number | null)[] = [
       t.code,
@@ -78,9 +79,13 @@ export function buildTeamsCsv(teams: TeamRow[], { shortlistState }: TeamsCsvOpti
       const m = t.members[i];
       cells.push(m?.fullName ?? null, m?.whatsapp ?? null, m?.email ?? null, m?.institutionName ?? null, m?.nic ?? null);
     }
-    lines.push(cells.map(csvCell).join(","));
+    rows.push(cells.map((c) => (c === null ? "" : String(c))));
   }
+  return rows;
+}
 
+export function buildTeamsCsv(teams: TeamRow[], options: TeamsCsvOptions): string {
+  const lines = buildTeamsTable(teams, options).map((row) => row.map(csvCell).join(","));
   return BOM + lines.join(NEWLINE) + NEWLINE;
 }
 
