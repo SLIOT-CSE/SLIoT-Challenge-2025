@@ -9,6 +9,7 @@ import {
   teamCodeSchema,
 } from "@/lib/schemas";
 import { generateTeamCode } from "@/lib/team-code";
+import { MAX_PROPOSAL_BYTES } from "@/lib/team-rules";
 import { NetworkError } from "./errors";
 import type { StoreState, Store } from "./store";
 import type {
@@ -50,6 +51,16 @@ export interface ProposalUpload {
   /** First bytes of the file, when the screen has them, to check for `%PDF-` */
   header?: Uint8Array;
 }
+
+export interface UploadOptions {
+  /** Called with 0 to 1 as the upload goes. The real backend reports it from XMLHttpRequest */
+  onProgress?: (fraction: number) => void;
+  /** Aborting rejects the call with an AbortError and leaves the previous version current */
+  signal?: AbortSignal;
+}
+
+/** Failed team logins (and code reminders) allowed per window, as the architecture's per-IP limit */
+const RATE_LIMIT = { attempts: 5, windowMs: 15 * 60 * 1000 };
 
 const ok = <T,>(data: T): Result<T> => ({ ok: true, data });
 const fail = (code: ErrorCode, message: string, extra: Partial<DataError> = {}): Result<never> => ({
@@ -132,6 +143,34 @@ export function createData(store: Store) {
     return s.session ? (s.teams.find((t) => t.id === s.session!.teamId) ?? null) : null;
   }
 
+  /** Seconds until another try is allowed, or null while under the limit */
+  function retryAfterSeconds(s: StoreState, action: string): number | null {
+    const now = store.now();
+    const recent = s.audit
+      .filter((e) => e.actorType === "anonymous" && e.action === action && e.createdAt > now - RATE_LIMIT.windowMs)
+      .sort((a, b) => a.createdAt - b.createdAt);
+    if (recent.length < RATE_LIMIT.attempts) return null;
+    // The window frees a slot when the oldest of the counted attempts ages out
+    const oldest = recent[recent.length - RATE_LIMIT.attempts];
+    return Math.max(1, Math.ceil((oldest.createdAt + RATE_LIMIT.windowMs - now) / 1000));
+  }
+
+  const rateLimited = (seconds: number) =>
+    fail("rate_limited", "Too many tries. Please wait before trying again.", { retryAfterSeconds: seconds });
+
+  /** The pretend upload: progress ticks over a moment (scaled by file size), stopping on abort or outage */
+  async function simulateUpload(sizeBytes: number, { onProgress, signal }: UploadOptions): Promise<void> {
+    const totalMs = store.latencyMs * (6 + 4 * Math.min(1, sizeBytes / MAX_PROPOSAL_BYTES));
+    const ticks = totalMs > 0 ? 12 : 1;
+    for (let i = 1; i <= ticks; i++) {
+      if (signal?.aborted) throw new DOMException("The upload was aborted.", "AbortError");
+      if (totalMs > 0) await new Promise((resolve) => setTimeout(resolve, totalMs / ticks));
+      if (signal?.aborted) throw new DOMException("The upload was aborted.", "AbortError");
+      if (store.state.settings.simulateNetworkError) throw new NetworkError();
+      onProgress?.(i / ticks);
+    }
+  }
+
   return {
     // ---- Competition ----
 
@@ -195,6 +234,7 @@ export function createData(store: Store) {
             stage: "registered",
             shortlistMark: false,
             shortlistEmailedAt: null,
+            finalistEmailedAt: null,
             createdAt: now,
             updatedAt: now,
           });
@@ -209,6 +249,9 @@ export function createData(store: Store) {
 
     async loginWithCode(code: string): Promise<Result<{ teamId: number }>> {
       await delay();
+      const wait = retryAfterSeconds(store.state, "team.login_failed");
+      if (wait !== null) return rateLimited(wait);
+
       const parsed = teamCodeSchema.safeParse(code);
       const team = parsed.success ? store.state.teams.find((t) => t.code === parsed.data) : undefined;
       if (!team) {
@@ -243,6 +286,11 @@ export function createData(store: Store) {
       await delay();
       const parsed = emailSchema.safeParse(email);
       if (!parsed.success) return fail("invalid_input", "Enter a valid email address.");
+
+      const wait = retryAfterSeconds(store.state, "team.code_reminder_requested");
+      if (wait !== null) return rateLimited(wait);
+      // Every request counts toward the limit, matching or not, so the limit can't be used to find emails
+      store.mutate((state) => record(state, { type: "anonymous", id: null }, "team.code_reminder_requested"));
 
       const leader = store.state.members.find((m) => m.position === 1 && m.email === parsed.data);
       const team = leader && store.state.teams.find((t) => t.id === leader.teamId);
@@ -289,7 +337,7 @@ export function createData(store: Store) {
 
     // ---- Team portal: submissions ----
 
-    async uploadProposal(upload: ProposalUpload): Promise<Result<{ version: number }>> {
+    async uploadProposal(upload: ProposalUpload, options: UploadOptions = {}): Promise<Result<{ version: number }>> {
       await delay();
       const s = store.state;
       const team = sessionTeam(s);
@@ -309,6 +357,13 @@ export function createData(store: Store) {
         return fail("invalid_input", "That file doesn't look like a PDF.", {
           issues: [{ path: "file", message: "That file doesn't look like a PDF." }],
         });
+      }
+
+      await simulateUpload(upload.sizeBytes, options);
+
+      // The server checks again when the file arrives: the deadline may have passed during a slow upload
+      if (store.now() > Date.parse(store.state.settings.deadlines.proposalDue)) {
+        return fail("proposal_deadline_passed", "The proposal deadline passed while the file was uploading.");
       }
 
       return ok(
@@ -445,8 +500,8 @@ export function createData(store: Store) {
           for (const t of state.teams) {
             if (t.shortlistMark) {
               shortlistedIds.push(t.id);
-              // A team that already sent a prototype stays at that stage
-              if (t.stage !== "prototype_submitted") t.stage = "shortlisted";
+              // A team that already sent a prototype, or is a finalist, stays at that stage
+              if (t.stage !== "prototype_submitted" && t.stage !== "finalist") t.stage = "shortlisted";
               if (t.shortlistEmailedAt === null) {
                 const leader = state.members.find((m) => m.teamId === t.id && m.position === 1)!;
                 queueEmail(state, t.id, leader.email, "shortlisted", { teamName: t.name });
@@ -494,6 +549,88 @@ export function createData(store: Store) {
         record(state, { type: "admin", id: actor.id }, "shortlist.reopened", { type: "setting", id: "shortlist_state" });
       });
       return ok(null);
+    },
+
+    // ---- Finalists (super admins) ----
+
+    /**
+     * Makes teams finalists. One step with no draft: needs the word FINALISTS, and only teams
+     * with a prototype qualify. Each newly announced team's leader is emailed once.
+     */
+    async announceFinalists(
+      teamIds: number[],
+      actor: AdminActor,
+      confirmation: string,
+    ): Promise<Result<{ count: number; newlyEmailedCount: number }>> {
+      await delay();
+      if (confirmation !== "FINALISTS") return fail("confirmation_required", "Type FINALISTS to confirm.");
+
+      const s = store.state;
+      const teams = teamIds.map((id) => s.teams.find((t) => t.id === id));
+      if (teams.some((t) => !t)) return fail("not_allowed", "One of those teams doesn't exist.");
+      const noPrototype = (teams as Team[]).filter(
+        (t) => !s.submissions.some((x) => x.teamId === t.id && x.kind === "prototype"),
+      );
+      if (noPrototype.length > 0) {
+        return fail("no_prototype", `${noPrototype.map((t) => t.name).join(", ")} hasn't submitted a prototype.`);
+      }
+
+      return ok(
+        store.mutate((state) => {
+          const now = store.now();
+          let count = 0;
+          let newlyEmailedCount = 0;
+          for (const id of teamIds) {
+            const t = state.teams.find((x) => x.id === id)!;
+            if (t.stage === "finalist") continue;
+            t.stage = "finalist";
+            t.updatedAt = now;
+            count++;
+            if (t.finalistEmailedAt === null) {
+              const leader = state.members.find((m) => m.teamId === t.id && m.position === 1)!;
+              queueEmail(state, t.id, leader.email, "finalist", { teamName: t.name });
+              t.finalistEmailedAt = now;
+              newlyEmailedCount++;
+            }
+          }
+          record(
+            state,
+            { type: "admin", id: actor.id },
+            "finalists.announced",
+            { type: "team", id: teamIds.join(",") },
+            { count, newlyEmailedCount },
+          );
+          return { count, newlyEmailedCount };
+        }),
+      );
+    },
+
+    /** Corrects a mistake: finalists go back to prototype_submitted. No email is sent */
+    async unmarkFinalists(teamIds: number[], actor: AdminActor): Promise<Result<{ count: number }>> {
+      await delay();
+      const s = store.state;
+      const teams = teamIds.map((id) => s.teams.find((t) => t.id === id));
+      if (teams.some((t) => !t || t.stage !== "finalist")) {
+        return fail("not_allowed", "Only finalists can be taken off the finalists list.");
+      }
+
+      return ok(
+        store.mutate((state) => {
+          for (const id of teamIds) {
+            const t = state.teams.find((x) => x.id === id)!;
+            t.stage = "prototype_submitted";
+            t.updatedAt = store.now();
+          }
+          record(
+            state,
+            { type: "admin", id: actor.id },
+            "finalists.unmarked",
+            { type: "team", id: teamIds.join(",") },
+            { count: teamIds.length },
+          );
+          return { count: teamIds.length };
+        }),
+      );
     },
 
     async listShortlistFinalisations(): Promise<ShortlistFinalisation[]> {

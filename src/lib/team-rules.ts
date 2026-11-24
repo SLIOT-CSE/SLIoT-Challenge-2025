@@ -14,6 +14,7 @@ export const TEAM_STAGES = [
   "shortlisted",
   "not_shortlisted",
   "prototype_submitted",
+  "finalist",
 ] as const;
 
 export type TeamStage = (typeof TEAM_STAGES)[number];

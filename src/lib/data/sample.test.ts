@@ -81,7 +81,7 @@ describe("generateSampleState", () => {
       const prototypes = state.submissions.filter((s) => s.teamId === team.id && s.kind === "prototype");
       expect(proposals.length > 0).toBe(team.stage !== "registered");
       if (proposals.length) expect(proposals.filter((p) => p.isCurrent)).toHaveLength(1);
-      expect(prototypes.length > 0).toBe(team.stage === "prototype_submitted");
+      expect(prototypes.length > 0).toBe(team.stage === "prototype_submitted" || team.stage === "finalist");
     }
   });
 

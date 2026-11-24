@@ -71,7 +71,7 @@ interface TeamPlan {
   members: number;
 }
 
-// 7 School, 8 University, 5 Open; every team stage is represented
+// 7 School, 8 University, 5 Open; every team stage is represented (two finalists, one team that stopped at its prototype)
 const PLANS: TeamPlan[] = [
   { name: "Wave Riders", category: "school", stage: "registered", members: 3 },
   { name: "Byte Fireflies", category: "school", stage: "proposal_submitted", members: 4 },
@@ -85,14 +85,14 @@ const PLANS: TeamPlan[] = [
   { name: "Gridlock Breakers", category: "university", stage: "shortlisted", members: 5 },
   { name: "Aqua Alert", category: "university", stage: "shortlisted", members: 4 },
   { name: "Tea Leaf Tech", category: "university", stage: "not_shortlisted", members: 3 },
-  { name: "Ohm Sweet Ohm", category: "university", stage: "prototype_submitted", members: 2 },
+  { name: "Ohm Sweet Ohm", category: "university", stage: "finalist", members: 2 },
   { name: "Signal Sparks", category: "university", stage: "proposal_submitted", members: 4 },
   { name: "Monsoon Mesh", category: "university", stage: "registered", members: 3 },
   { name: "Island Edge", category: "open", stage: "registered", members: 5 },
   { name: "Harbour Hackers", category: "open", stage: "proposal_submitted", members: 4 },
   { name: "Coral Code", category: "open", stage: "shortlisted", members: 3 },
   { name: "Paddy Pulse", category: "open", stage: "not_shortlisted", members: 2 },
-  { name: "Kite Runners", category: "open", stage: "prototype_submitted", members: 4 },
+  { name: "Kite Runners", category: "open", stage: "finalist", members: 4 },
 ];
 
 const SAMPLE_VIDEO_IDS = ["aqz-KE-bpKQ", "jNQXAC9IVRw", "9bZkp7q19f0", "kJQP7kiw5Fk", "M7lc1UVf-VE"];
@@ -131,8 +131,12 @@ export function generateSampleState(): StoreState {
     const teamUniversity = plan.category === "university" ? universities[(i * 3) % universities.length] : null;
     const teamInstitution = teamSchool ?? teamUniversity;
 
-    const shortlisted = plan.stage === "shortlisted" || plan.stage === "prototype_submitted";
+    const shortlisted =
+      plan.stage === "shortlisted" || plan.stage === "prototype_submitted" || plan.stage === "finalist";
+    const finalist = plan.stage === "finalist";
     const hasProposal = plan.stage !== "registered";
+    // Finalists were announced the day after prototypes were due
+    const finalistsAnnouncedAt = t(d.prototypeDue) + 24 * 3600 * 1000;
 
     teams.push({
       id: teamId,
@@ -144,6 +148,7 @@ export function generateSampleState(): StoreState {
       stage: plan.stage,
       shortlistMark: shortlisted,
       shortlistEmailedAt: shortlisted ? finalisedAt : null,
+      finalistEmailedAt: finalist ? finalistsAnnouncedAt : null,
       createdAt,
       updatedAt: createdAt,
     });
@@ -236,7 +241,7 @@ export function generateSampleState(): StoreState {
       });
     }
 
-    if (plan.stage === "prototype_submitted") {
+    if (plan.stage === "prototype_submitted" || finalist) {
       const videoId = SAMPLE_VIDEO_IDS[i % SAMPLE_VIDEO_IDS.length];
       submissions.push({
         id: nextId(),
@@ -264,6 +269,18 @@ export function generateSampleState(): StoreState {
         createdAt: finalisedAt,
       });
     }
+
+    if (finalist) {
+      outbox.push({
+        id: nextId(),
+        teamId,
+        toEmail: leader.email,
+        template: "finalist",
+        props: { teamName: plan.name },
+        status: "sent",
+        createdAt: finalistsAnnouncedAt,
+      });
+    }
   });
 
   const shortlistedIds = teams.filter((x) => x.shortlistMark).map((x) => x.id);
@@ -286,10 +303,21 @@ export function generateSampleState(): StoreState {
     details: { shortlistedCount: shortlistedIds.length },
     createdAt: finalisedAt,
   });
+  const finalistIds = teams.filter((x) => x.stage === "finalist").map((x) => x.id);
+  audit.push({
+    id: nextId(),
+    actorType: "admin",
+    actorId: SAMPLE_SUPER_ADMIN.id,
+    action: "finalists.announced",
+    targetType: "team",
+    targetId: finalistIds.join(","),
+    details: { count: finalistIds.length, newlyEmailedCount: finalistIds.length },
+    createdAt: t(d.prototypeDue) + 24 * 3600 * 1000,
+  });
   audit.sort((a, b) => a.createdAt - b.createdAt);
 
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     nextId: id,
     teams,
     members,

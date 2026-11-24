@@ -235,7 +235,7 @@ These follow the product side of the design system: same tokens and fonts, calme
 
 - **Login:** one field for the team code, formatted as you type (`SL27-XXXX-XXXX`). Plus "Forgot your code?", which asks for the leader email and gives the same neutral reply whether or not it exists.
 - **Dashboard:**
-  - **Status tracker:** Registered → Proposal → Shortlist → Prototype → Finals, with the current stage glowing.
+  - **Status tracker:** Registered → Proposal → Shortlist → Prototype → Finals, with the current stage glowing. A not-shortlisted team's tracker stops at Shortlist. Finals lights up for `finalist` teams and is otherwise an upcoming milestone with the finale date.
   - **Team card:** members and institution.
   - **Proposal panel:**
     - A drag-and-drop zone that only accepts PDFs of at most 10 MB.

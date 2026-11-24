@@ -12,7 +12,7 @@ import type {
 // saved to sessionStorage so a refresh keeps the state. Never used in production.
 
 export interface StoreState {
-  schemaVersion: 1;
+  schemaVersion: 2;
   /** One counter for every record's id */
   nextId: number;
   teams: Team[];
@@ -55,7 +55,7 @@ export class Store {
     if (!json) return null;
     try {
       const parsed = JSON.parse(json) as StoreState;
-      return parsed.schemaVersion === 1 ? parsed : null;
+      return parsed.schemaVersion === 2 ? parsed : null;
     } catch {
       return null;
     }

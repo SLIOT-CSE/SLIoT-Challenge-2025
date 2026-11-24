@@ -36,6 +36,8 @@ export const {
   setShortlistMarks,
   finaliseShortlist,
   reopenShortlist,
+  announceFinalists,
+  unmarkFinalists,
   listShortlistFinalisations,
   listOutbox,
   getAuditLog,
@@ -46,5 +48,5 @@ export const { setSampleStage, setSampleShortlistState, setSampleNetworkError, r
 
 export { NetworkError } from "./errors";
 export { SAMPLE_SUPER_ADMIN } from "./sample";
-export type { CompetitionState, ProposalUpload } from "./api";
+export type { CompetitionState, ProposalUpload, UploadOptions } from "./api";
 export * from "./types";

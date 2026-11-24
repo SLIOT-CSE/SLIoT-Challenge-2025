@@ -15,6 +15,8 @@ export interface Team {
   /** Draft tick by a super admin. Hidden from teams and admins until finalised */
   shortlistMark: boolean;
   shortlistEmailedAt: number | null;
+  /** When the "you're a finalist" email was queued. Stops a second announce from emailing again */
+  finalistEmailedAt: number | null;
   createdAt: number;
   updatedAt: number;
 }
@@ -75,7 +77,8 @@ export type EmailTemplate =
   | "code_reminder"
   | "proposal_received"
   | "shortlisted"
-  | "prototype_received";
+  | "prototype_received"
+  | "finalist";
 
 export interface OutboxEmail {
   id: number;
@@ -142,6 +145,8 @@ export type ErrorCode =
   | "shortlist_finalised"
   | "shortlist_not_finalised"
   | "no_proposal"
+  | "no_prototype"
+  | "rate_limited"
   | "confirmation_required";
 
 export interface FieldIssue {
@@ -161,6 +166,8 @@ export interface DataError {
   message: string;
   issues?: FieldIssue[];
   conflicts?: Conflict[];
+  /** With `rate_limited`: how long until another try is allowed */
+  retryAfterSeconds?: number;
 }
 
 export type Result<T> = { ok: true; data: T } | { ok: false; error: DataError };

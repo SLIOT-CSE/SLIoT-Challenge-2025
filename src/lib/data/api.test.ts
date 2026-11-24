@@ -327,6 +327,187 @@ describe("shortlisting", () => {
   });
 });
 
+describe("finalists", () => {
+  const finalistMails = async (name: string) =>
+    (await d.listOutbox((await byName(name)).id)).filter((e) => e.template === "finalist").length;
+
+  it("starts with two finalists, each emailed once", async () => {
+    expect((await d.listTeams({ stage: "finalist" })).map((t) => t.name).sort()).toEqual(["Kite Runners", "Ohm Sweet Ohm"]);
+    expect(await finalistMails("Ohm Sweet Ohm")).toBe(1);
+    expect(await finalistMails("Tiny Tinkerers")).toBe(0);
+  });
+
+  it("needs the word FINALISTS", async () => {
+    const team = await byName("Tiny Tinkerers");
+    expect(await d.announceFinalists([team.id], SAMPLE_SUPER_ADMIN, "FINALISE")).toMatchObject({
+      ok: false,
+      error: { code: "confirmation_required" },
+    });
+  });
+
+  it("only takes teams that submitted a prototype, and changes nothing if one doesn't", async () => {
+    const withPrototype = await byName("Tiny Tinkerers");
+    const without = await byName("Lanka Sensors"); // shortlisted, no prototype yet
+    expect(await d.announceFinalists([withPrototype.id, without.id], SAMPLE_SUPER_ADMIN, "FINALISTS")).toMatchObject({
+      ok: false,
+      error: { code: "no_prototype" },
+    });
+    expect((await byName("Tiny Tinkerers")).stage).toBe("prototype_submitted");
+  });
+
+  it("announces, emails the leader once and records it", async () => {
+    const team = await byName("Tiny Tinkerers");
+    const r = await d.announceFinalists([team.id, (await byName("Ohm Sweet Ohm")).id], SAMPLE_SUPER_ADMIN, "FINALISTS");
+    expect(r).toEqual({ ok: true, data: { count: 1, newlyEmailedCount: 1 } }); // Ohm was already a finalist
+    expect((await byName("Tiny Tinkerers")).stage).toBe("finalist");
+    expect(await finalistMails("Tiny Tinkerers")).toBe(1);
+    expect(await finalistMails("Ohm Sweet Ohm")).toBe(1);
+    expect((await d.getAuditLog()).map((a) => a.action)).toContain("finalists.announced");
+  });
+
+  it("un-marking drops a team back without an email, and announcing again doesn't email twice", async () => {
+    const team = await byName("Tiny Tinkerers");
+    await d.announceFinalists([team.id], SAMPLE_SUPER_ADMIN, "FINALISTS");
+    expect(await d.unmarkFinalists([team.id], SAMPLE_SUPER_ADMIN)).toEqual({ ok: true, data: { count: 1 } });
+    expect((await byName("Tiny Tinkerers")).stage).toBe("prototype_submitted");
+
+    expect(await d.announceFinalists([team.id], SAMPLE_SUPER_ADMIN, "FINALISTS")).toEqual({
+      ok: true,
+      data: { count: 1, newlyEmailedCount: 0 },
+    });
+    expect(await finalistMails("Tiny Tinkerers")).toBe(1);
+  });
+
+  it("can only un-mark finalists", async () => {
+    const team = await byName("Tiny Tinkerers");
+    expect(await d.unmarkFinalists([team.id], SAMPLE_SUPER_ADMIN)).toMatchObject({ ok: false, error: { code: "not_allowed" } });
+  });
+
+  it("stays a finalist through a shortlist re-finalise while still ticked, and can't replace the prototype", async () => {
+    await d.reopenShortlist(SAMPLE_SUPER_ADMIN);
+    await d.finaliseShortlist(SAMPLE_SUPER_ADMIN, "FINALISE");
+    expect((await byName("Kite Runners")).stage).toBe("finalist");
+
+    await loginAs("Kite Runners");
+    expect(await d.submitPrototype("https://youtu.be/dQw4w9WgXcQ")).toMatchObject({ ok: false, error: { code: "not_allowed" } });
+  });
+});
+
+describe("login rate limit", () => {
+  const fail5 = async () => {
+    for (let i = 0; i < 5; i++) await d.loginWithCode("SL27-0000-000" + i);
+  };
+
+  it("blocks the sixth try after five failures, even with a correct code", async () => {
+    await fail5();
+    const code = (await byName("Wave Riders")).code;
+    const r = await d.loginWithCode(code);
+    expect(r).toMatchObject({ ok: false, error: { code: "rate_limited", retryAfterSeconds: 900 } });
+    expect(await d.getCurrentTeam()).toBeNull();
+  });
+
+  it("is fine at four failures, and successful logins don't count", async () => {
+    for (let i = 0; i < 4; i++) await d.loginWithCode("SL27-0000-000" + i);
+    const code = (await byName("Wave Riders")).code;
+    expect((await d.loginWithCode(code)).ok).toBe(true);
+    await d.logout();
+    expect((await d.loginWithCode(code)).ok).toBe(true);
+  });
+
+  it("frees up when the window passes, and the wait shrinks as it does", async () => {
+    await fail5();
+    dev.setSampleStage("registration"); // same clock: still blocked
+    expect(await d.loginWithCode("SL27-0000-0009")).toMatchObject({ ok: false, error: { code: "rate_limited" } });
+
+    store.mutate((state) => {
+      state.settings.now = state.settings.now! + 10 * 60 * 1000;
+    });
+    const r = await d.loginWithCode("SL27-0000-0009");
+    expect(r).toMatchObject({ ok: false, error: { code: "rate_limited", retryAfterSeconds: 300 } });
+
+    store.mutate((state) => {
+      state.settings.now = state.settings.now! + 10 * 60 * 1000;
+    });
+    expect(await d.loginWithCode("SL27-0000-0009")).toMatchObject({ ok: false, error: { code: "invalid_code" } });
+  });
+
+  it("clears on reset", async () => {
+    await fail5();
+    dev.resetSampleData();
+    expect(await d.loginWithCode("SL27-0000-0009")).toMatchObject({ ok: false, error: { code: "invalid_code" } });
+  });
+
+  it("limits code reminders too, whether or not the email exists", async () => {
+    for (let i = 0; i < 5; i++) expect((await d.requestCodeReminder(`nobody${i}@example.lk`)).ok).toBe(true);
+    const leader = (await byName("Wave Riders")).members[0].email;
+    expect(await d.requestCodeReminder(leader)).toMatchObject({ ok: false, error: { code: "rate_limited" } });
+    expect((await d.listOutbox((await byName("Wave Riders")).id)).some((e) => e.template === "code_reminder")).toBe(false);
+  });
+});
+
+describe("proposal upload progress", () => {
+  const pdf = { fileName: "plan.pdf", sizeBytes: 3_000_000 };
+
+  it("reports progress from 0 up to 1 and saves the file", async () => {
+    await loginAs("Wave Riders");
+    const seen: number[] = [];
+    const r = await d.uploadProposal(pdf, { onProgress: (f) => seen.push(f) });
+    expect(r.ok).toBe(true);
+    expect(seen.at(-1)).toBe(1);
+    expect(seen).toEqual([...seen].sort((a, b) => a - b));
+  });
+
+  describe("with a pretend delay", () => {
+    let slowStore: Store;
+    let slow: ReturnType<typeof createData>;
+
+    beforeEach(async () => {
+      slowStore = new Store({ seed: generateSampleState, latencyMs: 5 });
+      slow = createData(slowStore);
+      const team = (await slow.listTeams()).find((t) => t.name === "Wave Riders")!;
+      await slow.loginWithCode(team.code);
+    });
+
+    it("ticks more than once", async () => {
+      const seen: number[] = [];
+      await slow.uploadProposal(pdf, { onProgress: (f) => seen.push(f) });
+      expect(seen.length).toBeGreaterThan(3);
+      expect(seen.at(-1)).toBe(1);
+    });
+
+    it("aborts without saving, leaving the previous version current", async () => {
+      await slow.uploadProposal(pdf);
+      const controller = new AbortController();
+      const upload = slow.uploadProposal(pdf, { signal: controller.signal, onProgress: (f) => f > 0.3 && controller.abort() });
+      await expect(upload).rejects.toMatchObject({ name: "AbortError" });
+      const team = (await slow.getCurrentTeam())!;
+      expect(team.submissions.filter((s) => s.kind === "proposal")).toHaveLength(1);
+      expect(team.proposal?.version).toBe(1);
+    });
+
+    it("fails with a network error if the connection drops mid-upload, saving nothing", async () => {
+      const upload = slow.uploadProposal(pdf, {
+        onProgress: (f) => {
+          if (f > 0.3) createDev(slowStore).setSampleNetworkError(true);
+        },
+      });
+      await expect(upload).rejects.toBeInstanceOf(NetworkError);
+      createDev(slowStore).setSampleNetworkError(false);
+      expect((await slow.getCurrentTeam())!.proposal).toBeNull();
+    });
+
+    it("is refused if the deadline passes while the file uploads", async () => {
+      const upload = slow.uploadProposal(pdf, {
+        onProgress: (f) => {
+          if (f > 0.3) createDev(slowStore).setSampleStage("shortlisting");
+        },
+      });
+      expect(await upload).toMatchObject({ ok: false, error: { code: "proposal_deadline_passed" } });
+      expect((await slow.getCurrentTeam())!.proposal).toBeNull();
+    });
+  });
+});
+
 describe("listTeams", () => {
   it("filters by category and stage", async () => {
     expect(await d.listTeams({ category: "open" })).toHaveLength(5);

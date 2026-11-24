@@ -1,6 +1,6 @@
 # SLIoT Challenge 2027: Workload
 
-Every step of the project from A to Z, split into substeps. Last updated 2026-11-23.
+Every step of the project from A to Z, split into substeps. Last updated 2026-11-24.
 
 - `[x]` done · `[ ]` to do · **(now)** in progress
 - Details live in [architecture.md](architecture.md) (backend, security, backups) and [frontend-plan.md](frontend-plan.md) (design, sections, screens).
@@ -24,7 +24,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | L | Sections 4: memories, sponsors, FAQ, contact, footer | Done                          |
 | M | Sample-data layer for the app screens | Done                          |
 | N | Registration screen (`/register`) | Done                          |
-| O | Team portal screens (`/team`) | To do                         |
+| O | Team portal screens (`/team`) | Done                          |
 | P | Admin dashboard screens (`/admin`) | To do                         |
 | Q | Frontend polish and verification | To do                         |
 | R | Accounts and access (department) | To do                         |
@@ -157,20 +157,24 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 - Code: `src/components/register/` (form logic in `form.ts` with tests), `src/components/app/app-header.tsx`, `src/components/ui/select.tsx`, route `src/app/(app)/register/page.tsx`
 - Not done here: the real Turnstile check and honeypot handling on the server (U1); `/team` link on the success screen 404s until step O
 
-## O. Team portal screens (`/team`)
+## O. Team portal screens (`/team`) (waiting for review)
 
-- [ ] O1. Code login (formatted input) and "Forgot your code?"
-- [ ] O2. Dashboard: status tracker, team card
-- [ ] O3. Proposal panel: PDF drop zone, progress, current version and history, countdown, lock after deadline
-- [ ] O4. Prototype panel: locked until shortlisted, YouTube link with live preview
-- [ ] O5. Every state from the demo switcher
+- [x] O1. Code login (`SL27-` prefix, formatted as you type, a pasted full code is trimmed) and "Forgot your code?" (same reply for any email); states: wrong code, short code, too many tries (live countdown), network error
+- [x] O2. Dashboard: status tracker (Registered → Proposal → Shortlist → Prototype → Finals; a not-shortlisted team stops at Shortlist; phones show only the current label), team card (code with copy button, members, no NIC or contacts), shortlisted and finalist banners, Log out
+- [x] O3. Proposal panel: drag-and-drop PDF zone with a specific message per mistake (not a PDF, empty, over 10 MB, not really a PDF), real progress with Cancel, current version and earlier versions, live countdown, lock after the deadline or once decided, "upload failed, try again" and server-refusal states
+- [x] O4. Prototype panel: waiting (shortlist date), not shortlisted (kind message, no form), open (YouTube link with thumbnail preview, replace until the deadline), closed, finalist (read-only)
+- [x] O5. Every state from the demo switcher checked in the browser (stage × team × shortlist); phone and desktop layouts
+- [x] O6. Added during step O: **finalist stage** (`finalist` team stage, `announceFinalists`, `unmarkFinalists`, finalist email, sample finalists), **upload progress and abort** (`uploadProposal(upload, { onProgress, signal })`), **login and reminder rate limit** (5 per 15 minutes, `rate_limited` with `retryAfterSeconds`)
+- Code: `src/components/team/` (logic in `portal.ts` with tests), route `src/app/(app)/team/page.tsx`
+- Not done here: the real upload over XMLHttpRequest (U3), the YouTube oEmbed check (U4), the real rate limit (U2); no admin screen for finalists yet (P4b)
 
 ## P. Admin dashboard screens (`/admin`)
 
 - [ ] P1. Login screen and app shell with role-based sidebar
-- [ ] P2. Teams table (200 rows): sort, filter, search, columns, expandable members; CSV and Sheets buttons
+- [ ] P2. Teams table (20 sample rows): sort, filter, search, columns, expandable members; CSV and Sheets buttons
 - [ ] P3. Team detail drawer with history, audit trail and edit mode
 - [ ] P4. Shortlist page: draft marks, bulk tick, summary bar, finalise (type FINALISE), reopen, history
+- [ ] P4b. Finalists page (super admins): tick teams that submitted a prototype, "Announce finalists" (type FINALISTS), un-mark to correct, uses `announceFinalists` and `unmarkFinalists`
 - [ ] P5. Settings (deadlines in Sri Lanka time), admin accounts (generated password shown once), audit log
 - [ ] P6. Loading skeletons, empty states, errors, "Sample data" badge
 
@@ -203,7 +207,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 ## T. Email system
 
 - [ ] T1. Outbox table and background worker in `instrumentation.ts` (retries 1 min → 12 h)
-- [ ] T2. React Email templates: registration confirmed, code reminder, proposal received, shortlisted, prototype received
+- [ ] T2. React Email templates: registration confirmed, code reminder, proposal received, shortlisted, prototype received, finalist
 - [ ] T3. nodemailer over Workspace SMTP; console transport in development; `pnpm email:dev` preview
 - [ ] T4. Test sends to real Gmail and Outlook inboxes on phone and desktop
 
@@ -221,6 +225,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 - [ ] V2. Teams queries, filters, edits with audit trail
 - [ ] V3. CSV export (UTF-8 with BOM) and Sheets export (one master sheet, one-way refresh)
 - [ ] V4. Shortlist: draft marks, finalise transaction, emails to newly shortlisted teams only, reopen, history
+- [ ] V4b. Finalists: announce (needs a prototype, email once via `finalist_emailed_at`), un-mark, audit entries
 - [ ] V5. Settings, admin accounts, audit log
 - [ ] V6. Decide: correction email for a team removed after reopening (open question)
 

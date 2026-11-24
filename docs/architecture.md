@@ -178,6 +178,7 @@ erDiagram
 | stage | TEXT | | ✓ | See the stage flow below. Default `registered` |
 | shortlist_mark | INTEGER | | ✓ | Draft tick by a super admin, 0/1, default 0. Hidden from teams and admins until finalised |
 | shortlist_emailed_at | INTEGER | | | When the "you're shortlisted" email was queued. Stops a re-finalise from emailing a team twice |
+| finalist_emailed_at | INTEGER | | | When the "you're a finalist" email was queued. Stops a second announce from emailing a team twice |
 | created_at | INTEGER | | ✓ | |
 | updated_at | INTEGER | | ✓ | |
 
@@ -190,6 +191,7 @@ Stage flow:
 | `shortlisted` | The shortlist is finalised and the team is ticked |
 | `not_shortlisted` | The shortlist is finalised and the team isn't ticked |
 | `prototype_submitted` | A shortlisted team submits its first prototype link |
+| `finalist` | A super admin announces the team as a finalist (only teams with a prototype). Un-marking returns it to `prototype_submitted` |
 
 Indexes: `code` (unique), `category`, `stage`.
 
@@ -308,7 +310,7 @@ One row per press of **Finalise shortlist**, so every version of the shortlist i
 | id | INTEGER | PK | ✓ | |
 | team_id | INTEGER | FK → teams.id | | The team the email is about, if any |
 | to_email | TEXT | | ✓ | |
-| template | TEXT | | ✓ | `registration_confirmed` \| `code_reminder` \| `proposal_received` \| `shortlisted` \| `prototype_received` |
+| template | TEXT | | ✓ | `registration_confirmed` \| `code_reminder` \| `proposal_received` \| `shortlisted` \| `prototype_received` \| `finalist` |
 | props | TEXT | | ✓ | JSON props for the React Email template, rendered at send time |
 | status | TEXT | | ✓ | `pending` \| `sent` \| `failed` |
 | attempts | INTEGER | | ✓ | Default 0. Gives up after 6 |
@@ -436,6 +438,16 @@ A dedicated page, `/admin/shortlist`, visible only to super admins.
    - The marks are changed, then the list is finalised again.
    - Only **newly shortlisted** teams get an email. Teams already emailed are never emailed twice.
    - Every finalise is recorded, so the history of changes is visible.
+
+### 6.6a Finalists (super admins only)
+
+Added during step O. A lighter process than the shortlist, because it is smaller, later and decided by a person checking the list.
+
+1. A super admin ticks teams that have **submitted a prototype**. A team without one can't be a finalist.
+2. **Announce finalists** asks for the word `FINALISTS`. The chosen teams' stage becomes `finalist`, and each newly announced team's leader gets a "you're a finalist" email once (`finalist_emailed_at` stops a repeat). The action is written to the audit log.
+3. There is no draft step and no reopen. To correct a mistake a super admin un-marks a team: it returns to `prototype_submitted`, no email is sent, and the audit log records it.
+4. A finalist sees "Finals" lit in the team portal's status tracker, with the finale date. A finalist can no longer replace the prototype link.
+5. If the shortlist is re-finalised, a finalist who is still ticked stays a finalist; one who is unticked becomes `not_shortlisted`.
 
 ### 6.7 Exports
 
