@@ -41,7 +41,7 @@ export const bebasNeue = Bebas_Neue({
 
 export const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: "variable",
   display: "swap",
   variable: "--font-montserrat",
 });
