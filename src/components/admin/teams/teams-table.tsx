@@ -173,7 +173,7 @@ export function TeamsTable({
   const visibleCount = table.getVisibleLeafColumns().length + 1;
 
   return (
-    <div className="max-h-[calc(100dvh-19rem)] min-h-64 overflow-auto rounded-panel ring-1 ring-edge ring-inset">
+    <div className="relative max-h-[calc(100dvh-19rem)] min-h-64 overflow-auto rounded-panel ring-1 ring-edge ring-inset">
       <table className="w-full border-separate border-spacing-0 text-small">
         <caption className="sr-only">Teams. Select a column heading to sort by it.</caption>
         <thead>

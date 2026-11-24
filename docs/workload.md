@@ -25,7 +25,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | M | Sample-data layer for the app screens | Done                          |
 | N | Registration screen (`/register`) | Done                          |
 | O | Team portal screens (`/team`) | Done                          |
-| P | Admin dashboard screens (`/admin`) | **In progress** (slice 2 of 4 done) |
+| P | Admin dashboard screens (`/admin`) | **In progress** (slice 3 of 4 done) |
 | Q | Frontend polish and verification | To do                         |
 | R | Accounts and access (department) | To do                         |
 | S | Database layer | To do                         |
@@ -182,7 +182,7 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - [x] Dev switcher: sign in as a sample organizer
 - [x] 251 tests (51 new), lint, typecheck and build pass; primitives checked in the browser at desktop and 375 px
 
-**Slice 2, shell, login and Teams (done, waiting for review):**
+**Slice 2, shell, login and Teams (done):**
 
 - Routes: `/admin/login` (outside the shell) and the signed-in screens under `src/app/(app)/admin/(shell)/`. Shortlist, Finalists, Settings, Admins and Audit log are placeholders (`ComingNext`) behind the real `SuperOnly` gate, so the sidebar and the role check can be tried; slices 3 and 4 replace them
 - Shell (`src/components/admin/`): `AdminShell` checks the session (skeleton while checking, redirect to login when signed out), role-aware sidebar on large screens and a scrolling tab row on phones, "Sample data" badge, signed-in name and role, sign out. Toasts live here
@@ -195,13 +195,22 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - Decisions to confirm: the first click on a number column sorts high to low (TanStack's default for numbers); "Email code again" has no confirm step; the team's activity hides draft shortlist ticks from plain admins (the backend's audit read should do the same, step R)
 - Not covered yet: keyboard and screen-reader pass (step Q), reduced motion in a real browser
 
+**Slice 3, Shortlist and Finalists (done):**
+
+- `/admin/shortlist` (`shortlist/shortlist-screen.tsx`, rules in `shortlist-logic.ts` with tests): teams with a proposal, a tick each, category filter, "Tick all shown" / "Untick all shown", sticky summary of ticks per category, draft or finalised banner. Finalise needs typing FINALISE and says how many teams are shortlisted, how many leaders get an email (only teams not emailed before), how many teams will see "not shortlisted", and warns about teams told earlier that they were shortlisted and are now unticked (they get no correction email). Once finalised the ticks are locked, with Reopen (confirm) and the finalisation history
+- `/admin/finalists`: "Ready to announce" (prototype in, not yet a finalist) with select-all, then FINALISTS to announce (counts newly emailed leaders); "Finalists" list with Remove (confirm, no email sent, says a sent email can't be taken back)
+- Shared: `use-admin-data.ts` (loads teams, settings and history, refreshes when the store changes), `errors.ts`
+- 291 tests (6 new), lint, typecheck and build pass. Checked in the browser: finalised view, reopen, ticking (including two quick ticks in a row), finalise dialog with warnings, FINALISE → toast and lock, announce 2 finalists, remove one, no console errors, 375 px
+- Found and fixed: quick ticks in a row were ignored while a call was running; visually hidden text inside a scrolling table made the whole page wider on phones (every table scroll box is now positioned; this also fixed it for Teams)
+- To confirm: finalising demotes any unticked team to "not shortlisted", even one that already has a prototype or is a finalist (`finaliseShortlist` in `api.ts` only protects ticked teams). A real shortlist reopen after prototypes exist would hit this. Probably the function should leave teams past the shortlist stage alone
+
 **Screens:**
 
 - [x] P1. Login screen and app shell with role-based sidebar
 - [x] P2. Teams table (20 sample rows, 200 with the dev "Add teams" button): sort, filter, search, columns, expandable members; CSV and Sheets buttons
 - [x] P3. Team detail drawer with history, audit trail and edit mode
-- [ ] P4. Shortlist page: draft marks, bulk tick, summary bar, finalise (type FINALISE), reopen, history
-- [ ] P4b. Finalists page (super admins): tick teams that submitted a prototype, "Announce finalists" (type FINALISTS), un-mark to correct, uses `announceFinalists` and `unmarkFinalists`
+- [x] P4. Shortlist page: draft marks, bulk tick, summary bar, finalise (type FINALISE), reopen, history
+- [x] P4b. Finalists page (super admins): tick teams that submitted a prototype, "Announce finalists" (type FINALISTS), un-mark to correct, uses `announceFinalists` and `unmarkFinalists`
 - [ ] P5. Settings (deadlines in Sri Lanka time), admin accounts (generated password shown once), audit log
 - [ ] P6. Loading skeletons, empty states, errors, "Sample data" badge
 

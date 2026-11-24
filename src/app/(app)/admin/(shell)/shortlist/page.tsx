@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import { ComingNext } from "@/components/admin/coming-next";
+import { SuperOnly } from "@/components/admin/super-only";
+import { ShortlistScreen } from "@/components/admin/shortlist/shortlist-screen";
 
 export const metadata: Metadata = { title: "Shortlist" };
 
-export default function Page() {
-  return <ComingNext title="Shortlist" slice="Slice 3" />;
+export default function ShortlistPage() {
+  return (
+    <SuperOnly>
+      <ShortlistScreen />
+    </SuperOnly>
+  );
 }
