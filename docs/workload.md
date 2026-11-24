@@ -232,11 +232,15 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - [ ] Q4. Lighthouse mobile within budget (LCP < 2.5s, CLS < 0.05, INP < 200ms, first-view JS ≲ 180 KB gzip)
 - [ ] Q5. `/impeccable audit` and `polish` passes; fix findings
 
-## R. Accounts and access (department)
+## R. Accounts and access (department) (paused at R3c, 2026-11-24)
 
-- [ ] R1. `sliot@cse.mrt.ac.lk` mailbox with 2-Step Verification and an app password (Workspace admin)
-- [ ] R2. Google Cloud project with Drive and Sheets APIs; service account and JSON key
-- [ ] R3. Shared Drive "SLIoT 2027" (service account as Content manager, judges as viewers)
+- [x] R1. `sliot@cse.mrt.ac.lk` mailbox with 2-Step Verification and an app password (Workspace admin). App password "SL-IOT-Web" created 2026-11-24; SMTP sending still to be confirmed in step T3
+- [x] R2. Google Cloud project with Drive and Sheets APIs; service account and JSON key (project `sliot-2027`, service account `sliot-website@sliot-2027.iam.gserviceaccount.com`; key stored privately, never in the repo)
+- [ ] R3. Drive storage for proposals. Plan changed 2026-11-24: no permission to create a Shared Drive, so use a folder "SLIoT 2027 Proposals" in the `sliot@cse.mrt.ac.lk` My Drive, with uploads made through OAuth as that account (refresh token, scope `drive`), not the service account (service accounts have no storage quota). Judges get viewer access to the folder. The service account is still used for Sheets only
+  - [x] R3a. Create the folder (folder ID `1YHcUQvkxhelSOxpg-lnk8S1D0mBGjao7`)
+  - [x] R3b. OAuth consent screen (Internal if available, so the refresh token does not expire). Internal was available
+  - [ ] R3c. OAuth client (Web application) and refresh token via OAuth Playground
+  - [ ] R3d. Judges as viewers on the folder (can wait)
 - [ ] R4. Master Google Sheet shared with the service account
 - [ ] R5. Cloudflare: R2 bucket `sliot-backups`, bucket-scoped token, Turnstile widget for sliot.cse.mrt.ac.lk, billing alert
 - [ ] R6. healthchecks.io check for backups
@@ -244,9 +248,9 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 
 ## S. Database layer
 
-- [ ] S1. better-sqlite3 + Drizzle (allow its native build in `pnpm-workspace.yaml`)
-- [ ] S2. Schema and first migration for all nine tables (architecture.md section 5)
-- [ ] S3. Database client: WAL mode, foreign keys on, file at `/var/lib/sliot/sliot.db`
+- [x] S1. better-sqlite3 + Drizzle. better-sqlite3 13 ships prebuilt binaries for every platform, so its `node-gyp` build is **declined** in `pnpm-workspace.yaml` (it needs Visual Studio on Windows and isn't needed). Same for esbuild and `@node-rs/argon2`
+- [x] S2. Schema and first migration for all nine tables (architecture.md section 5): `src/server/db/schema.ts`, migrations in `src/server/db/migrations/` (`pnpm db:generate`), CHECK constraints on every enum
+- [x] S3. Database client: WAL mode, foreign keys on, file at `/var/lib/sliot/sliot.db` (`DATABASE_PATH`; development default `./data/sliot.db`). `src/server/db/client.ts`, `pnpm db:migrate`, env schema in `src/server/env.ts` with `.env.example`
 - [ ] S4. Settings helpers; `pnpm admin:create` prints a generated password
 - [ ] S5. Replace the sample-data functions with real queries
 

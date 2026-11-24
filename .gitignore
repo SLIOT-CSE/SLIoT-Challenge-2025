@@ -33,3 +33,11 @@ memory.md
 
 # TypeScript incremental build cache
 *.tsbuildinfo
+
+# Local SQLite database and uploads (development)
+/data/
+
+# Environment files with real values (.env.example is committed)
+.env
+.env.*
+!.env.example

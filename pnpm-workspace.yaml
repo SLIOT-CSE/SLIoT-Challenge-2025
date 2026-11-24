@@ -1,3 +1,9 @@
 allowBuilds:
   '@parcel/watcher': false
   unrs-resolver: false
+  # Ships prebuilt binaries for every platform; its node-gyp rebuild needs Visual Studio and isn't needed
+  better-sqlite3: false
+  # Binaries come from @esbuild/<platform> optional dependencies; the postinstall only re-checks them
+  esbuild: false
+  # Binary comes from @node-rs/argon2-<platform> optional dependencies
+  '@node-rs/argon2': false

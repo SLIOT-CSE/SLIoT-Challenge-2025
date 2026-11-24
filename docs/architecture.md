@@ -94,7 +94,7 @@ Tailwind 4 trade-off: it needs Safari 16.4+ (iPhones updated since 2023), Chrome
 | **Cloudflare R2** | Off-server backup storage | Free tier covers us, no download fees |
 | **Vitest**, **Playwright** | Unit tests and end-to-end tests of the registration and upload flows | Playwright is already used for visual checks |
 
-`better-sqlite3` builds a native module on install, so it must be allowed in `pnpm-workspace.yaml` (`allowBuilds: better-sqlite3: true`).
+`better-sqlite3` (13.x) ships prebuilt binaries for every platform inside the package, so its `node-gyp` build is declined in `pnpm-workspace.yaml` (`allowBuilds: better-sqlite3: false`). Allowing it makes pnpm compile from source, which needs Visual Studio on Windows.
 
 ## 4. Overall architecture
 
