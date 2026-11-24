@@ -1,4 +1,5 @@
 import type {
+  Admin,
   AuditEntry,
   Member,
   OutboxEmail,
@@ -12,10 +13,11 @@ import type {
 // saved to sessionStorage so a refresh keeps the state. Never used in production.
 
 export interface StoreState {
-  schemaVersion: 2;
+  schemaVersion: 3;
   /** One counter for every record's id */
   nextId: number;
   teams: Team[];
+  admins: Admin[];
   members: Member[];
   submissions: Submission[];
   settings: Settings;
@@ -24,6 +26,8 @@ export interface StoreState {
   audit: AuditEntry[];
   /** The team logged in with its code */
   session: { teamId: number } | null;
+  /** The organizer logged in on /admin/login */
+  adminSession: { adminId: number } | null;
 }
 
 /** Where the state is saved between page loads. Kept separate so tests run in plain Node */
@@ -55,7 +59,7 @@ export class Store {
     if (!json) return null;
     try {
       const parsed = JSON.parse(json) as StoreState;
-      return parsed.schemaVersion === 2 ? parsed : null;
+      return parsed.schemaVersion === 3 ? parsed : null;
     } catch {
       return null;
     }

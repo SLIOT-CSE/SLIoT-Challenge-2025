@@ -19,6 +19,22 @@ export const TEAM_STAGES = [
 
 export type TeamStage = (typeof TEAM_STAGES)[number];
 
+/** Plain-language names for the organizer screens and exports */
+export const TEAM_STAGE_LABELS: Record<TeamStage, string> = {
+  registered: "Registered",
+  proposal_submitted: "Proposal submitted",
+  shortlisted: "Shortlisted",
+  not_shortlisted: "Not shortlisted",
+  prototype_submitted: "Prototype submitted",
+  finalist: "Finalist",
+};
+
+export const CATEGORY_LABELS: Record<CategoryId, string> = {
+  school: "School",
+  university: "University",
+  open: "Open",
+};
+
 export const SUBMISSION_KINDS = ["proposal", "prototype"] as const;
 export type SubmissionKind = (typeof SUBMISSION_KINDS)[number];
 

@@ -1,6 +1,5 @@
 import type { Deadlines } from "@/content/deadlines";
 import type { CategoryId, InstitutionType, SubmissionKind, TeamStage } from "@/lib/team-rules";
-
 // Records and results of the data layer. Shapes follow docs/architecture.md, section 5,
 // with times as Unix milliseconds. The backend returns the same shapes.
 
@@ -58,6 +57,8 @@ export interface Settings {
   now: number | null;
   shortlistState: ShortlistState;
   deadlines: Deadlines;
+  /** When "Export to Sheets" last ran (architecture: `last_sheet_export_at`) */
+  lastSheetExportAt: number | null;
   /** Sample only: when on, every data call fails with a NetworkError. Set from the dev switcher */
   simulateNetworkError?: boolean;
 }
@@ -103,10 +104,84 @@ export interface AuditEntry {
   createdAt: number;
 }
 
+/** An audit entry with the actor's name filled in, for the screens */
+export interface AuditEntryView extends AuditEntry {
+  actorName: string | null;
+}
+
 /** Who is doing an admin action */
 export interface AdminActor {
   id: number;
   name: string;
+}
+
+export type AdminRole = "super_admin" | "admin";
+
+/** An organizer account, as stored (the sample store keeps a fake hash, never the password) */
+export interface Admin {
+  id: number;
+  /** Lower-case */
+  username: string;
+  displayName: string;
+  role: AdminRole;
+  disabled: boolean;
+  passwordHash: string;
+  lastLoginAt: number | null;
+  createdAt: number;
+}
+
+/** An organizer account as the screens see it: no password hash */
+export type AdminAccount = Omit<Admin, "passwordHash">;
+
+export interface NewAdminInput {
+  username: string;
+  displayName: string;
+  role: AdminRole;
+}
+
+/** The deadlines super admins can change (architecture: the `settings` keys) */
+export type DeadlineSettings = Pick<Deadlines, "registrationCloses" | "proposalDue" | "prototypeDue">;
+
+/** What an edit changed, one entry per field, for the audit trail */
+export interface FieldChange {
+  /** e.g. `name`, `institutionName`, `member2.email` */
+  field: string;
+  from: string | null;
+  to: string | null;
+}
+
+/** What the team edit form sends: the team's fixable details, members in position order */
+export interface TeamEditInput {
+  name: string;
+  /** School and University teams: the one institution for every member */
+  institutionName?: string;
+  institutionIsOther?: boolean;
+  /** Same number of members as the team has: edits can't add or remove people */
+  members: {
+    fullName: string;
+    whatsapp: string;
+    email: string;
+    nic?: string;
+    /** Open teams only */
+    institutionType?: InstitutionType;
+    institutionName?: string;
+    institutionIsOther?: boolean;
+  }[];
+}
+
+export type AuditActionGroup = "team" | "shortlist" | "finalists" | "admin" | "settings" | "export";
+
+export interface AuditFilter {
+  actorType?: ActorType;
+  actorId?: number;
+  actionGroup?: AuditActionGroup;
+  /** Unix ms, inclusive */
+  from?: number;
+  /** Unix ms, inclusive */
+  to?: number;
+  offset?: number;
+  /** Default 100 */
+  limit?: number;
 }
 
 // Joined views the screens use
@@ -147,7 +222,13 @@ export type ErrorCode =
   | "no_proposal"
   | "no_prototype"
   | "rate_limited"
-  | "confirmation_required";
+  | "confirmation_required"
+  | "forbidden"
+  | "invalid_credentials"
+  | "duplicate_username"
+  | "last_super_admin"
+  | "own_account"
+  | "not_found";
 
 export interface FieldIssue {
   /** e.g. `members.2.email` */

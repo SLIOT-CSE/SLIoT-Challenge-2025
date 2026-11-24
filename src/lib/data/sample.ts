@@ -4,8 +4,11 @@ import { generateTeamCode } from "@/lib/team-code";
 import type { CategoryId, InstitutionType, TeamStage } from "@/lib/team-rules";
 import { sampleTimeForStage } from "./clock";
 import type { StoreState } from "./store";
+import { sampleHash } from "./sample-auth";
 import type {
+  Admin,
   AdminActor,
+  AdminRole,
   AuditEntry,
   Member,
   OutboxEmail,
@@ -22,6 +25,17 @@ export const SAMPLE_SEED = 2027;
 
 /** The organizer the sample shortlist history is attributed to, and the actor screens can use */
 export const SAMPLE_SUPER_ADMIN: AdminActor = { id: 1, name: "Sample Super Admin" };
+
+/**
+ * The seeded organizer accounts. The passwords are invented and exist only in this sample
+ * layer (the dev switcher and the login page show them in development); the store keeps
+ * only a fake hash. Admin ids are their own numbering, separate from team ids.
+ */
+export const SAMPLE_ADMIN_ACCOUNTS = [
+  { id: 1, username: "super", displayName: SAMPLE_SUPER_ADMIN.name, role: "super_admin", password: "sample-super-1" },
+  { id: 2, username: "admin1", displayName: "Sample Admin One", role: "admin", password: "sample-admin-1" },
+  { id: 3, username: "admin2", displayName: "Sample Admin Two", role: "admin", password: "sample-admin-2" },
+] as const satisfies readonly { id: number; username: string; displayName: string; role: AdminRole; password: string }[];
 
 /** mulberry32: a small seeded random number generator */
 function createRng(seed: number) {
@@ -316,10 +330,23 @@ export function generateSampleState(): StoreState {
   });
   audit.sort((a, b) => a.createdAt - b.createdAt);
 
+  const admins: Admin[] = SAMPLE_ADMIN_ACCOUNTS.map((a, i) => ({
+    id: a.id,
+    username: a.username,
+    displayName: a.displayName,
+    role: a.role,
+    disabled: false,
+    passwordHash: sampleHash(a.password),
+    // Accounts were made before registration opened; the super admin logged in most recently
+    createdAt: t(d.registrationOpens) - (10 - i) * 24 * 3600 * 1000,
+    lastLoginAt: i === 0 ? t(d.prototypeDue) + 25 * 3600 * 1000 : null,
+  }));
+
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     nextId: id,
     teams,
+    admins,
     members,
     submissions,
     settings: {
@@ -327,10 +354,12 @@ export function generateSampleState(): StoreState {
       now: sampleTimeForStage("registration", d),
       shortlistState: "finalised",
       deadlines: { ...d },
+      lastSheetExportAt: null,
     },
     finalisations: [finalisation],
     outbox,
     audit,
     session: null,
+    adminSession: null,
   };
 }

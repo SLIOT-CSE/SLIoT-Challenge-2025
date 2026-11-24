@@ -1,8 +1,11 @@
 import type { Deadlines } from "@/content/deadlines";
 import { stageAt, type Stage } from "@/lib/competition";
+import { generatePassword } from "@/lib/admin-password";
 import {
+  deadlineSettingsSchema,
   emailSchema,
   hasPdfHeader,
+  newAdminSchema,
   prototypeLinkSchema,
   proposalFileSchema,
   registrationInputSchema,
@@ -10,17 +13,28 @@ import {
 } from "@/lib/schemas";
 import { generateTeamCode } from "@/lib/team-code";
 import { MAX_PROPOSAL_BYTES } from "@/lib/team-rules";
+import { auditActionGroup } from "./audit";
+import { buildTeamsCsv, teamsCsvFileName } from "./csv";
 import { NetworkError } from "./errors";
+import { sampleHash, sampleHashMatches } from "./sample-auth";
 import type { StoreState, Store } from "./store";
 import type {
   ActorType,
+  Admin,
+  AdminAccount,
   AdminActor,
+  AdminRole,
   AuditEntry,
+  AuditEntryView,
+  AuditFilter,
   Conflict,
   DataError,
+  DeadlineSettings,
   EmailTemplate,
   ErrorCode,
+  FieldChange,
   FieldIssue,
+  NewAdminInput,
   OutboxEmail,
   Result,
   Settings,
@@ -29,6 +43,7 @@ import type {
   Submission,
   Team,
   TeamDetail,
+  TeamEditInput,
   TeamFilter,
   TeamRow,
 } from "./types";
@@ -158,6 +173,61 @@ export function createData(store: Store) {
   const rateLimited = (seconds: number) =>
     fail("rate_limited", "Too many tries. Please wait before trying again.", { retryAfterSeconds: seconds });
 
+  const toAccount = (a: Admin): AdminAccount => ({
+    id: a.id,
+    username: a.username,
+    displayName: a.displayName,
+    role: a.role,
+    disabled: a.disabled,
+    lastLoginAt: a.lastLoginAt,
+    createdAt: a.createdAt,
+  });
+
+  /**
+   * The role check every admin function starts with. The actor must be an active account, and
+   * super-admin functions need the super_admin role. The backend gets the actor from the session.
+   */
+  function authorise(actor: AdminActor, role: AdminRole | "any"): Result<Admin> {
+    const admin = store.state.admins.find((a) => a.id === actor.id);
+    if (!admin || admin.disabled) return fail("forbidden", "You need to be signed in as an organizer.");
+    if (role === "super_admin" && admin.role !== "super_admin") {
+      return fail("forbidden", "Only super admins can do this.");
+    }
+    return ok(admin);
+  }
+
+  const activeSuperAdmins = (s: StoreState) => s.admins.filter((a) => a.role === "super_admin" && !a.disabled);
+
+  function withActorName(s: StoreState, e: AuditEntry): AuditEntryView {
+    let actorName: string | null = null;
+    if (e.actorType === "admin") actorName = s.admins.find((a) => a.id === e.actorId)?.displayName ?? null;
+    if (e.actorType === "team") actorName = s.teams.find((t) => t.id === e.actorId)?.name ?? null;
+    if (e.actorType === "system") actorName = "System";
+    return { ...e, actorName };
+  }
+
+  const toIssues = (error: { issues: { path: PropertyKey[]; message: string }[] }): FieldIssue[] =>
+    error.issues.map((i) => ({ path: i.path.join("."), message: i.message }));
+
+  /** Another team already uses an email or NIC in `members` (one team per person) */
+  function memberConflicts(
+    s: StoreState,
+    members: { position: number; email: string; nic: string | null }[],
+    exceptTeamId?: number,
+  ): Conflict[] {
+    const others = s.members.filter((m) => m.teamId !== exceptTeamId);
+    const emails = new Set(others.map((m) => m.email));
+    const nics = new Set(others.map((m) => m.nic).filter((n): n is string => n !== null));
+    const conflicts: Conflict[] = [];
+    for (const m of members) {
+      if (emails.has(m.email)) conflicts.push({ field: "email", memberPosition: m.position });
+      if (m.nic && nics.has(m.nic)) conflicts.push({ field: "nic", memberPosition: m.position });
+    }
+    return conflicts;
+  }
+
+  const SUPER_ONLY = "super_admin" as const;
+
   /** The pretend upload: progress ticks over a moment (scaled by file size), stopping on abort or outage */
   async function simulateUpload(sizeBytes: number, { onProgress, signal }: UploadOptions): Promise<void> {
     const totalMs = store.latencyMs * (6 + 4 * Math.min(1, sizeBytes / MAX_PROPOSAL_BYTES));
@@ -194,24 +264,11 @@ export function createData(store: Store) {
       if (stage !== "registration") return fail("registration_closed", "Registration has closed.");
 
       const parsed = registrationInputSchema.safeParse(input);
-      if (!parsed.success) {
-        const issues: FieldIssue[] = parsed.error.issues.map((i) => ({
-          path: i.path.join("."),
-          message: i.message,
-        }));
-        return fail("invalid_input", "Some details need fixing.", { issues });
-      }
+      if (!parsed.success) return fail("invalid_input", "Some details need fixing.", { issues: toIssues(parsed.error) });
       const data = parsed.data;
 
       // One team per person: email and NIC are unique across all teams
-      const s = store.state;
-      const emails = new Set(s.members.map((m) => m.email));
-      const nics = new Set(s.members.map((m) => m.nic).filter((n): n is string => n !== null));
-      const conflicts: Conflict[] = [];
-      for (const m of data.members) {
-        if (emails.has(m.email)) conflicts.push({ field: "email", memberPosition: m.position });
-        if (m.nic && nics.has(m.nic)) conflicts.push({ field: "nic", memberPosition: m.position });
-      }
+      const conflicts = memberConflicts(store.state, data.members);
       if (conflicts.length > 0) {
         return fail("duplicate_member", "Someone in this team is already registered in another team.", { conflicts });
       }
@@ -452,6 +509,8 @@ export function createData(store: Store) {
     /** Draft ticks. Only teams with a proposal can be ticked, and only while the list is a draft */
     async setShortlistMarks(teamIds: number[], marked: boolean, actor: AdminActor): Promise<Result<{ count: number }>> {
       await delay();
+      const auth = authorise(actor, SUPER_ONLY);
+      if (!auth.ok) return auth;
       const s = store.state;
       if (s.settings.shortlistState === "finalised") {
         return fail("shortlist_finalised", "The shortlist is finalised. Reopen it to change the ticks.");
@@ -486,6 +545,8 @@ export function createData(store: Store) {
       confirmation: string,
     ): Promise<Result<{ shortlistedCount: number; newlyEmailedCount: number; finalisationId: number }>> {
       await delay();
+      const auth = authorise(actor, SUPER_ONLY);
+      if (!auth.ok) return auth;
       if (confirmation !== "FINALISE") return fail("confirmation_required", "Type FINALISE to confirm.");
       if (store.state.settings.shortlistState === "finalised") {
         return fail("shortlist_finalised", "The shortlist is already finalised.");
@@ -541,6 +602,8 @@ export function createData(store: Store) {
     /** Back to draft. Teams keep their published result until the next finalise */
     async reopenShortlist(actor: AdminActor): Promise<Result<null>> {
       await delay();
+      const auth = authorise(actor, SUPER_ONLY);
+      if (!auth.ok) return auth;
       if (store.state.settings.shortlistState !== "finalised") {
         return fail("shortlist_not_finalised", "The shortlist isn't finalised.");
       }
@@ -563,6 +626,8 @@ export function createData(store: Store) {
       confirmation: string,
     ): Promise<Result<{ count: number; newlyEmailedCount: number }>> {
       await delay();
+      const auth = authorise(actor, SUPER_ONLY);
+      if (!auth.ok) return auth;
       if (confirmation !== "FINALISTS") return fail("confirmation_required", "Type FINALISTS to confirm.");
 
       const s = store.state;
@@ -608,6 +673,8 @@ export function createData(store: Store) {
     /** Corrects a mistake: finalists go back to prototype_submitted. No email is sent */
     async unmarkFinalists(teamIds: number[], actor: AdminActor): Promise<Result<{ count: number }>> {
       await delay();
+      const auth = authorise(actor, SUPER_ONLY);
+      if (!auth.ok) return auth;
       const s = store.state;
       const teams = teamIds.map((id) => s.teams.find((t) => t.id === id));
       if (teams.some((t) => !t || t.stage !== "finalist")) {
@@ -647,13 +714,378 @@ export function createData(store: Store) {
       return clone(list.sort((a, b) => b.createdAt - a.createdAt || b.id - a.id));
     },
 
-    async getAuditLog(filter: { targetType?: string; targetId?: string; limit?: number } = {}): Promise<AuditEntry[]> {
+    /** The trail for one target (the team drawer). Organizers of either role may read it */
+    async getAuditLog(
+      filter: { targetType?: string; targetId?: string; limit?: number } = {},
+    ): Promise<AuditEntryView[]> {
       await delay();
-      const list = store.state.audit
+      const s = store.state;
+      const list = s.audit
         .filter((e) => !filter.targetType || e.targetType === filter.targetType)
         .filter((e) => !filter.targetId || e.targetId === filter.targetId)
-        .sort((a, b) => b.createdAt - a.createdAt || b.id - a.id);
+        .sort((a, b) => b.createdAt - a.createdAt || b.id - a.id)
+        .map((e) => withActorName(s, e));
       return clone(filter.limit ? list.slice(0, filter.limit) : list);
+    },
+
+    // ---- Admin: sign in ----
+
+    async adminLogin(username: string, password: string): Promise<Result<{ admin: AdminAccount }>> {
+      await delay();
+      const wait = retryAfterSeconds(store.state, "admin.login_failed");
+      if (wait !== null) return rateLimited(wait);
+
+      const name = username.trim().toLowerCase();
+      const admin = store.state.admins.find((a) => a.username === name);
+      // A disabled account gets the same reply as a wrong password, so it can't be told apart
+      if (!admin || admin.disabled || !sampleHashMatches(password, admin.passwordHash)) {
+        store.mutate((state) =>
+          record(state, { type: "anonymous", id: null }, "admin.login_failed", undefined, { username: name.slice(0, 60) }),
+        );
+        return fail("invalid_credentials", "Wrong username or password.");
+      }
+      return ok(
+        store.mutate((state) => {
+          const a = state.admins.find((x) => x.id === admin.id)!;
+          a.lastLoginAt = store.now();
+          state.adminSession = { adminId: a.id };
+          record(state, { type: "admin", id: a.id }, "admin.login", { type: "admin", id: a.id });
+          return { admin: toAccount(a) };
+        }),
+      );
+    },
+
+    async adminLogout(): Promise<void> {
+      await delay();
+      store.mutate((state) => {
+        state.adminSession = null;
+      });
+    },
+
+    /** The organizer who is signed in, or null (also null once the account is disabled) */
+    async getCurrentAdmin(): Promise<AdminAccount | null> {
+      await delay();
+      const s = store.state;
+      const admin = s.adminSession ? s.admins.find((a) => a.id === s.adminSession!.adminId) : undefined;
+      return admin && !admin.disabled ? clone(toAccount(admin)) : null;
+    },
+
+    // ---- Admin: editing teams ----
+
+    /**
+     * Fixes typos in a team: its name, institution and each member's details. Not the code,
+     * category, stage or number of members. Runs the same rules as registration, including one
+     * team per person. TODO(backend): compare `updatedAt` so two organizers can't overwrite each
+     * other's edit silently.
+     */
+    async updateTeam(teamId: number, edit: TeamEditInput, actor: AdminActor): Promise<Result<{ changes: FieldChange[] }>> {
+      await delay();
+      const auth = authorise(actor, "any");
+      if (!auth.ok) return auth;
+
+      const s = store.state;
+      const team = s.teams.find((t) => t.id === teamId);
+      if (!team) return fail("not_found", "That team doesn't exist.");
+      const current = s.members.filter((m) => m.teamId === teamId).sort((a, b) => a.position - b.position);
+      if (edit.members.length !== current.length) {
+        return fail("invalid_input", "Members can't be added or removed here.");
+      }
+
+      const parsed = registrationInputSchema.safeParse({
+        name: edit.name,
+        category: team.category,
+        institutionName: edit.institutionName,
+        institutionIsOther: edit.institutionIsOther,
+        members: edit.members,
+      });
+      if (!parsed.success) return fail("invalid_input", "Some details need fixing.", { issues: toIssues(parsed.error) });
+      const data = parsed.data;
+
+      const conflicts = memberConflicts(s, data.members, teamId);
+      if (conflicts.length > 0) {
+        return fail("duplicate_member", "Someone in this team is already registered in another team.", { conflicts });
+      }
+
+      const changes: FieldChange[] = [];
+      const diff = (field: string, from: string | null, to: string | null) => {
+        if (from !== to) changes.push({ field, from, to });
+      };
+      const yesNo = (value: boolean) => (value ? "yes" : "no");
+      diff("name", team.name, data.name);
+      diff("institutionName", team.institutionName, data.institutionName);
+      diff("institutionIsOther", yesNo(team.institutionIsOther), yesNo(data.institutionIsOther));
+      current.forEach((m, i) => {
+        const next = data.members[i];
+        const at = `member${m.position}`;
+        diff(`${at}.fullName`, m.fullName, next.fullName);
+        diff(`${at}.whatsapp`, m.whatsapp, next.whatsapp);
+        diff(`${at}.email`, m.email, next.email);
+        diff(`${at}.nic`, m.nic, next.nic);
+        // In School and University teams a member's institution follows the team's, so the team-level change says it
+        if (team.category === "open") {
+          diff(`${at}.institutionType`, m.institutionType, next.institutionType);
+          diff(`${at}.institutionName`, m.institutionName, next.institutionName);
+          diff(`${at}.institutionIsOther`, yesNo(m.institutionIsOther), yesNo(next.institutionIsOther));
+        }
+      });
+      if (changes.length === 0) return ok({ changes });
+
+      return ok(
+        store.mutate((state) => {
+          const t = state.teams.find((x) => x.id === teamId)!;
+          t.name = data.name;
+          t.institutionName = data.institutionName;
+          t.institutionIsOther = data.institutionIsOther;
+          t.updatedAt = store.now();
+          state.members
+            .filter((m) => m.teamId === teamId)
+            .forEach((m) => {
+              const next = data.members[m.position - 1];
+              m.fullName = next.fullName;
+              m.whatsapp = next.whatsapp;
+              m.email = next.email;
+              m.nic = next.nic;
+              m.institutionType = next.institutionType;
+              m.institutionName = next.institutionName;
+              m.institutionIsOther = next.institutionIsOther;
+            });
+          record(state, { type: "admin", id: actor.id }, "team.edited", { type: "team", id: teamId }, { changes });
+          return { changes };
+        }),
+      );
+    },
+
+    /** Emails the team code to the leader again */
+    async resendCode(teamId: number, actor: AdminActor): Promise<Result<{ toEmail: string }>> {
+      await delay();
+      const auth = authorise(actor, "any");
+      if (!auth.ok) return auth;
+      const team = store.state.teams.find((t) => t.id === teamId);
+      const leader = team && store.state.members.find((m) => m.teamId === teamId && m.position === 1);
+      if (!team || !leader) return fail("not_found", "That team doesn't exist.");
+      return ok(
+        store.mutate((state) => {
+          queueEmail(state, team.id, leader.email, "code_reminder", { code: team.code, teamName: team.name });
+          record(state, { type: "admin", id: actor.id }, "team.code_resent", { type: "team", id: team.id });
+          return { toEmail: leader.email };
+        }),
+      );
+    },
+
+    // ---- Admin: exports ----
+
+    /** The teams as CSV, in the order of `teamIds` (the table's current view), or every team */
+    async exportTeamsCsv(
+      teamIds: number[] | undefined,
+      actor: AdminActor,
+    ): Promise<Result<{ csv: string; fileName: string; count: number }>> {
+      await delay();
+      const auth = authorise(actor, "any");
+      if (!auth.ok) return auth;
+      const s = store.state;
+      const teams = teamIds ? teamIds.map((id) => s.teams.find((t) => t.id === id)) : s.teams;
+      if (teams.some((t) => !t)) return fail("not_found", "One of those teams doesn't exist.");
+      const rows = (teams as Team[]).map((t) => row(s, t));
+      return ok(
+        store.mutate((state) => {
+          record(state, { type: "admin", id: actor.id }, "export.csv", undefined, { count: rows.length });
+          return {
+            csv: buildTeamsCsv(clone(rows), { shortlistState: state.settings.shortlistState }),
+            fileName: teamsCsvFileName(store.now()),
+            count: rows.length,
+          };
+        }),
+      );
+    },
+
+    /** Pretend export to the master Google Sheet: only records when it ran */
+    async exportToSheets(actor: AdminActor): Promise<Result<{ exportedAt: number; count: number }>> {
+      await delay();
+      const auth = authorise(actor, "any");
+      if (!auth.ok) return auth;
+      return ok(
+        store.mutate((state) => {
+          const exportedAt = store.now();
+          state.settings.lastSheetExportAt = exportedAt;
+          record(state, { type: "admin", id: actor.id }, "export.sheets", undefined, { count: state.teams.length });
+          return { exportedAt, count: state.teams.length };
+        }),
+      );
+    },
+
+    // ---- Admin: settings, accounts and the audit log (super admins) ----
+
+    /** Changes deadlines. Keeps registration, proposal and prototype in that order */
+    async updateSettings(patch: Partial<DeadlineSettings>, actor: AdminActor): Promise<Result<DeadlineSettings>> {
+      await delay();
+      const auth = authorise(actor, SUPER_ONLY);
+      if (!auth.ok) return auth;
+
+      const { registrationCloses, proposalDue, prototypeDue } = store.state.settings.deadlines;
+      const next: DeadlineSettings = { registrationCloses, proposalDue, prototypeDue, ...patch };
+      const parsed = deadlineSettingsSchema.safeParse(next);
+      if (!parsed.success) return fail("invalid_input", "Some deadlines need fixing.", { issues: toIssues(parsed.error) });
+
+      const keys = ["registrationCloses", "proposalDue", "prototypeDue"] as const;
+      const changes: FieldChange[] = keys
+        .filter((k) => store.state.settings.deadlines[k] !== next[k])
+        .map((k) => ({ field: k, from: store.state.settings.deadlines[k], to: next[k] }));
+      if (changes.length === 0) return ok(next);
+
+      return ok(
+        store.mutate((state) => {
+          Object.assign(state.settings.deadlines, next);
+          record(state, { type: "admin", id: actor.id }, "settings.updated", { type: "setting", id: "deadlines" }, { changes });
+          return next;
+        }),
+      );
+    },
+
+    async listAdmins(actor: AdminActor): Promise<Result<AdminAccount[]>> {
+      await delay();
+      const auth = authorise(actor, SUPER_ONLY);
+      if (!auth.ok) return auth;
+      return ok(clone([...store.state.admins].sort((a, b) => a.id - b.id).map(toAccount)));
+    },
+
+    /** Makes an account with a generated password. The password is returned once and never stored */
+    async createAdmin(
+      input: NewAdminInput,
+      actor: AdminActor,
+    ): Promise<Result<{ admin: AdminAccount; password: string }>> {
+      await delay();
+      const auth = authorise(actor, SUPER_ONLY);
+      if (!auth.ok) return auth;
+
+      const parsed = newAdminSchema.safeParse(input);
+      if (!parsed.success) return fail("invalid_input", "Some details need fixing.", { issues: toIssues(parsed.error) });
+      const data = parsed.data;
+      if (store.state.admins.some((a) => a.username === data.username)) {
+        return fail("duplicate_username", "That username is taken. Choose another.", {
+          issues: [{ path: "username", message: "That username is taken. Choose another." }],
+        });
+      }
+
+      const password = generatePassword();
+      return ok(
+        store.mutate((state) => {
+          const admin: Admin = {
+            id: store.nextId(),
+            username: data.username,
+            displayName: data.displayName,
+            role: data.role,
+            disabled: false,
+            passwordHash: sampleHash(password),
+            lastLoginAt: null,
+            createdAt: store.now(),
+          };
+          state.admins.push(admin);
+          record(state, { type: "admin", id: actor.id }, "admin.created", { type: "admin", id: admin.id }, {
+            username: admin.username,
+            role: admin.role,
+          });
+          return { admin: toAccount(admin), password };
+        }),
+      );
+    },
+
+    /** New generated password. The old one stops working and the account's sessions end */
+    async resetAdminPassword(adminId: number, actor: AdminActor): Promise<Result<{ password: string }>> {
+      await delay();
+      const auth = authorise(actor, SUPER_ONLY);
+      if (!auth.ok) return auth;
+      if (!store.state.admins.some((a) => a.id === adminId)) return fail("not_found", "That account doesn't exist.");
+
+      const password = generatePassword();
+      return ok(
+        store.mutate((state) => {
+          const target = state.admins.find((a) => a.id === adminId)!;
+          target.passwordHash = sampleHash(password);
+          if (state.adminSession?.adminId === adminId) state.adminSession = null;
+          record(state, { type: "admin", id: actor.id }, "admin.password_reset", { type: "admin", id: adminId });
+          return { password };
+        }),
+      );
+    },
+
+    /** Disabled accounts can't log in and their sessions end. Not yourself, and not the last super admin */
+    async setAdminDisabled(adminId: number, disabled: boolean, actor: AdminActor): Promise<Result<AdminAccount>> {
+      await delay();
+      const auth = authorise(actor, SUPER_ONLY);
+      if (!auth.ok) return auth;
+      const s = store.state;
+      const target = s.admins.find((a) => a.id === adminId);
+      if (!target) return fail("not_found", "That account doesn't exist.");
+
+      if (disabled && !target.disabled) {
+        if (target.id === actor.id) return fail("own_account", "You can't disable your own account.");
+        if (target.role === "super_admin" && activeSuperAdmins(s).length <= 1) {
+          return fail("last_super_admin", "This is the last active super admin. Make another account a super admin first.");
+        }
+      }
+      if (target.disabled === disabled) return ok(clone(toAccount(target)));
+
+      return ok(
+        store.mutate((state) => {
+          const t = state.admins.find((a) => a.id === adminId)!;
+          t.disabled = disabled;
+          if (disabled && state.adminSession?.adminId === adminId) state.adminSession = null;
+          record(state, { type: "admin", id: actor.id }, disabled ? "admin.disabled" : "admin.enabled", {
+            type: "admin",
+            id: adminId,
+          });
+          return toAccount(t);
+        }),
+      );
+    },
+
+    /** Changes an account's role. The last active super admin can't be demoted */
+    async setAdminRole(adminId: number, role: AdminRole, actor: AdminActor): Promise<Result<AdminAccount>> {
+      await delay();
+      const auth = authorise(actor, SUPER_ONLY);
+      if (!auth.ok) return auth;
+      const s = store.state;
+      const target = s.admins.find((a) => a.id === adminId);
+      if (!target) return fail("not_found", "That account doesn't exist.");
+      if (target.role === role) return ok(clone(toAccount(target)));
+
+      if (role !== "super_admin" && target.role === "super_admin" && !target.disabled && activeSuperAdmins(s).length <= 1) {
+        return fail("last_super_admin", "This is the last active super admin. Make another account a super admin first.");
+      }
+
+      return ok(
+        store.mutate((state) => {
+          const t = state.admins.find((a) => a.id === adminId)!;
+          const from = t.role;
+          t.role = role;
+          record(state, { type: "admin", id: actor.id }, "admin.role_changed", { type: "admin", id: adminId }, { from, to: role });
+          return toAccount(t);
+        }),
+      );
+    },
+
+    /** The whole audit log, newest first, a page at a time */
+    async listAuditLog(
+      actor: AdminActor,
+      filter: AuditFilter = {},
+    ): Promise<Result<{ entries: AuditEntryView[]; hasMore: boolean }>> {
+      await delay();
+      const auth = authorise(actor, SUPER_ONLY);
+      if (!auth.ok) return auth;
+
+      const s = store.state;
+      const matching = s.audit
+        .filter((e) => !filter.actorType || e.actorType === filter.actorType)
+        .filter((e) => filter.actorId === undefined || e.actorId === filter.actorId)
+        .filter((e) => !filter.actionGroup || auditActionGroup(e.action) === filter.actionGroup)
+        .filter((e) => filter.from === undefined || e.createdAt >= filter.from)
+        .filter((e) => filter.to === undefined || e.createdAt <= filter.to)
+        .sort((a, b) => b.createdAt - a.createdAt || b.id - a.id);
+
+      const offset = filter.offset ?? 0;
+      const limit = filter.limit ?? 100;
+      const page = matching.slice(offset, offset + limit).map((e) => withActorName(s, e));
+      return ok(clone({ entries: page, hasMore: offset + limit < matching.length }));
     },
   };
 }

@@ -25,7 +25,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | M | Sample-data layer for the app screens | Done                          |
 | N | Registration screen (`/register`) | Done                          |
 | O | Team portal screens (`/team`) | Done                          |
-| P | Admin dashboard screens (`/admin`) | To do                         |
+| P | Admin dashboard screens (`/admin`) | **In progress** (slice 1 of 4 done) |
 | Q | Frontend polish and verification | To do                         |
 | R | Accounts and access (department) | To do                         |
 | S | Database layer | To do                         |
@@ -168,7 +168,21 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 - Code: `src/components/team/` (logic in `portal.ts` with tests), route `src/app/(app)/team/page.tsx`
 - Not done here: the real upload over XMLHttpRequest (U3), the YouTube oEmbed check (U4), the real rate limit (U2); no admin screen for finalists yet (P4b)
 
-## P. Admin dashboard screens (`/admin`)
+## P. Admin dashboard screens (`/admin`) (in progress)
+
+Built in four slices, each checked in the browser before the next: (1) foundations, (2) shell, login and Teams (P1–P3), (3) Shortlist and Finalists (P4, P4b), (4) Settings, Admins, Audit log and polish (P5, P6). Review points after slices 2 and 4.
+
+**Slice 1, foundations (done, waiting for review):**
+
+- [x] Data layer (`src/lib/data/`), store `schemaVersion: 3`: seeded organizer accounts (`super`, `admin1`, `admin2`; invented sample passwords, only a fake hash is stored), `adminLogin` (5 tries per 15 minutes, same reply for a wrong password and a disabled account), `adminLogout`, `getCurrentAdmin`
+- [x] Role checks live in the data layer: the five shortlist and finalist functions, settings, accounts and the audit log return `forbidden` for anyone but an active super admin
+- [x] `updateTeam` (name, institution, member details; same rules as `/register`, one team per person; audit entry with old → new), `resendCode`, `exportTeamsCsv` (M1–M5 layout, UTF-8 BOM, formula-safe cells, result column once finalised), `exportToSheets` (pretend), `updateSettings` (registration < proposal < prototype), `listAdmins`, `createAdmin`, `resetAdminPassword`, `setAdminDisabled`, `setAdminRole` (not yourself, not the last active super admin), `listAuditLog` (filters, 100 per page); `getAuditLog` entries now carry `actorName`
+- [x] Generated passwords: 16 characters, no look-alikes (`src/lib/admin-password.ts`)
+- [x] UI primitives in `src/components/ui/`: `Dialog`, `Drawer` (shared shell in `overlay.tsx`, on the existing Radix Dialog), `ConfirmByTyping`, `PasswordReveal`, `Toast` (`ToastProvider`, `useToast`), `Checkbox`, `Badge`, `Skeleton`, `EmptyState`; gallery at `/design-system/admin-ui`
+- [x] Dev switcher: sign in as a sample organizer
+- [x] 251 tests (51 new), lint, typecheck and build pass; primitives checked in the browser at desktop and 375 px
+
+**Screens:**
 
 - [ ] P1. Login screen and app shell with role-based sidebar
 - [ ] P2. Teams table (20 sample rows): sort, filter, search, columns, expandable members; CSV and Sheets buttons

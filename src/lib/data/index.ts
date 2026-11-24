@@ -41,12 +41,36 @@ export const {
   listShortlistFinalisations,
   listOutbox,
   getAuditLog,
+  adminLogin,
+  adminLogout,
+  getCurrentAdmin,
+  updateTeam,
+  resendCode,
+  exportTeamsCsv,
+  exportToSheets,
+  updateSettings,
+  listAdmins,
+  createAdmin,
+  resetAdminPassword,
+  setAdminDisabled,
+  setAdminRole,
+  listAuditLog,
 } = data;
 
-export const { setSampleStage, setSampleShortlistState, setSampleNetworkError, resetSampleData, listSampleTeamLogins } =
-  dev;
+export const {
+  setSampleStage,
+  setSampleShortlistState,
+  setSampleNetworkError,
+  resetSampleData,
+  listSampleTeamLogins,
+  listSampleAdminLogins,
+  loginAsSampleAdmin,
+} = dev;
 
 export { NetworkError } from "./errors";
 export { SAMPLE_SUPER_ADMIN } from "./sample";
+export { auditActionGroup, AUDIT_ACTION_GROUPS } from "./audit";
+export { buildTeamsCsv, csvCell, formatColomboTime, shortlistResult } from "./csv";
+export type { SampleAdminLogin, SampleTeamLogin } from "./dev";
 export type { CompetitionState, ProposalUpload, UploadOptions } from "./api";
 export * from "./types";

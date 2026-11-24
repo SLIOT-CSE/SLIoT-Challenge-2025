@@ -2,7 +2,10 @@
 
 import { useState, useSyncExternalStore } from "react";
 import {
+  adminLogout,
+  listSampleAdminLogins,
   listSampleTeamLogins,
+  loginAsSampleAdmin,
   loginWithCode,
   logout,
   resetSampleData,
@@ -17,7 +20,7 @@ import { cn } from "@/lib/utils";
 
 // Development-only panel for the app screens (/register, /team, /admin): moves the sample
 // clock between competition stages, flips the shortlist between draft and finalised, logs in
-// as any sample team and resets the 20 sample teams. It renders nothing in production.
+// as any sample team or organizer and resets the 20 sample teams. It renders nothing in production.
 
 const STAGE_LABEL: Record<Stage, string> = {
   "before-registration": "Before registration",
@@ -53,10 +56,11 @@ function Panel() {
 
   if (!mounted) return null;
 
-  const { settings, teams, session } = store.state;
+  const { settings, teams, session, admins, adminSession } = store.state;
   const now = store.now();
   const stage = stageAt(new Date(now), settings.deadlines);
   const loggedIn = teams.find((t) => t.id === session?.teamId);
+  const organizer = admins.find((a) => a.id === adminSession?.adminId);
 
   return (
     <aside
@@ -138,6 +142,40 @@ function Panel() {
               {loggedIn && (
                 <button type="button" onClick={() => void logout()} className={smallButton}>
                   Log out
+                </button>
+              )}
+            </div>
+          </Field>
+
+          <Field
+            label="Organizer"
+            hint={
+              organizer
+                ? `Signed in as ${organizer.displayName} (${organizer.role === "super_admin" ? "super admin" : "admin"})`
+                : "Not signed in"
+            }
+          >
+            <div className="flex gap-2">
+              <select
+                className={selectClass}
+                value=""
+                aria-label="Sign in as a sample organizer"
+                onChange={(e) => {
+                  if (e.target.value) loginAsSampleAdmin(Number(e.target.value));
+                }}
+              >
+                <option value="">Sign in as…</option>
+                {listSampleAdminLogins()
+                  .filter((a) => !a.disabled)
+                  .map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.displayName} · {a.role === "super_admin" ? "super admin" : "admin"}
+                    </option>
+                  ))}
+              </select>
+              {organizer && (
+                <button type="button" onClick={() => void adminLogout()} className={smallButton}>
+                  Sign out
                 </button>
               )}
             </div>
