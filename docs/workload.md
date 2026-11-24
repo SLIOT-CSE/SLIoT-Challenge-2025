@@ -251,6 +251,7 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - [x] S1. better-sqlite3 + Drizzle. better-sqlite3 13 ships prebuilt binaries for every platform, so its `node-gyp` build is **declined** in `pnpm-workspace.yaml` (it needs Visual Studio on Windows and isn't needed). Same for esbuild and `@node-rs/argon2`
 - [x] S2. Schema and first migration for all nine tables (architecture.md section 5): `src/server/db/schema.ts`, migrations in `src/server/db/migrations/` (`pnpm db:generate`), CHECK constraints on every enum
 - [x] S3. Database client: WAL mode, foreign keys on, file at `/var/lib/sliot/sliot.db` (`DATABASE_PATH`; development default `./data/sliot.db`). `src/server/db/client.ts`, `pnpm db:migrate`, env schema in `src/server/env.ts` with `.env.example`
+- [x] S3a. Development test data: `pnpm db:seed` wipes the local database and writes a fixed data set (`src/server/db/seed-data.ts`): 20 teams in the prototype round (10 not shortlisted, 3 of them without a proposal; 6 shortlisted; 4 with a prototype), proposal versions, outbox, audit log, one finalisation, organizers `super` / `admin1` / `admin2`. Sets the dev-only `dev_now` setting so the app sits in the prototype round. Refuses to run in production
 - [ ] S4. Settings helpers; `pnpm admin:create` prints a generated password
 - [ ] S5. Replace the sample-data functions with real queries
 

@@ -26,6 +26,11 @@ Other scripts:
 | `pnpm start` | Serve the production build (port 3000, or `PORT`) |
 | `pnpm lint` | ESLint (Next.js + TypeScript rules) |
 | `pnpm typecheck` | TypeScript check without building (`tsc --noEmit`) |
+| `pnpm test` | Unit tests (Vitest) |
+| `pnpm db:migrate` | Apply database migrations (`./data/sliot.db` in development, `DATABASE_PATH` otherwise) |
+| `pnpm db:seed` | Development only: wipe the local database and fill it with 20 test teams; prints the logins |
+| `pnpm db:generate` | Write a migration after changing `src/server/db/schema.ts` |
+| `pnpm db:studio` | Browse the database |
 
 ## Project layout
 

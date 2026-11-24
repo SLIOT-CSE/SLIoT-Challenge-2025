@@ -30,6 +30,9 @@ pnpm test                # Vitest, all tests
 pnpm test:watch
 pnpm vitest run src/lib/data/api.test.ts      # one file
 pnpm vitest run -t "name of the test"         # tests matching a name
+pnpm db:migrate          # apply migrations (./data/sliot.db in dev, DATABASE_PATH otherwise)
+pnpm db:seed             # dev only: wipe the local db, write 20 test teams, print the logins
+pnpm db:generate         # write a migration after changing src/server/db/schema.ts
 ```
 
 - Tests are `src/**/*.test.ts` only (node environment, no DOM or component tests), so put testable logic in plain `.ts` modules next to the components (for example `shortlist-logic.ts`, `teams-view.ts`).
