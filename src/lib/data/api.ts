@@ -607,6 +607,11 @@ export function createData(store: Store) {
       if (store.state.settings.shortlistState !== "finalised") {
         return fail("shortlist_not_finalised", "The shortlist isn't finalised.");
       }
+      // The shortlist is decided once, before prototypes. Reopening later could pull teams that
+      // already submitted out of the competition, so it is locked as soon as one prototype exists.
+      if (store.state.submissions.some((x) => x.kind === "prototype")) {
+        return fail("not_allowed", "Teams have submitted prototypes, so the shortlist can no longer be reopened.");
+      }
       store.mutate((state) => {
         state.settings.shortlistState = "draft";
         record(state, { type: "admin", id: actor.id }, "shortlist.reopened", { type: "setting", id: "shortlist_state" });

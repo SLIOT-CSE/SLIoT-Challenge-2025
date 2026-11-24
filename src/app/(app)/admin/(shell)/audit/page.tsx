@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import { ComingNext } from "@/components/admin/coming-next";
+import { SuperOnly } from "@/components/admin/super-only";
+import { AuditScreen } from "@/components/admin/audit/audit-screen";
 
 export const metadata: Metadata = { title: "Audit log" };
 
 export default function Page() {
-  return <ComingNext title="Audit log" slice="Slice 4" />;
+  return (
+    <SuperOnly>
+      <AuditScreen />
+    </SuperOnly>
+  );
 }

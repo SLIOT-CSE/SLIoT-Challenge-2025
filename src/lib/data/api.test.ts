@@ -258,7 +258,7 @@ describe("shortlisting", () => {
       error: { code: "shortlist_finalised" },
     });
 
-    await d.reopenShortlist(SAMPLE_SUPER_ADMIN);
+    dev.setSampleShortlistState("draft"); // the sample has prototypes, so Reopen itself is refused (tested below)
     const noProposal = await byName("Wave Riders");
     expect(await d.setShortlistMarks([noProposal.id], true, SAMPLE_SUPER_ADMIN)).toMatchObject({
       ok: false,
@@ -268,7 +268,7 @@ describe("shortlisting", () => {
   });
 
   it("only changes marks until the list is finalised: teams don't see them", async () => {
-    await d.reopenShortlist(SAMPLE_SUPER_ADMIN);
+    dev.setSampleShortlistState("draft"); // the sample has prototypes, so Reopen itself is refused (tested below)
     const team = await byName("Byte Fireflies");
     expect(await d.setShortlistMarks([team.id], true, SAMPLE_SUPER_ADMIN)).toEqual({ ok: true, data: { count: 1 } });
     expect((await byName("Byte Fireflies")).stage).toBe("proposal_submitted");
@@ -276,7 +276,7 @@ describe("shortlisting", () => {
   });
 
   it("needs the word FINALISE", async () => {
-    await d.reopenShortlist(SAMPLE_SUPER_ADMIN);
+    dev.setSampleShortlistState("draft"); // the sample has prototypes, so Reopen itself is refused (tested below)
     expect(await d.finaliseShortlist(SAMPLE_SUPER_ADMIN, "finalise")).toMatchObject({
       ok: false,
       error: { code: "confirmation_required" },
@@ -288,7 +288,7 @@ describe("shortlisting", () => {
       ok: false,
       error: { code: "shortlist_finalised" },
     });
-    await d.reopenShortlist(SAMPLE_SUPER_ADMIN);
+    dev.setSampleShortlistState("draft"); // the sample has prototypes, so Reopen itself is refused (tested below)
     expect(await d.reopenShortlist(SAMPLE_SUPER_ADMIN)).toMatchObject({ ok: false, error: { code: "shortlist_not_finalised" } });
   });
 
@@ -296,7 +296,7 @@ describe("shortlisting", () => {
     const shortlistedMails = async (name: string) =>
       (await d.listOutbox((await byName(name)).id)).filter((e) => e.template === "shortlisted").length;
 
-    await d.reopenShortlist(SAMPLE_SUPER_ADMIN);
+    dev.setSampleShortlistState("draft"); // the sample has prototypes, so Reopen itself is refused (tested below)
 
     const added = await byName("Byte Fireflies"); // proposal submitted, not yet ticked
     const removed = await byName("Lanka Sensors"); // shortlisted and emailed before
@@ -323,7 +323,23 @@ describe("shortlisting", () => {
     expect(history).toHaveLength(2);
     expect(history[0].newlyEmailedCount).toBe(1);
     const actions = (await d.getAuditLog()).map((a) => a.action);
-    expect(actions).toEqual(expect.arrayContaining(["shortlist.reopened", "shortlist.marked", "shortlist.finalised"]));
+    expect(actions).toEqual(expect.arrayContaining(["shortlist.marked", "shortlist.finalised"]));
+  });
+});
+
+describe("reopening the shortlist", () => {
+  it("is refused once any team has submitted a prototype", async () => {
+    expect(await d.reopenShortlist(SAMPLE_SUPER_ADMIN)).toMatchObject({ ok: false, error: { code: "not_allowed" } });
+    expect((await d.getCompetitionState()).shortlistState).toBe("finalised");
+  });
+
+  it("works while no prototype exists, and is recorded", async () => {
+    store.mutate((s) => {
+      s.submissions = s.submissions.filter((x) => x.kind !== "prototype");
+    });
+    expect(await d.reopenShortlist(SAMPLE_SUPER_ADMIN)).toEqual({ ok: true, data: null });
+    expect((await d.getCompetitionState()).shortlistState).toBe("draft");
+    expect((await d.getAuditLog()).map((a) => a.action)).toContain("shortlist.reopened");
   });
 });
 
@@ -384,7 +400,7 @@ describe("finalists", () => {
   });
 
   it("stays a finalist through a shortlist re-finalise while still ticked, and can't replace the prototype", async () => {
-    await d.reopenShortlist(SAMPLE_SUPER_ADMIN);
+    dev.setSampleShortlistState("draft"); // the sample has prototypes, so Reopen itself is refused (tested below)
     await d.finaliseShortlist(SAMPLE_SUPER_ADMIN, "FINALISE");
     expect((await byName("Kite Runners")).stage).toBe("finalist");
 

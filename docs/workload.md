@@ -25,7 +25,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | M | Sample-data layer for the app screens | Done                          |
 | N | Registration screen (`/register`) | Done                          |
 | O | Team portal screens (`/team`) | Done                          |
-| P | Admin dashboard screens (`/admin`) | **In progress** (slice 3 of 4 done) |
+| P | Admin dashboard screens (`/admin`) | **Done, waiting for review** (all 4 slices) |
 | Q | Frontend polish and verification | To do                         |
 | R | Accounts and access (department) | To do                         |
 | S | Database layer | To do                         |
@@ -168,7 +168,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 - Code: `src/components/team/` (logic in `portal.ts` with tests), route `src/app/(app)/team/page.tsx`
 - Not done here: the real upload over XMLHttpRequest (U3), the YouTube oEmbed check (U4), the real rate limit (U2); no admin screen for finalists yet (P4b)
 
-## P. Admin dashboard screens (`/admin`) (in progress)
+## P. Admin dashboard screens (`/admin`) (done, waiting for review)
 
 Built in four slices, each checked in the browser before the next: (1) foundations, (2) shell, login and Teams (P1–P3), (3) Shortlist and Finalists (P4, P4b), (4) Settings, Admins, Audit log and polish (P5, P6). Review points after slices 2 and 4.
 
@@ -202,7 +202,17 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - Shared: `use-admin-data.ts` (loads teams, settings and history, refreshes when the store changes), `errors.ts`
 - 291 tests (6 new), lint, typecheck and build pass. Checked in the browser: finalised view, reopen, ticking (including two quick ticks in a row), finalise dialog with warnings, FINALISE → toast and lock, announce 2 finalists, remove one, no console errors, 375 px
 - Found and fixed: quick ticks in a row were ignored while a call was running; visually hidden text inside a scrolling table made the whole page wider on phones (every table scroll box is now positioned; this also fixed it for Teams)
-- To confirm: finalising demotes any unticked team to "not shortlisted", even one that already has a prototype or is a finalist (`finaliseShortlist` in `api.ts` only protects ticked teams). A real shortlist reopen after prototypes exist would hit this. Probably the function should leave teams past the shortlist stage alone
+- Decided: the shortlist is decided once, before prototypes. `reopenShortlist` is refused (`not_allowed`) as soon as any prototype exists, and the Shortlist screen shows why instead of the Reopen button. That removes the case where a second finalise could demote a team that already has a prototype or is a finalist. Tests: 305. The backend needs the same rule (step R). The dev switcher's Draft/Finalised control still bypasses it, for trying screens
+
+**Slice 4, Settings, Admins, Audit log and polish (done, waiting for review):**
+
+- `/admin/settings`: the three deadlines in native `datetime-local` boxes, always in Sri Lanka time (`deadline-input.ts` converts to and from `+05:30`), each with "in N days" or "N days ago". Only changed deadlines are sent; the data layer's order check lands on the right field. Discard changes, saved toast
+- `/admin/admins`: every account with role, status and last sign-in. Create admin (name, username, role; a taken username shows on the field), reset password, enable or disable, change role, each with a confirm dialog. New and reset passwords go through `PasswordReveal` (shown once, never stored). No actions on your own row, so you can't lock yourself out; the data layer still refuses to disable or demote the last active super admin
+- `/admin/audit`: newest first in plain sentences (`describe-audit.ts`), filters for who (anyone, teams, visitors, one organizer), what (action group) and a From/To day in Sri Lanka time (`audit-filter.ts`), a backwards range says so, 100 at a time with "Load 100 more". On a phone the person shows under the time so the sentence stays visible
+- P6: every screen has a skeleton, an offline state with retry and an empty state; "Sample data" badge on all of them; `ComingNext` placeholder removed
+- Finalists now lists only shortlisted teams with a prototype (stage "prototype_submitted"), so a team that was shortlisted out never appears
+- 303 tests (12 new this slice), lint, typecheck and build pass. Checked in the browser: settings invalid and valid save, create admin (taken username, then success with the one-time password), disable, audit filter by group, 375 px on all three
+- Known: the audit sentence for a disabled, enabled or reset account doesn't name the account (the stored entry only has its id); entries made at the sample clock sort below the seeded later-dated ones, which is a sample-data effect
 
 **Screens:**
 
@@ -211,8 +221,8 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - [x] P3. Team detail drawer with history, audit trail and edit mode
 - [x] P4. Shortlist page: draft marks, bulk tick, summary bar, finalise (type FINALISE), reopen, history
 - [x] P4b. Finalists page (super admins): tick teams that submitted a prototype, "Announce finalists" (type FINALISTS), un-mark to correct, uses `announceFinalists` and `unmarkFinalists`
-- [ ] P5. Settings (deadlines in Sri Lanka time), admin accounts (generated password shown once), audit log
-- [ ] P6. Loading skeletons, empty states, errors, "Sample data" badge
+- [x] P5. Settings (deadlines in Sri Lanka time), admin accounts (generated password shown once), audit log
+- [x] P6. Loading skeletons, empty states, errors, "Sample data" badge
 
 ## Q. Frontend polish and verification
 

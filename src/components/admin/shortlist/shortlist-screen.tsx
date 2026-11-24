@@ -68,6 +68,8 @@ export function ShortlistScreen() {
   const finalised = data.settings.shortlistState === "finalised";
   const latest = data.finalisations[0];
   const tickedTotal = preview.shortlisted;
+  // Once a prototype is in, the shortlist is final: reopening could pull teams out of the competition
+  const reopenLocked = data.teams.some((t) => t.prototype !== null);
 
   async function mark(ids: number[], on: boolean) {
     // Each change is its own call, so quick ticks in a row all go through
@@ -131,10 +133,14 @@ export function ShortlistScreen() {
               {latest ? `${formatDateTime(latest.finalisedAt)} by ${latest.finalisedByName}. ` : ""}The ticks are locked.
             </span>
           </p>
-          <Button variant="secondary" size="sm" onClick={() => setReopenOpen(true)}>
-            <Undo2 aria-hidden="true" className="size-4" />
-            Reopen shortlist
-          </Button>
+          {reopenLocked ? (
+            <p className="max-w-xs text-caption text-haze">Teams have submitted prototypes, so the shortlist can no longer be reopened.</p>
+          ) : (
+            <Button variant="secondary" size="sm" onClick={() => setReopenOpen(true)}>
+              <Undo2 aria-hidden="true" className="size-4" />
+              Reopen shortlist
+            </Button>
+          )}
         </div>
       ) : (
         <div className="flex items-start gap-3 rounded-panel bg-warning/10 p-4 text-small text-foam ring-1 ring-warning/40 ring-inset">
