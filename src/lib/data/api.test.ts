@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { normaliseTeamCode } from "@/lib/team-code";
 import { createData } from "./api";
 import { createDev } from "./dev";
+import { NetworkError } from "./errors";
 import { generateSampleState, SAMPLE_SUPER_ADMIN } from "./sample";
 import { Store } from "./store";
 
@@ -32,7 +33,6 @@ const newTeam = (over: Record<string, unknown> = {}) => ({
   name: "Brand New Team",
   category: "school",
   institutionName: "Some School, Colombo",
-  consent: true,
   members: [
     { fullName: "Aruni Silva", whatsapp: "077 555 0101", email: "aruni@new.example.lk" },
     { fullName: "Dev Perera", whatsapp: "077 555 0102", email: "dev@new.example.lk" },
@@ -358,6 +358,23 @@ describe("sample controls", () => {
     dev.setSampleStage("prototype");
     dev.setSampleShortlistState("draft");
     expect(await d.getCompetitionState()).toMatchObject({ stage: "prototype", shortlistState: "draft" });
+  });
+
+  it("makes every call throw a NetworkError while the outage is on, and stops when it's off", async () => {
+    dev.setSampleNetworkError(true);
+    await expect(d.registerTeam(newTeam())).rejects.toBeInstanceOf(NetworkError);
+    await expect(d.listTeams()).rejects.toBeInstanceOf(NetworkError);
+    expect(dev.listSampleTeamLogins()).toHaveLength(20); // the switcher itself keeps working
+
+    dev.setSampleNetworkError(false);
+    expect((await d.registerTeam(newTeam())).ok).toBe(true);
+    expect(await d.listTeams()).toHaveLength(21); // nothing was saved during the outage
+  });
+
+  it("clears the outage on reset", async () => {
+    dev.setSampleNetworkError(true);
+    dev.resetSampleData();
+    expect(await d.listTeams()).toHaveLength(20);
   });
 
   it("resets to the 20 seeded teams", async () => {

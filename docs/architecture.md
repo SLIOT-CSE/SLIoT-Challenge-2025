@@ -178,7 +178,6 @@ erDiagram
 | stage | TEXT | | ✓ | See the stage flow below. Default `registered` |
 | shortlist_mark | INTEGER | | ✓ | Draft tick by a super admin, 0/1, default 0. Hidden from teams and admins until finalised |
 | shortlist_emailed_at | INTEGER | | | When the "you're shortlisted" email was queued. Stops a re-finalise from emailing a team twice |
-| consent_at | INTEGER | | ✓ | When the leader accepted the privacy notice |
 | created_at | INTEGER | | ✓ | |
 | updated_at | INTEGER | | ✓ | |
 
@@ -349,7 +348,6 @@ Indexes: `created_at`, (`target_type`, `target_id`).
    | Team | Team name, category (School / University / Open) | The category decides what the rest of the form asks |
    | Institution (School and University teams only) | **School:** school name, typed in. **University:** dropdown of the main universities plus **Other**; choosing Other shows a text field for the name | Asked once and applied to every member, so all members are from the same place by design |
    | Members | Member 1 is labelled **Team leader**. "Add member" adds up to 5 in total; any member except the leader can be removed. Each member: full name, WhatsApp number, email, and NIC if they're a university student | **Open teams only:** each member also picks School or University and names their institution, with the same dropdown + Other for universities |
-   | Consent | Checkbox for the privacy notice | Required |
 
    A hidden honeypot field and a Turnstile widget sit on the form.
 
@@ -489,7 +487,7 @@ A dedicated page, `/admin/shortlist`, visible only to super admins.
 | Script injection | Content-Security-Policy and security headers (HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `frame-ancestors 'none'`), allowing only our own origin plus Turnstile |
 | Leaked secrets | Secrets only on the server, never in Git (see below); Google key file readable only by the app user; R2 keys only in the backup tools' config, not in the app |
 | Vulnerable dependencies | Dependabot alerts on the repo, `pnpm audit` before each release |
-| Personal data | Collect only what the competition needs (NIC only from university students); privacy notice + consent checkbox on registration (Sri Lanka Personal Data Protection Act, No. 9 of 2022); proposals private in Drive; the export Sheet shared only with organizers, since it holds NICs and phone numbers; admin access logged |
+| Personal data | Collect only what the competition needs (NIC only from university students); no privacy page or consent checkbox on registration (decision: removed during step N; note the Sri Lanka Personal Data Protection Act, No. 9 of 2022); proposals private in Drive; the export Sheet shared only with organizers, since it holds NICs and phone numbers; admin access logged |
 
 ### Secrets and configuration
 

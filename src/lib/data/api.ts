@@ -9,6 +9,7 @@ import {
   teamCodeSchema,
 } from "@/lib/schemas";
 import { generateTeamCode } from "@/lib/team-code";
+import { NetworkError } from "./errors";
 import type { StoreState, Store } from "./store";
 import type {
   ActorType,
@@ -62,8 +63,11 @@ const BEFORE_DECISION: Team["stage"][] = ["registered", "proposal_submitted"];
 const SHORTLISTED: Team["stage"][] = ["shortlisted", "prototype_submitted"];
 
 export function createData(store: Store) {
-  const delay = (): Promise<void> =>
-    store.latencyMs > 0 ? new Promise((resolve) => setTimeout(resolve, store.latencyMs)) : Promise.resolve();
+  // Every call starts here: the pretend delay, then the pretend outage if the switcher has one on
+  const delay = async (): Promise<void> => {
+    if (store.latencyMs > 0) await new Promise((resolve) => setTimeout(resolve, store.latencyMs));
+    if (store.state.settings.simulateNetworkError) throw new NetworkError();
+  };
 
   const stageNow = (): Stage => stageAt(new Date(store.now()), store.state.settings.deadlines);
 
@@ -191,7 +195,6 @@ export function createData(store: Store) {
             stage: "registered",
             shortlistMark: false,
             shortlistEmailedAt: null,
-            consentAt: now,
             createdAt: now,
             updatedAt: now,
           });

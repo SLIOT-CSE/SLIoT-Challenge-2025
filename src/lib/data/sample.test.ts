@@ -60,7 +60,6 @@ describe("generateSampleState", () => {
         category: team.category,
         institutionName: team.institutionName ?? undefined,
         institutionIsOther: team.institutionIsOther,
-        consent: true,
         members: members.map((m) => ({
           fullName: m.fullName,
           whatsapp: m.whatsapp,

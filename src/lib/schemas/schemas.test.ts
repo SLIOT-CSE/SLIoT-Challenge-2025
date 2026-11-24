@@ -26,7 +26,6 @@ function team(over: Record<string, unknown>): RegistrationInput {
     category: "school",
     institutionName: "Royal College",
     members: [member(1)],
-    consent: true,
     ...over,
   } as RegistrationInput;
 }
@@ -105,10 +104,6 @@ describe("registrationInputSchema", () => {
   it("accepts exactly 5 members", () => {
     const five = [1, 2, 3, 4, 5].map((n) => member(n));
     expect(registrationInputSchema.safeParse(team({ members: five })).success).toBe(true);
-  });
-
-  it("requires consent", () => {
-    expect(issuePaths(team({ consent: false }))).toContain("consent");
   });
 
   describe("university team", () => {

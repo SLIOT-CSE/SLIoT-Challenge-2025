@@ -144,7 +144,6 @@ export function generateSampleState(): StoreState {
       stage: plan.stage,
       shortlistMark: shortlisted,
       shortlistEmailedAt: shortlisted ? finalisedAt : null,
-      consentAt: createdAt,
       createdAt,
       updatedAt: createdAt,
     });

@@ -8,34 +8,34 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 
 ## Progress at a glance
 
-| Step | What | Status |
-|---|---|---|
-| A | Planning and architecture | Done |
-| B | Vite → Next.js migration | Done |
+| Step | What | Status                        |
+|---|---|-------------------------------|
+| A | Planning and architecture | Done                          |
+| B | Vite → Next.js migration | Done                          |
 | C | Production deployment | Done (two server checks open) |
-| D | Coming-soon page | Done (removed in H) |
-| E | TypeScript migration | Done |
-| F | Tailwind CSS 4 upgrade | Done |
-| G | Design foundations | Done |
-| H | Remove coming-soon mode | Done |
-| I | Sections 1: nav, hero, live callout, kinetic band | Done |
-| J | Sections 2: about map, categories, how to take part | Done |
-| K | Sections 3: timeline, prizes | Done |
-| L | Sections 4: memories, sponsors, FAQ, contact, footer | **Built, waiting for your review** |
-| M | Sample-data layer for the app screens | To do |
-| N | Registration screen (`/register`) | To do |
-| O | Team portal screens (`/team`) | To do |
-| P | Admin dashboard screens (`/admin`) | To do |
-| Q | Frontend polish and verification | To do |
-| R | Accounts and access (department) | To do |
-| S | Database layer | To do |
-| T | Email system | To do |
-| U | Registration and team portal backend | To do |
-| V | Admin and shortlisting backend | To do |
-| W | Security hardening | To do |
-| X | Backups and operations | To do |
-| Y | Testing, content and launch | To do |
-| Z | After launch | To do |
+| D | Coming-soon page | Done (removed in H)           |
+| E | TypeScript migration | Done                          |
+| F | Tailwind CSS 4 upgrade | Done                          |
+| G | Design foundations | Done                          |
+| H | Remove coming-soon mode | Done                          |
+| I | Sections 1: nav, hero, live callout, kinetic band | Done                          |
+| J | Sections 2: about map, categories, how to take part | Done                          |
+| K | Sections 3: timeline, prizes | Done                          |
+| L | Sections 4: memories, sponsors, FAQ, contact, footer | Done                          |
+| M | Sample-data layer for the app screens | Done                          |
+| N | Registration screen (`/register`) | Done                          |
+| O | Team portal screens (`/team`) | To do                         |
+| P | Admin dashboard screens (`/admin`) | To do                         |
+| Q | Frontend polish and verification | To do                         |
+| R | Accounts and access (department) | To do                         |
+| S | Database layer | To do                         |
+| T | Email system | To do                         |
+| U | Registration and team portal backend | To do                         |
+| V | Admin and shortlisting backend | To do                         |
+| W | Security hardening | To do                         |
+| X | Backups and operations | To do                         |
+| Y | Testing, content and launch | To do                         |
+| Z | After launch | To do                         |
 
 ---
 
@@ -144,16 +144,18 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 - [x] M3. Data-access functions in `src/lib/data/` backed by sample data (same signatures the backend will implement); writes return a `Result` with the field or member to fix
 - [x] M4. In-session sample store (`sessionStorage`) so flows can be clicked through end to end
 - [x] M5. Development-only switcher (`src/components/dev/sample-switcher.tsx`): competition stage, shortlist draft/finalised, log in as a sample team, reset. Mounted by `src/app/(app)/layout.tsx` for `/register`, `/team` and `/admin`; preview at `/design-system/sample-data`
-- [x] M6. Vitest set up (`pnpm test`); 130 tests for schemas, team codes, the generator and the data-layer rules
+- [x] M6. Vitest set up (`pnpm test`); tests for schemas, team codes, the generator and the data-layer rules (155 in total after step N, including the form logic)
 
-## N. Registration screen (`/register`)
+## N. Registration screen (`/register`) (waiting for review)
 
-- [ ] N1. Step 1, team: name, category tiles
-- [ ] N2. Step 2, institution: school name, or university dropdown + Other (skipped for Open)
-- [ ] N3. Step 3, members: leader card + add up to 5; WhatsApp, email, NIC for university students; per-member institution for Open
-- [ ] N4. Step 4, review and consent, Turnstile placeholder
-- [ ] N5. Success screen with the team code reveal and copy button
-- [ ] N6. Every state: closed, submitting, duplicate email or NIC, network error
+- [x] N1. Step 1, team: name, category tiles (`?category=` from the home page preselects)
+- [x] N2. Step 2, institution: school name, or university dropdown + Other (skipped for Open)
+- [x] N3. Step 3, members: leader card + add up to 5; WhatsApp, email, NIC for university students; per-member institution for Open
+- [x] N4. Step 4, review (read-only summary with Edit links and a "Back to review" shortcut), Turnstile placeholder; no consent checkbox (removed by decision)
+- [x] N5. Success screen with the team code reveal and copy button
+- [x] N6. Every state: closed (not yet open, closed), submitting, field errors from the server, duplicate email or NIC (names the member and field), network error (new "Simulate network errors" toggle in the dev switcher)
+- Code: `src/components/register/` (form logic in `form.ts` with tests), `src/components/app/app-header.tsx`, `src/components/ui/select.tsx`, route `src/app/(app)/register/page.tsx`
+- Not done here: the real Turnstile check and honeypot handling on the server (U1); `/team` link on the success screen 404s until step O
 
 ## O. Team portal screens (`/team`)
 

@@ -41,8 +41,10 @@ export const {
   getAuditLog,
 } = data;
 
-export const { setSampleStage, setSampleShortlistState, resetSampleData, listSampleTeamLogins } = dev;
+export const { setSampleStage, setSampleShortlistState, setSampleNetworkError, resetSampleData, listSampleTeamLogins } =
+  dev;
 
+export { NetworkError } from "./errors";
 export { SAMPLE_SUPER_ADMIN } from "./sample";
 export type { CompetitionState, ProposalUpload } from "./api";
 export * from "./types";

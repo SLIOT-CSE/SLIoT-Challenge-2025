@@ -60,9 +60,9 @@ export const teamCodeSchema = z
 
 /** Names and free text: trimmed, with a length range */
 export function text(label: string, min: number, max: number) {
-  return z
-    .string({ error: `${label} is required` })
-    .trim()
-    .min(min, { error: min <= 1 ? `${label} is required` : `${label} must be at least ${min} characters` })
-    .max(max, { error: `${label} must be at most ${max} characters` });
+  // Empty says "is required" (reported first); too short but not empty says how long it must be
+  const required = z.string({ error: `${label} is required` }).trim().min(1, { error: `${label} is required` });
+  const ranged =
+    min > 1 ? required.min(min, { error: `${label} must be at least ${min} characters` }) : required;
+  return ranged.max(max, { error: `${label} must be at most ${max} characters` });
 }

@@ -6,6 +6,7 @@ import {
   loginWithCode,
   logout,
   resetSampleData,
+  setSampleNetworkError,
   setSampleShortlistState,
   setSampleStage,
   store,
@@ -141,6 +142,19 @@ function Panel() {
               )}
             </div>
           </Field>
+
+          <label className="flex min-h-11 cursor-pointer items-center gap-3">
+            <input
+              type="checkbox"
+              className="size-5 accent-mint"
+              checked={Boolean(settings.simulateNetworkError)}
+              onChange={(e) => setSampleNetworkError(e.target.checked)}
+            />
+            <span>
+              <span className="block font-semibold">Simulate network errors</span>
+              <span className="block text-caption text-haze">Every data call fails until you turn this off</span>
+            </span>
+          </label>
 
           <button type="button" onClick={resetSampleData} className={cn(smallButton, "w-full")}>
             Reset sample data

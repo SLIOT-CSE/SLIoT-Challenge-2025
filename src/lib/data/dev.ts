@@ -29,6 +29,13 @@ export function createDev(store: Store) {
       });
     },
 
+    /** While on, every data call throws a NetworkError, to see each screen's offline state */
+    setSampleNetworkError(on: boolean): void {
+      store.mutate((s) => {
+        s.settings.simulateNetworkError = on;
+      });
+    },
+
     /** Reseeds the 20 teams, the clock and everything else */
     resetSampleData(): void {
       store.reset();

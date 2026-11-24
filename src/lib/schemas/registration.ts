@@ -25,6 +25,101 @@ export type MemberInput = z.input<typeof memberInputSchema>;
 
 export const categorySchema = z.enum(["school", "university", "open"]);
 
+export interface RuleIssue {
+  path: (string | number)[];
+  message: string;
+}
+
+/** The team-level shape the rules read. Wider than the parsed schema so forms can use it too */
+export interface TeamRuleInput {
+  category: CategoryId | "";
+  institutionName?: string;
+  institutionIsOther?: boolean;
+  members: {
+    email: string;
+    nic?: string;
+    institutionType?: InstitutionType | "";
+    institutionName?: string;
+    institutionIsOther?: boolean;
+  }[];
+}
+
+/**
+ * The rules that look across fields: the shared institution, NIC for university students and
+ * repeats inside the form. A plain function, so the form can run it on half-filled values
+ * (zod skips refinements while any field is invalid) and the schema runs the same code.
+ */
+export function teamRuleIssues(team: TeamRuleInput): RuleIssue[] {
+  type Path = (string | number)[];
+  const issues: RuleIssue[] = [];
+  const issue = (path: Path, message: string) => issues.push({ path, message });
+
+  /** Checks one institution (a team's, or an Open member's) */
+  const checkInstitution = (
+    type: InstitutionType,
+    name: string | undefined,
+    isOther: boolean | undefined,
+    namePath: Path,
+  ) => {
+    if (!name) {
+      issue(
+        namePath,
+        type === "school" ? "Enter the school name" : isOther ? "Enter the university name" : "Choose a university",
+      );
+      return;
+    }
+    if (type === "university" && !isOther && !(universities as readonly string[]).includes(name)) {
+      issue(namePath, "Choose a university from the list, or pick Other and type its name");
+    }
+    if (type === "school" && isOther) issue(namePath, "Only universities can be marked Other");
+  };
+
+  if (team.category === "school" || team.category === "university") {
+    checkInstitution(team.category, team.institutionName?.trim(), team.institutionIsOther, ["institutionName"]);
+  }
+
+  const seenEmail = new Map<string, number>();
+  const seenNic = new Map<string, number>();
+
+  team.members.forEach((m, i) => {
+    const at = (field: string): Path => ["members", i, field];
+
+    // Which institution type does this member belong to?
+    let type: InstitutionType | null = null;
+    if (team.category === "open") {
+      if (!m.institutionType) issue(at("institutionType"), "Choose School or University");
+      else {
+        type = m.institutionType;
+        checkInstitution(type, m.institutionName?.trim(), m.institutionIsOther, at("institutionName"));
+      }
+    } else if (team.category) {
+      type = team.category;
+    }
+
+    // NIC: every university student, nobody else
+    if (type === "university") {
+      const nic = m.nic?.trim();
+      if (!nic) issue(at("nic"), "NIC is required for university students");
+      else if (!normaliseNic(nic)) issue(at("nic"), "Enter a valid NIC, like 123456789V or 200012345678");
+      else {
+        const normal = normaliseNic(nic)!;
+        const first = seenNic.get(normal);
+        if (first !== undefined) issue(at("nic"), `Same NIC as member ${first + 1}`);
+        else seenNic.set(normal, i);
+      }
+    }
+
+    const email = m.email.trim().toLowerCase();
+    if (email) {
+      const firstEmail = seenEmail.get(email);
+      if (firstEmail !== undefined) issue(at("email"), `Same email as member ${firstEmail + 1}`);
+      else seenEmail.set(email, i);
+    }
+  });
+
+  return issues;
+}
+
 export const registrationInputSchema = z
   .object({
     name: text("Team name", 2, 60),
@@ -36,69 +131,9 @@ export const registrationInputSchema = z
       .array(memberInputSchema)
       .min(TEAM_SIZE.min, { error: "A team needs at least one member" })
       .max(TEAM_SIZE.max, { error: `A team can have at most ${TEAM_SIZE.max} members` }),
-    consent: z.literal(true, { error: "You need to accept the privacy notice to register" }),
   })
   .superRefine((team, ctx) => {
-    type Path = (string | number)[];
-    const issue = (path: Path, message: string) => ctx.addIssue({ code: "custom", message, path });
-
-    /** Checks one institution (a team's, or an Open member's) */
-    const checkInstitution = (
-      type: InstitutionType,
-      name: string | undefined,
-      isOther: boolean | undefined,
-      namePath: Path,
-    ) => {
-      if (!name) {
-        issue(namePath, type === "school" ? "Enter the school name" : "Choose a university");
-        return;
-      }
-      if (type === "university" && !isOther && !(universities as readonly string[]).includes(name)) {
-        issue(namePath, "Choose a university from the list, or pick Other and type its name");
-      }
-      if (type === "school" && isOther) issue(namePath, "Only universities can be marked Other");
-    };
-
-    if (team.category !== "open") {
-      checkInstitution(team.category, team.institutionName, team.institutionIsOther, ["institutionName"]);
-    }
-
-    const seenEmail = new Map<string, number>();
-    const seenNic = new Map<string, number>();
-
-    team.members.forEach((m, i) => {
-      const at = (field: string): Path => ["members", i, field];
-
-      // Which institution type does this member belong to?
-      let type: InstitutionType;
-      if (team.category === "open") {
-        if (!m.institutionType) {
-          issue(at("institutionType"), "Choose School or University");
-          type = "school"; // keep checking the other fields
-        } else {
-          type = m.institutionType;
-          checkInstitution(type, m.institutionName, m.institutionIsOther, at("institutionName"));
-        }
-      } else {
-        type = team.category;
-      }
-
-      // NIC: every university student, nobody else
-      if (type === "university") {
-        if (!m.nic) issue(at("nic"), "NIC is required for university students");
-        else if (!normaliseNic(m.nic)) issue(at("nic"), "Enter a valid NIC, like 123456789V or 200012345678");
-        else {
-          const nic = normaliseNic(m.nic)!;
-          const first = seenNic.get(nic);
-          if (first !== undefined) issue(at("nic"), `Same NIC as member ${first + 1}`);
-          else seenNic.set(nic, i);
-        }
-      }
-
-      const firstEmail = seenEmail.get(m.email);
-      if (firstEmail !== undefined) issue(at("email"), `Same email as member ${firstEmail + 1}`);
-      else seenEmail.set(m.email, i);
-    });
+    for (const { path, message } of teamRuleIssues(team)) ctx.addIssue({ code: "custom", message, path });
   })
   .transform((team) => {
     const teamInstitution = team.category === "open" ? null : (team.institutionName as string);

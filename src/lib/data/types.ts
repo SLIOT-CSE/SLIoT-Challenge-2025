@@ -15,7 +15,6 @@ export interface Team {
   /** Draft tick by a super admin. Hidden from teams and admins until finalised */
   shortlistMark: boolean;
   shortlistEmailedAt: number | null;
-  consentAt: number;
   createdAt: number;
   updatedAt: number;
 }
@@ -57,6 +56,8 @@ export interface Settings {
   now: number | null;
   shortlistState: ShortlistState;
   deadlines: Deadlines;
+  /** Sample only: when on, every data call fails with a NetworkError. Set from the dev switcher */
+  simulateNetworkError?: boolean;
 }
 
 export interface ShortlistFinalisation {
