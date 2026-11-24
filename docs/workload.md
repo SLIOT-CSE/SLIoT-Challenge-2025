@@ -137,14 +137,14 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 - [x] L6. Deleted the old pages (`/guidelines`, `/faqs`, `/finalists`, `/innovation-tour`, `/session_1`), old components, views and constants, `robot.png`, the old theme colours and the five old fonts; removed `scroll-lock`
 - [x] L7. Full-page screenshots at all sizes for review
 
-## M. Sample-data layer for the app screens
+## M. Sample-data layer for the app screens (waiting for review)
 
-- [ ] M1. zod schemas in `src/lib/schemas/` (team, member, NIC, WhatsApp number, proposal, prototype link), shared with the backend later
-- [ ] M2. Sample data generator: 200 teams with Sri Lankan names, schools and universities, every stage, fixed seed
-- [ ] M3. Data-access functions in `src/lib/data/` backed by sample data (same signatures the backend will implement)
-- [ ] M4. In-session sample store so flows can be clicked through end to end
-- [ ] M5. Development-only switcher for the competition state
-- [ ] M6. Vitest set up; unit tests for schemas and code formatting
+- [x] M1. zod schemas in `src/lib/schemas/` (team, member, NIC, WhatsApp number, proposal, prototype link), shared with the backend later
+- [x] M2. Sample data generator: 20 teams (7 School, 8 University, 5 Open) with Sri Lankan names, schools and universities, every team stage, fixed seed; fake emails (`@example.lk`) and NICs (`2099…`)
+- [x] M3. Data-access functions in `src/lib/data/` backed by sample data (same signatures the backend will implement); writes return a `Result` with the field or member to fix
+- [x] M4. In-session sample store (`sessionStorage`) so flows can be clicked through end to end
+- [x] M5. Development-only switcher (`src/components/dev/sample-switcher.tsx`): competition stage, shortlist draft/finalised, log in as a sample team, reset. Mounted by `src/app/(app)/layout.tsx` for `/register`, `/team` and `/admin`; preview at `/design-system/sample-data`
+- [x] M6. Vitest set up (`pnpm test`); 130 tests for schemas, team codes, the generator and the data-layer rules
 
 ## N. Registration screen (`/register`)
 
