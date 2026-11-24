@@ -255,7 +255,8 @@ These follow the product side of the design system: same tokens and fonts, calme
 - **Teams:**
   - **Table:** a TanStack table of 200 sample teams with sticky header, sorting, and filters for category, stage and institution. Search covers team, member name, email and NIC. You can pick columns, and expanding a row shows its members.
   - **Exports:** "Download CSV" and "Export to Sheets" buttons, with toasts in place of the real work for now.
-  - **Team detail:** opens in a side drawer with members, submissions history, audit trail and edit mode.
+  - **Team detail:** opens in a side drawer (`?team=<code>`, so a team can be linked to) with members, submissions history, audit trail and edit mode. Edit mode fixes the name, institution and member details with the same rules as registration; it asks before discarding edits.
+  - **Filters and columns:** search and the category, stage and institution filters are kept in the address; the column choice is kept in the browser.
 - **Shortlist:**
   - **Marking:** the list of teams with proposals, with checkboxes and bulk tick by category. A sticky summary bar shows counts per category.
   - **Finalise:** a dialog where you type `FINALISE` to confirm.

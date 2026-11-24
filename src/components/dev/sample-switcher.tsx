@@ -2,6 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import {
+  addSampleTeams,
   adminLogout,
   listSampleAdminLogins,
   listSampleTeamLogins,
@@ -65,7 +66,7 @@ function Panel() {
   return (
     <aside
       aria-label="Sample data controls"
-      className="fixed right-4 bottom-4 z-tooltip w-[min(20rem,calc(100vw-2rem))] rounded-panel border border-edge bg-night text-small text-foam shadow-lift"
+      className="fixed right-4 bottom-4 z-dropdown w-[min(20rem,calc(100vw-2rem))] rounded-panel border border-edge bg-night text-small text-foam shadow-lift"
     >
       <button
         type="button"
@@ -194,9 +195,14 @@ function Panel() {
             </span>
           </label>
 
-          <button type="button" onClick={resetSampleData} className={cn(smallButton, "w-full")}>
-            Reset sample data
-          </button>
+          <div className="flex gap-2">
+            <button type="button" onClick={() => addSampleTeams(200)} className={cn(smallButton, "flex-1")}>
+              Add teams (200)
+            </button>
+            <button type="button" onClick={resetSampleData} className={cn(smallButton, "flex-1")}>
+              Reset sample data
+            </button>
+          </div>
         </div>
       )}
     </aside>

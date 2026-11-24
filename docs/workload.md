@@ -25,7 +25,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | M | Sample-data layer for the app screens | Done                          |
 | N | Registration screen (`/register`) | Done                          |
 | O | Team portal screens (`/team`) | Done                          |
-| P | Admin dashboard screens (`/admin`) | **In progress** (slice 1 of 4 done) |
+| P | Admin dashboard screens (`/admin`) | **In progress** (slice 2 of 4 done) |
 | Q | Frontend polish and verification | To do                         |
 | R | Accounts and access (department) | To do                         |
 | S | Database layer | To do                         |
@@ -172,7 +172,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 
 Built in four slices, each checked in the browser before the next: (1) foundations, (2) shell, login and Teams (P1–P3), (3) Shortlist and Finalists (P4, P4b), (4) Settings, Admins, Audit log and polish (P5, P6). Review points after slices 2 and 4.
 
-**Slice 1, foundations (done, waiting for review):**
+**Slice 1, foundations (done):**
 
 - [x] Data layer (`src/lib/data/`), store `schemaVersion: 3`: seeded organizer accounts (`super`, `admin1`, `admin2`; invented sample passwords, only a fake hash is stored), `adminLogin` (5 tries per 15 minutes, same reply for a wrong password and a disabled account), `adminLogout`, `getCurrentAdmin`
 - [x] Role checks live in the data layer: the five shortlist and finalist functions, settings, accounts and the audit log return `forbidden` for anyone but an active super admin
@@ -182,11 +182,24 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - [x] Dev switcher: sign in as a sample organizer
 - [x] 251 tests (51 new), lint, typecheck and build pass; primitives checked in the browser at desktop and 375 px
 
+**Slice 2, shell, login and Teams (done, waiting for review):**
+
+- Routes: `/admin/login` (outside the shell) and the signed-in screens under `src/app/(app)/admin/(shell)/`. Shortlist, Finalists, Settings, Admins and Audit log are placeholders (`ComingNext`) behind the real `SuperOnly` gate, so the sidebar and the role check can be tried; slices 3 and 4 replace them
+- Shell (`src/components/admin/`): `AdminShell` checks the session (skeleton while checking, redirect to login when signed out), role-aware sidebar on large screens and a scrolling tab row on phones, "Sample data" badge, signed-in name and role, sign out. Toasts live here
+- Login: username and password with show/hide, the rate-limit message, a network error state, and in development a box that fills in the sample organizers
+- Teams (`teams/`): TanStack Table v9 (`useTable` with `rowSortingFeature` and `columnVisibilityFeature`; the screen filters before the table and keeps expansion itself). Filters (search, category, stage, institution) live in the address, the open team is `?team=<code>`, the column choice is saved in localStorage (`columns-config.ts`, with try/catch). CSV downloads the teams as shown (filtered, sorted); Sheets shows when it last ran
+- Team drawer: members, submissions (every version), activity in plain sentences (`describe-audit.ts`, reused by the Audit log in slice 4). Edit mode reuses the registration form's fields and rules (`MemberCard`, `validate`), shows server conflicts on the right field, asks before discarding edits and blocks closing while saving. "Email code again" sends at once, with a toast
+- Dev: "Add teams (200)" in the sample panel; the panel now sits under modals so it can't cover a drawer's buttons
+- 285 tests (34 new), lint, typecheck and build pass. Checked in the browser: sign-in, wrong password, the role-based sidebar and the super-only message, filters, sort, columns (saved across a reload), expand, drawer, edit (local and server errors, save, discard), CSV contents, resend, 375 px (no overflow, full-width drawer)
+- Found and fixed: two filters changed quickly undid each other (the second was built from a stale address)
+- Decisions to confirm: the first click on a number column sorts high to low (TanStack's default for numbers); "Email code again" has no confirm step; the team's activity hides draft shortlist ticks from plain admins (the backend's audit read should do the same, step R)
+- Not covered yet: keyboard and screen-reader pass (step Q), reduced motion in a real browser
+
 **Screens:**
 
-- [ ] P1. Login screen and app shell with role-based sidebar
-- [ ] P2. Teams table (20 sample rows): sort, filter, search, columns, expandable members; CSV and Sheets buttons
-- [ ] P3. Team detail drawer with history, audit trail and edit mode
+- [x] P1. Login screen and app shell with role-based sidebar
+- [x] P2. Teams table (20 sample rows, 200 with the dev "Add teams" button): sort, filter, search, columns, expandable members; CSV and Sheets buttons
+- [x] P3. Team detail drawer with history, audit trail and edit mode
 - [ ] P4. Shortlist page: draft marks, bulk tick, summary bar, finalise (type FINALISE), reopen, history
 - [ ] P4b. Finalists page (super admins): tick teams that submitted a prototype, "Announce finalists" (type FINALISTS), un-mark to correct, uses `announceFinalists` and `unmarkFinalists`
 - [ ] P5. Settings (deadlines in Sri Lanka time), admin accounts (generated password shown once), audit log

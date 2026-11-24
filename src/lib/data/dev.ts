@@ -1,6 +1,6 @@
 import type { Stage } from "@/lib/competition";
 import { sampleTimeForStage } from "./clock";
-import { SAMPLE_ADMIN_ACCOUNTS } from "./sample";
+import { SAMPLE_ADMIN_ACCOUNTS, appendSampleTeams } from "./sample";
 import type { Store } from "./store";
 import type { AdminRole, ShortlistState } from "./types";
 
@@ -50,6 +50,13 @@ export function createDev(store: Store) {
     /** Reseeds the 20 teams, the clock and everything else */
     resetSampleData(): void {
       store.reset();
+    },
+
+    /** Adds invented teams until there are `total` (default 200), to try the Teams table at size */
+    addSampleTeams(total = 200): void {
+      store.mutate((s) => {
+        appendSampleTeams(s, total);
+      });
     },
 
     /** Every team's code, for logging in as it without typing */

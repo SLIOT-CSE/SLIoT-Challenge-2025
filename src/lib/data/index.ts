@@ -58,6 +58,7 @@ export const {
 } = data;
 
 export const {
+  addSampleTeams,
   setSampleStage,
   setSampleShortlistState,
   setSampleNetworkError,
