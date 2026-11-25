@@ -98,7 +98,7 @@ The header links jump to section anchors; the URL hash updates as you scroll.
 ### 5.1 Navigation (floating pill), from SpiritX
 
 - **Desktop:** a floating pill detached from the top. Logo on the left; section links in the middle, with a mint pill sliding under the active section (Motion `layoutId`); **Team login** (ghost, from the proposal round on) and **Register** (filled mint) on the right. The pill hides on scroll down and returns on scroll up.
-- **Team login:** hidden before registration opens and while it is open; shown from the moment registration closes (the proposal round) to the end of the edition, here and in the phone menu (`showsTeamLogin` in `src/lib/competition.ts`). The footer link is always there, and teams can already log in and upload during registration.
+- **Team login:** hidden before registration opens and while it is open; shown from the moment registration closes (the proposal round) to the end of the edition, here and in the phone menu (`showsTeamLogin` in `src/lib/competition.ts`). Teams can still reach `/team` directly during registration.
 - **Phone:** logo + Register + menu button. The menu opens full screen: links stagger up from a mask, the icon morphs from bars to an X, and focus is trapped inside.
 - **Glass:** blur only here and in dialogs.
 
@@ -208,8 +208,10 @@ Organizers first (CSE, University of Moratuwa), then partners by tier (SLT-MOBIT
 
 ### 5.14 Footer
 
-- **Content:** logo, one-line description, organizer credit, social links, privacy notice link, copyright.
-- **Back to top:** a button with scroll progress shown as a ring around it.
+- **Desktop layout:** Three-zone monumental stage — logo and one-line description on the left, centered SLIoT robot figure framed by an SVG concentric IoT circuit ring in the middle, and organizer credit with partner logos on the right — flowing into the giant outlined `SLIoT 2027` wordmark and a bottom hairline bar (copyright and circular social icons).
+- **Wordmark:** The thin outline holds a fine grid of round dots that thins out towards the cut-off bottom. One soft aqua light crosses the dots every 9 seconds; with reduced motion it rests over the year.
+- **Phone layout:** The robot figure and circuit ring sit centered behind a dark contrast scrim with the logo, description, organizer credit, partner logos, `SLIoT 2027`, copyright/links, and social icons stacked cleanly.
+- **Back to top:** A button with scroll progress shown as a ring around it.
 
 ## 6. App screens (product register, sample data)
 

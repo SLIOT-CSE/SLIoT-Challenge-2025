@@ -331,6 +331,14 @@
   mask-image: linear-gradient(to bottom, #000 62%, transparent 96%);
 }
 
+/* Footer figure: fades smoothly downward into the footer horizon and softens the right edge */
+.fig-fade-footer {
+  -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 98%), linear-gradient(to left, transparent, #000 16%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to bottom, #000 58%, transparent 98%), linear-gradient(to left, transparent, #000 16%);
+  mask-composite: intersect;
+}
+
 /* FAQ answers open and close smoothly where the browser supports animating details */
 .faq-item {
   interpolate-size: allow-keywords;
@@ -358,6 +366,41 @@
   -webkit-text-stroke: 1.5px rgb(221 247 239 / 0.4);
 }
 
+/* The footer wordmark's dot fill: an array of sensor nodes inside the letters. Both layers
+   share one grid, which scales with the type but never gets finer than 6px */
+.dot-fill,
+.dot-signal {
+  --pitch: max(6px, 0.034em);
+  color: transparent;
+  background-image: radial-gradient(circle closest-side, var(--dot) 52%, transparent 66%);
+  background-size: var(--pitch) var(--pitch);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.dot-fill {
+  --dot: color-mix(in srgb, var(--color-lagoon) 42%, transparent);
+}
+
+/* The same nodes lit aqua, seen only through a soft band that crosses the word */
+.dot-signal {
+  --dot: var(--color-aqua);
+  -webkit-mask: linear-gradient(100deg, transparent 41%, #000 50%, transparent 59%) 100% 0 / 300% 100% no-repeat;
+  mask: linear-gradient(100deg, transparent 41%, #000 50%, transparent 59%) 100% 0 / 300% 100% no-repeat;
+  animation: dot-sweep 9s linear infinite;
+}
+
+@keyframes dot-sweep {
+  from {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
+  to {
+    -webkit-mask-position: 0% 0;
+    mask-position: 0% 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .intro-line,
   .intro-rise,
@@ -369,5 +412,11 @@
   .signal-node,
   .live-ping {
     animation: none;
+  }
+  /* The light rests over the year instead of crossing */
+  .dot-signal {
+    animation: none;
+    -webkit-mask-position: 38% 0;
+    mask-position: 38% 0;
   }
 }

@@ -4,3 +4,6 @@ const img = (path: string) => `/images/${path}`;
 export const logo = img("sliot-logo.svg");
 // 2027 hero figure; cut off on its right and bottom edges (see HeroFigure)
 export const figure = img("sliot-figure.webp");
+// Centered footer robot figure; temporarily points to sliot-figure.webp until a dedicated
+// centered standing figure is generated at public/images/sliot-footer-figure.webp.
+export const footerFigure = img("sliot-figure.webp");
