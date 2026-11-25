@@ -203,8 +203,9 @@ Organizers first (CSE, University of Moratuwa), then partners by tier (SLT-MOBIT
 
 ### 5.13 Contact (calm)
 
-- **People:** organizer cards with photo, role, email and a WhatsApp button. There are 3 photos today; anyone without a photo gets an initials tile in aurora tones.
-- **Below the cards:** the department address and the social links, with WhatsApp first.
+- **Backdrop:** a soft aurora glow and fine grain, no photo.
+- **People:** framed portrait cards in a narrower (`max-w-5xl`) column with photo, name, role, and pills showing the WhatsApp number and email (compact rows below the `lg` breakpoint). There are 3 photos today; anyone without a photo gets an initials tile in aurora tones, and a photo where the person is small can set `framing` in `people.ts`.
+- **Below the cards:** a "Follow SLIoT" banner with signal rings and a "Follow on WhatsApp" button, then a slim row with the department address (map link) and the other social links.
 
 ### 5.14 Footer
 

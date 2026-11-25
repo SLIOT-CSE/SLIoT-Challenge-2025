@@ -12,21 +12,21 @@ export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative isolate overflow-hidden border-t border-ocean/70 bg-gradient-to-b from-abyss via-night/80 to-abyss">
-      {/* Upper monumental stage: 3 columns on md+, centered stack over backdrop figure on phones */}
-      <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-7 px-4 pb-8 pt-20 text-center sm:px-8 md:grid md:min-h-[27rem] md:grid-cols-[minmax(0,1fr)_minmax(17rem,23rem)_minmax(0,1fr)] md:items-end md:gap-8 md:pb-2 md:pt-14 md:text-left lg:min-h-[30rem] lg:grid-cols-[minmax(0,1fr)_minmax(20rem,27rem)_minmax(0,1fr)]">
+    <footer className="relative isolate overflow-hidden border-t border-ocean/70 bg-abyss">
+      {/* Upper monumental stage: 3 columns from lg (1024px+), centered stack over backdrop figure below lg */}
+      <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-7 px-4 pb-8 pt-20 text-center sm:px-8 lg:grid lg:min-h-[28rem] lg:grid-cols-[minmax(0,1.15fr)_minmax(16rem,20rem)_minmax(0,1.15fr)] lg:items-end lg:gap-8 lg:pb-2 lg:pt-14 lg:text-left xl:min-h-[30rem] xl:grid-cols-[minmax(0,1fr)_minmax(20rem,26rem)_minmax(0,1fr)]">
         {/* Left: brand logo + concise competition description */}
-        <div className="relative z-10 flex flex-col items-center gap-4 md:items-start md:pb-10">
-          <img src={logo} alt="SLIoT Challenge" width={1518} height={813} className="h-14 w-auto sm:h-16" />
-          <p className="max-w-[36ch] text-pretty text-small text-haze">{site.description}</p>
+        <div className="relative z-10 flex flex-col items-center gap-4 lg:items-start lg:pb-10">
+          <img src={logo} alt="SLIoT Challenge" width={1518} height={813} className="h-11 w-auto sm:h-12" />
+          <p className="max-w-[38ch] text-pretty text-small text-haze">{site.description}</p>
         </div>
 
-        {/* Center: radial IoT circuit ring + SLIoT robot figure (backdrop on mobile, center stage on md+) */}
+        {/* Center: radial IoT circuit ring + SLIoT robot figure (dimmed backdrop below lg, center stage on lg+) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none max-md:absolute max-md:inset-x-0 max-md:top-2 max-md:bottom-0 max-md:z-0 max-md:flex max-md:items-start max-md:justify-center md:relative md:flex md:h-full md:items-end md:justify-center"
+          className="pointer-events-none max-lg:absolute max-lg:inset-x-0 max-lg:top-4 max-lg:z-0 max-lg:flex max-lg:justify-center lg:relative lg:flex lg:h-full lg:items-end lg:justify-center"
         >
-          <div className="relative aspect-[957/932] w-[min(92vw,24rem)] md:w-full">
+          <div className="relative aspect-[957/932] w-[min(90vw,24rem)] max-lg:opacity-45 lg:w-full">
             {/* Soft aurora bloom behind the figure */}
             <div className="absolute left-1/2 top-[48%] size-[118%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(11_90_109/0.42),rgb(20_103_111/0.14)_55%,transparent)]" />
 
@@ -41,20 +41,17 @@ export function SiteFooter() {
               alt=""
               width={957}
               height={932}
-              sizes="(min-width: 1024px) 27rem, (min-width: 768px) 23rem, 24rem"
+              sizes="(min-width: 1280px) 26rem, (min-width: 1024px) 20rem, 24rem"
               draggable={false}
               className="fig-fade-footer relative h-full w-full select-none object-contain"
             />
           </div>
-
-          {/* Mobile readability scrim so centered text stays >= 4.5:1 over the figure */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(1_6_16/0.62)_0%,rgb(1_6_16/0.88)_72%,rgb(1_6_16/0.96)_100%)] md:hidden" />
         </div>
 
-        {/* Right: organizer credit + partner logo chips */}
-        <div className="relative z-10 flex flex-col items-center gap-4 md:items-end md:pb-10 md:text-right">
+        {/* Right: organizer credit + partner logos */}
+        <div className="relative z-10 flex flex-col items-center gap-4 lg:items-end lg:pb-10 lg:text-right">
           <p className="max-w-[38ch] text-pretty text-small text-haze">{site.credit}</p>
-          <ul className="flex flex-wrap items-center justify-center gap-4 md:justify-end" aria-label="Organizers and partners">
+          <ul className="flex flex-wrap items-center justify-center gap-3 lg:justify-end xl:gap-4" aria-label="Organizers and partners">
             {footerPartners.map((partner) => {
               const logoImg = (
                 <Image
@@ -63,7 +60,7 @@ export function SiteFooter() {
                   width={partner.width}
                   height={partner.height}
                   sizes="6rem"
-                  className="h-9 w-auto max-w-28 object-contain transition-transform duration-200 ease-out-quart group-hover:-translate-y-0.5 motion-reduce:transition-none"
+                  className="h-8 w-auto max-w-24 object-contain transition-transform duration-200 ease-out-quart group-hover:-translate-y-0.5 motion-reduce:transition-none xl:h-9 xl:max-w-28"
                 />
               );
 
@@ -93,20 +90,14 @@ export function SiteFooter() {
       {/* The edition, kept huge as the page's last word */}
       <p
         aria-hidden="true"
-        className="pointer-events-none relative z-10 mx-auto -mb-[0.22em] grid max-w-7xl select-none px-4 text-center font-display text-[clamp(5rem,22vw,20rem)] leading-none sm:px-8 md:-mt-6"
+        className="text-outline pointer-events-none relative z-10 mx-auto -mb-[0.22em] max-w-7xl select-none px-4 text-center font-display text-[clamp(5rem,22vw,20rem)] leading-none opacity-60 sm:px-8 lg:-mt-6"
       >
-        {/* Three copies stacked in one cell: dots, the light crossing them, then the outline.
-            The dots thin out towards the bottom, where the word runs off the page */}
-        <span className="grid [grid-area:1/1] [mask-image:linear-gradient(to_bottom,#000_40%,rgb(0_0_0/0.2)_80%)]">
-          <span className="dot-fill [grid-area:1/1]">{edition.shortName}</span>
-          <span className="dot-signal [grid-area:1/1]">{edition.shortName}</span>
-        </span>
-        <span className="text-outline opacity-60 [grid-area:1/1]">{edition.shortName}</span>
+        {edition.shortName}
       </p>
 
-      {/* Bottom hairline bar: copyright + social icons */}
-      <div className="relative z-10 border-t border-ocean/70 bg-abyss/85">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 py-6 text-center text-caption text-haze md:flex-row md:justify-between md:px-8 md:text-left">
+      {/* Bottom hairline bar: extra bottom/right clearance so fixed BackToTop never overlaps socials */}
+      <div className="relative z-10 border-t border-ocean/70 bg-abyss/90">
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 pb-20 pt-6 text-center text-caption text-haze sm:px-8 lg:flex-row lg:justify-between lg:py-6 lg:pr-24 lg:text-left min-[1440px]:pr-8">
           <p>
             © {year} {edition.name}.
           </p>

@@ -1,12 +1,21 @@
 // Organizers to contact, partners, and the department address.
 // TODO(2027): the people below organized the previous edition; replace with the 2027 team.
 
-export type Person = { name: string; role: string; email: string; whatsapp?: string; photo?: string };
+export type Person = {
+  name: string;
+  role: string;
+  email: string;
+  /** As shown on the card, e.g. "+94 77 123 4567" */
+  whatsapp?: string;
+  photo?: string;
+  /** Zooms into a photo where the person is small. `origin` is the point that stays put */
+  framing?: { zoom: number; origin: string };
+};
 
 export const contacts: Person[] = [
-  { name: "Buwaneka Halpage", role: "Event chair", email: "buwanekah.23@cse.mrt.ac.lk", photo: "/images/people/buwaneka.avif" },
-  { name: "Yasiru Bandara", role: "Event vice chair", email: "yasirub.23@cse.mrt.ac.lk", photo: "/images/people/yasiru.avif" },
-  { name: "Gishan Bandara", role: "Event vice chair", email: "gishanb.23@cse.mrt.ac.lk", photo: "/images/people/gishan.avif" },
+  { name: "Buwaneka Halpage", role: "Event chair", email: "buwanekah.23@cse.mrt.ac.lk", whatsapp: "+94 74 022 4877", photo: "/images/people/buwaneka.avif" },
+  { name: "Yasiru Bandara", role: "Event vice chair", email: "yasirub.23@cse.mrt.ac.lk", whatsapp: "+94 76 015 9557", photo: "/images/people/yasiru.avif" },
+  { name: "Gishan Bandara", role: "Event vice chair", email: "gishanb.23@cse.mrt.ac.lk", whatsapp: "+94 70 335 2954", photo: "/images/people/gishan.avif", framing: { zoom: 1.45, origin: "9% 84%" } },
 ];
 
 export const address = {
