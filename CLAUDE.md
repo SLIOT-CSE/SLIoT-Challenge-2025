@@ -28,11 +28,13 @@ pnpm lint                # ESLint
 pnpm typecheck           # tsc --noEmit
 pnpm test                # Vitest, all tests
 pnpm test:watch
-pnpm vitest run src/lib/data/api.test.ts      # one file
+pnpm vitest run src/server/backend/team.test.ts   # one file
 pnpm vitest run -t "name of the test"         # tests matching a name
 pnpm db:migrate          # apply migrations (./data/sliot.db in dev, DATABASE_PATH otherwise)
 pnpm db:seed             # dev only: wipe the local db, write 20 test teams, print the logins
 pnpm db:generate         # write a migration after changing src/server/db/schema.ts
+pnpm admin:create <user> "<Name>" [role]  # make an organizer account, prints its password
+pnpm email:dev           # preview the email templates (port 3200)
 ```
 
 - Tests are `src/**/*.test.ts` only (node environment, no DOM or component tests), so put testable logic in plain `.ts` modules next to the components (for example `shortlist-logic.ts`, `teams-view.ts`).
@@ -50,7 +52,7 @@ pnpm db:generate         # write a migration after changing src/server/db/schema
 ### Routes (`src/app/`)
 
 - `page.tsx`: the public one-page site. Its sections live in `src/components/site/`, and the page changes with the competition stage (`src/lib/competition.ts` works out the stage and countdowns from the key dates).
-- `(app)/`: route group for `/register`, `/team` and `/admin`. Its layout adds the dev-only sample-data switcher (`src/components/dev/`). Admin is split into `admin/login/` (outside the shell) and `admin/(shell)/` (signed-in pages with a role-aware sidebar).
+- `(app)/`: route group for `/register`, `/team` and `/admin`. Its layout adds the dev-only test-data switcher (`src/components/dev/`). Admin is split into `admin/login/` (outside the shell) and `admin/(shell)/` (signed-in pages with a role-aware sidebar).
 - `design-system/`: dev-only reference pages (tokens, contrast, callouts, prizes, sample data, admin UI gallery). They return 404 in production.
 - Route files stay thin. Screens live in `src/components/{register,team,admin}/`.
 
@@ -58,18 +60,17 @@ pnpm db:generate         # write a migration after changing src/server/db/schema
 
 All public-page copy and data lives in `src/content/*.ts` (dates in `deadlines.ts`, prizes, FAQ, people/partners, memories albums and so on). The README has a table of which file holds what. Placeholders still waiting for real 2027 content are marked `TODO(2027)`. Images go in `public/images/` and are usually referenced through `src/assets/index.ts`.
 
-### Sample-data layer (`src/lib/data/`): the frontend/backend seam
+### Data layer: screens → `@/lib/data` → server actions → SQLite
 
-The app screens run on a client-side sample backend until the real backend arrives (steps R–V):
-
-- `index.ts` exports the functions screens call (`registerTeam`, `loginWithCode`, `listTeams`, `finaliseShortlist`, `adminLogin`, `listAuditLog`, ...). They are bound to a `Store` saved in **sessionStorage**, with a pretend delay. In the backend steps this file is meant to export the same names backed by the server, so screens must import only from `@/lib/data`.
-- `api.ts` holds the business rules: deadlines, roles (super admin vs admin are enforced here, not only in the UI), shortlist and finalist state, audit entries. Calls return `Result` objects with `DataError` codes. A failed transport throws `NetworkError`.
-- During server prerendering the store is a throwaway in-memory copy, so **screens read data in effects or on user action, never during render**.
-- The store has a `schemaVersion`. Bump it when the stored shape changes so old sessionStorage state is reseeded.
-- `dev.ts` holds dev-only controls (stage switching, sample teams, the shortlist Draft/Finalised override) used by the sample switcher. These may bypass rules the real API enforces.
-- Zod schemas shared by the forms and the data layer live in `src/lib/schemas/`.
-
-Rules enforced in the sample layer must also be enforced in the real backend. When you add one, note it in `docs/workload.md` or `docs/architecture.md`.
+- `src/lib/data/index.ts` is what screens import (`registerTeam`, `loginWithCode`, `listTeams`, `finaliseShortlist`, `adminLogin`, ...). It wraps the server actions in `src/server/actions.ts`: a call that gets no answer throws `NetworkError`, and after a write `dataVersion` ticks so screens refresh (`useSyncExternalStore(dataVersion.subscribe, dataVersion.get, ...)`). Screens import only from `@/lib/data`, and read data in effects or on user action, never during render. The proposal PDF goes to `POST /api/team/proposal` (XHR, for progress).
+- `src/server/backend/` holds the business rules: `team.ts` (registration, code login, portal, uploads) and `admin.ts` (organizer functions), built per request by `createBackend(ctx)`. The `RequestContext` carries the database, clock, IP, cookies and outside services, so tests run it on a seeded in-memory database (`test-context.ts`). Calls return `Result` objects with `DataError` codes.
+- The organizer comes from the session cookie, never from arguments: the `actor` parameters screens pass are ignored. Roles are enforced in the backend; draft shortlist ticks are hidden from plain admins there.
+- Sessions (`src/server/auth/sessions.ts`) are hashed tokens in httpOnly cookies and always use real time. The **dev clock** (`dev_now` setting, ignored in production) moves the app's "now" for stage testing and keeps running from when it was set.
+- Every audited action and email goes through `record()` and `queueEmail()` in `backend/common.ts`. Emails are sent by the worker in `src/server/email/` (started from `src/instrumentation.ts`), with templates in `src/emails/`.
+- Outside services (Drive via OAuth, Sheets via the service account, YouTube oEmbed, Turnstile) live in `src/server/services/`. There is no fallback: until their env variables exist (see `.env.example`, checked by `src/server/env.ts`), uploads and the Sheets export fail with `not_configured` and emails wait as `pending`. Production refuses to start without the required ones.
+- Schema: `src/server/db/schema.ts` (Drizzle, nine tables from architecture §5). After changing it run `pnpm db:generate` and commit the migration. Development databases migrate themselves on first use.
+- `src/server/dev-actions.ts` powers the dev-only switcher and the login page's dev box (dev clock, sign in as, reseed). Each action refuses to run in production.
+- Zod schemas shared by the forms and the backend live in `src/lib/schemas/`. `src/lib/data/fixtures/sample-state.ts` is test-only data for the pure screen-logic tests.
 
 ### Competition process (affects shortlist and finalist code)
 

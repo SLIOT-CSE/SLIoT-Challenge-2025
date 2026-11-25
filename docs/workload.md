@@ -27,12 +27,12 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | O | Team portal screens (`/team`) | Done                          |
 | P | Admin dashboard screens (`/admin`) | **Done, waiting for review** (all 4 slices) |
 | Q | Frontend polish and verification | To do                         |
-| R | Accounts and access (department) | To do                         |
-| S | Database layer | To do                         |
-| T | Email system | To do                         |
-| U | Registration and team portal backend | To do                         |
-| V | Admin and shortlisting backend | To do                         |
-| W | Security hardening | To do                         |
+| R | Accounts and access (department) | **Paused at R3c** (R1, R2, R3a, R3b done) |
+| S | Database layer | **Done, waiting for review**  |
+| T | Email system | **Done, waiting for review** (T4 needs SMTP settings) |
+| U | Registration and team portal backend | **Done, waiting for review** (Drive and Turnstile need their keys) |
+| V | Admin and shortlisting backend | **Done, waiting for review** (V6 open) |
+| W | Security hardening | **Code done**; nginx and server steps at deploy |
 | X | Backups and operations | To do                         |
 | Y | Testing, content and launch | To do                         |
 | Z | After launch | To do                         |
@@ -252,41 +252,41 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - [x] S2. Schema and first migration for all nine tables (architecture.md section 5): `src/server/db/schema.ts`, migrations in `src/server/db/migrations/` (`pnpm db:generate`), CHECK constraints on every enum
 - [x] S3. Database client: WAL mode, foreign keys on, file at `/var/lib/sliot/sliot.db` (`DATABASE_PATH`; development default `./data/sliot.db`). `src/server/db/client.ts`, `pnpm db:migrate`, env schema in `src/server/env.ts` with `.env.example`
 - [x] S3a. Development test data: `pnpm db:seed` wipes the local database and writes a fixed data set (`src/server/db/seed-data.ts`): 20 teams in the prototype round (10 not shortlisted, 3 of them without a proposal; 6 shortlisted; 4 with a prototype), proposal versions, outbox, audit log, one finalisation, organizers `super` / `admin1` / `admin2`. Sets the dev-only `dev_now` setting so the app sits in the prototype round. Refuses to run in production
-- [ ] S4. Settings helpers; `pnpm admin:create` prints a generated password
-- [ ] S5. Replace the sample-data functions with real queries
+- [x] S4. Settings helpers (`src/server/settings.ts`); `pnpm admin:create <username> "<Display name>" [role]` prints a generated password; argon2id passwords (`@node-rs/argon2`); sessions in `src/server/auth/sessions.ts`
+- [x] S5. Sample store removed. `src/server/backend/` (team + admin) keeps the same function names and `Result` shapes; `src/server/actions.ts` (server actions) and `POST /api/team/proposal`; `src/lib/data/index.ts` is now a thin client wrapper (NetworkError on no answer, `dataVersion` ticks after writes so screens refresh). Organizer identity comes from the session cookie, never the browser. Dev switcher and the login page's dev box use `src/server/dev-actions.ts` (refused in production). The dev clock (`dev_now`) keeps running from when it was set; sessions always use real time. Backend tests run on a seeded in-memory database
 
 ## T. Email system
 
-- [ ] T1. Outbox table and background worker in `instrumentation.ts` (retries 1 min → 12 h)
-- [ ] T2. React Email templates: registration confirmed, code reminder, proposal received, shortlisted, prototype received, finalist
-- [ ] T3. nodemailer over Workspace SMTP; console transport in development; `pnpm email:dev` preview
+- [x] T1. Outbox and background worker started from `src/instrumentation.ts` (`src/server/email/worker.ts`): one email every 2 s; retries at 1 min, 5 min, 30 min, 2 h, 12 h, then `failed`. Schedules by real time (new emails are due at once). Also deletes expired sessions daily
+- [x] T2. React Email templates in `src/emails/` (react-email 6; inline styles from the aurora palette rather than its Tailwind wrapper, for client support): registration confirmed, code reminder, proposal received, shortlisted, prototype received, finalist. The header uses `/icon.png`, since Gmail doesn't show SVG. TODO(2027): a PNG wordmark
+- [x] T3. nodemailer over Workspace SMTP (`src/server/email/transport.ts`); `pnpm email:dev` preview on port 3200. **Changed:** no console transport. Decided 2026-11-24: until the SMTP variables are set, emails wait in the outbox as `pending` with `last_error` "SMTP not configured"; production refuses to start without them
 - [ ] T4. Test sends to real Gmail and Outlook inboxes on phone and desktop
 
 ## U. Registration and team portal backend
 
-- [ ] U1. Registration action: Turnstile, honeypot, rate limit, validation, unique email and NIC, team code generator
-- [ ] U2. Team sessions (hashed token, 7 days), code login with rate limit, "forgot your code"
-- [ ] U3. Proposal upload route: 10 MB, PDF check, SHA-256, upload to the Shared Drive, versions
-- [ ] U4. Prototype link: URL parsing, YouTube oEmbed check, versions
-- [ ] U5. Deadline locks on the server; submission emails
+- [x] U1. Registration: Turnstile widget (`src/components/register/turnstile.tsx`, placeholder in development without keys) checked on the server, honeypot, 20 registrations per IP per hour (school labs share an address), validation, unique email and NIC (with a unique-index fallback), team code generator
+- [x] U2. Team sessions (hashed token, 7 days, httpOnly cookie `sliot_team`), code login with 5 failures per IP per 15 min, "forgot your code" with the same reply either way
+- [x] U3. Proposal upload route `POST /api/team/proposal`: Origin check, 10 MB, `%PDF-` check, SHA-256, upload to Drive **as sliot@cse.mrt.ac.lk through OAuth** into `<folder>/<Category>/` (R3 option B), versions. Fails with "not set up yet" until the Drive variables exist
+- [x] U4. Prototype link: URL parsing, YouTube oEmbed check (accepted if YouTube itself is unreachable), versions; finalists can't replace it
+- [x] U5. Deadline locks on the server (checked again after a slow upload); submission emails
 
 ## V. Admin and shortlisting backend
 
-- [ ] V1. Admin login (argon2), roles, 12-hour sessions, generated passwords, reset
-- [ ] V2. Teams queries, filters, edits with audit trail
-- [ ] V3. CSV export (UTF-8 with BOM) and Sheets export (one master sheet, one-way refresh)
-- [ ] V4. Shortlist: draft marks, finalise transaction, emails to newly shortlisted teams only, reopen, history
-- [ ] V4b. Finalists: announce (needs a prototype, email once via `finalist_emailed_at`), un-mark, audit entries
-- [ ] V5. Settings, admin accounts, audit log
+- [x] V1. Admin login (argon2, timing-equal for unknown users), roles, 12-hour sessions (`sliot_admin`), generated passwords, reset and disable end the account's sessions
+- [x] V2. Teams queries, filters, edits with audit trail; optional `expectedUpdatedAt` refuses a stale edit (`edit_conflict`)
+- [x] V3. CSV export (UTF-8 with BOM) and Sheets export through the service account (`GOOGLE_SERVICE_ACCOUNT_KEY_FILE`, `GOOGLE_SHEET_ID`; RAW values; creates the Teams tab if missing). Optional: without its settings the button explains
+- [x] V4. Shortlist: draft marks, finalise transaction (state checked inside it), emails to newly shortlisted teams only, reopen (refused once a prototype exists), history
+- [x] V4b. Finalists: announce (needs a prototype, email once via `finalist_emailed_at`), un-mark, audit entries
+- [x] V5. Settings, admin accounts, audit log (draft ticks hidden from plain admins on the server)
 - [ ] V6. Decide: correction email for a team removed after reopening (open question)
 
 ## W. Security hardening
 
-- [ ] W1. Security headers and Content-Security-Policy (Turnstile allowed)
-- [ ] W2. Rate limits in the app; nginx `limit_req` on login endpoints
-- [ ] W3. `Origin` checks on route handlers
-- [ ] W4. nginx `client_max_body_size 12m` on the upload route
-- [ ] W5. Secrets in `/etc/sliot/` (mode 600), copies in the password manager; Dependabot on
+- [x] W1. Security headers and Content-Security-Policy (`src/server/security-headers.ts`, applied in `next.config.ts`): own origin plus Turnstile and YouTube thumbnails; HSTS in production
+- [x] W2. Rate limits in the app (audit-log based, per IP); nginx `limit_req` on POSTs to `/team`, `/admin/login`, `/register` and the upload route in `deploy/nginx.conf.example`. **To apply on the server**
+- [x] W3. `Origin` checks on route handlers (`src/server/origin.ts`); server actions are checked by Next
+- [x] W4. nginx `client_max_body_size 12m` on the upload route, 1m elsewhere (example file). **To apply on the server**
+- [ ] W5. Secrets in `/etc/sliot/sliot.env` (mode 600, linked as `.env.production.local`), copies in the password manager (**server task**). Dependabot config added (`.github/dependabot.yml`, targets `full-site`); turn on alerts in the repo settings
 
 ## X. Backups and operations
 

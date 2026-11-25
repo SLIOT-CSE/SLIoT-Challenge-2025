@@ -31,6 +31,21 @@ Other scripts:
 | `pnpm db:seed` | Development only: wipe the local database and fill it with 20 test teams; prints the logins |
 | `pnpm db:generate` | Write a migration after changing `src/server/db/schema.ts` |
 | `pnpm db:studio` | Browse the database |
+| `pnpm admin:create <user> "<Name>" [super_admin\|admin]` | Create an organizer account; prints its generated password once |
+| `pnpm email:dev` | Preview the email templates (port 3200) |
+
+### Database and settings
+
+The app stores everything in one SQLite file: `./data/sliot.db` in development (created and migrated on first use), `DATABASE_PATH` in production. For test data, run `pnpm db:seed`. It writes 20 teams in the prototype round and prints the organizer logins and team codes. The test-data switcher in the corner of `/register`, `/team` and `/admin` (development only) moves the competition clock, signs in as any team or organizer, and reseeds.
+
+Outside services are configured with environment variables, listed with notes in `.env.example`. Copy it to `.env.local` in development, or to `/etc/sliot/sliot.env` linked as `.env.production.local` on the server. Until a service's variables are set:
+
+- **Email (SMTP):** emails wait in the outbox as pending.
+- **Drive (OAuth):** proposal uploads are refused with a clear message.
+- **Sheets:** the export button explains, and the CSV download still works.
+- **Turnstile:** the registration form shows a placeholder (development only).
+
+Production refuses to start without email, Drive and Turnstile.
 
 ## Project layout
 

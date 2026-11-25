@@ -381,7 +381,7 @@ Indexes: `created_at`, (`target_type`, `target_id`).
 1. The team portal shows the current proposal (if any), its history and the deadline.
 2. The upload goes to the route handler `POST /api/team/proposal` (not a server action, whose 1 MB body limit is too small).
 3. The server checks the session, that the proposal deadline hasn't passed, the size (at most 10 MB) and that the file starts with `%PDF-`. It also computes a SHA-256 of the file.
-4. The file is uploaded to the Shared Drive with the service account (decision D4-A) into `SLIoT 2027 / Proposals / <Category>/`, named `SL27-7KQ4-M9XD – <Team name> – v<n>.pdf`. Files stay private to the Shared Drive's members (organizers and judges); no "anyone with the link" sharing.
+4. The file is uploaded to Drive as `sliot@cse.mrt.ac.lk` through OAuth (decision D4, changed) into `SLIoT 2027 Proposals/<Category>/` (category folders are created on first use), named `SL27-7KQ4-M9XD – <Team name> – v<n>.pdf`. Files stay private: the folder is shared only with organizers and judges, with no "anyone with the link" sharing. Until the Drive settings exist the upload is refused with "not set up yet" and nothing is saved.
 5. The Drive file ID and link are saved as a new `submissions` row. It becomes current and the previous one stays in the history. The team stage moves to `proposal_submitted`.
 6. A "proposal received" email is queued for the leader.
 
@@ -479,7 +479,7 @@ Added during step O. A lighter process than the shortlist, because it is smaller
   - The outbox stores the template name and its props, not rendered HTML, so a fixed template applies to retries too.
 - **Development:**
   - `pnpm email:dev` opens React Email's preview server to design the templates with sample data.
-  - In development the app prints emails to the console instead of sending them.
+  - No console transport (decided 2026-11-24): until the SMTP settings exist, emails stay `pending` in the outbox with `last_error` "SMTP not configured", visible in the dashboard, and send once they're added. Production refuses to start without them.
   - Before launch, each template is sent once to real Gmail and Outlook inboxes and checked on phone and desktop.
 - **Recommended to dept IT (not blocking):** add a DMARC record for `cse.mrt.ac.lk`. There is none today.
 - **Changing provider later:** if the mailbox ever becomes a problem, only the nodemailer transport changes (e.g. to Resend or Amazon SES). Templates and outbox stay the same.
@@ -506,7 +506,7 @@ Added during step O. A lighter process than the shortlist, because it is smaller
 
 Stored on the server in `/etc/sliot/sliot.env` (owner: app user, mode 600), linked into the app folder as `.env.production.local` (git-ignored, survives deploys). A copy lives in the organizers' password manager for disaster recovery. Names only:
 
-`DATABASE_PATH`, `SMTP_USER`, `SMTP_APP_PASSWORD`, `GOOGLE_APPLICATION_CREDENTIALS` (path to the service account key, `/etc/sliot/google-sa.json`), `DRIVE_PROPOSALS_FOLDER_ID`, `SHEETS_EXPORT_ID`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `APP_URL`.
+`DATABASE_PATH`, `SITE_URL`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` (the app password), `EMAIL_FROM`, `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN`, `GOOGLE_DRIVE_FOLDER_ID`, `GOOGLE_SERVICE_ACCOUNT_KEY_FILE` (`/etc/sliot/google-sa.json`), `GOOGLE_SHEET_ID`, `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`. The list with notes is `.env.example`; `src/server/env.ts` checks them, and production refuses to start while a required one is missing (the Sheets pair is optional).
 
 R2 credentials live only in `/etc/litestream.yml` and the rclone config, both mode 600.
 
@@ -561,12 +561,14 @@ Free on R2's free tier: 10 GB storage, 1 million writes and 10 million reads a m
 
 The existing pipeline (push to `main` → self-hosted runner → install → build → PM2 reload → health check) stays, with these additions:
 
-- **Database migrations:** a step before the restart takes a pre-migration snapshot and runs `pnpm db:migrate`.
+- **Database migrations:** a step before the restart takes a pre-migration snapshot and runs `pnpm db:migrate`. The migrate step is in `deploy.yml`; the snapshot comes with step X5.
 - **Health check:** the existing check moves to `/api/health`, which also checks the database is readable and reports how many emails are waiting in the outbox.
 - **nginx:**
   - `client_max_body_size 12m` on `/api/team/proposal`
-  - `limit_req` zones for the team and admin login endpoints
-  - security headers
+  - `limit_req` zones for the team and admin login endpoints (POSTs only) and registration
+  - security headers are sent by Next.js itself (`next.config.ts`), so nginx doesn't add them
+  - the old `/register` redirect must be removed at launch, since `/register` is now the app's page
+  - all of it is in `deploy/nginx.conf.example`
 - **One-time server setup** (documented in `deploy/`): the `/var/lib/sliot` and `/etc/sliot` folders, the Litestream service, the snapshot timer and the rclone config.
 
 ## 11. Accounts and access needed before the build
@@ -613,7 +615,7 @@ The existing pipeline (push to `main` → self-hosted runner → install → bui
 | D1 | Email | Google Workspace SMTP from `sliot@cse.mrt.ac.lk` with an app password, behind an outbox with retries |
 | D2 | Team login | Team code only, with rate limits, upload notifications and audit log |
 | D3 | Admin login | Username + argon2 password, no authenticator app; roles super admin and admin |
-| D4 | Proposal storage | Service account uploading to a Google Shared Drive; file ID and link stored in the database |
+| D4 | Proposal storage | **Changed 2026-11-24:** no permission to create a Shared Drive, so proposals go to the folder "SLIoT 2027 Proposals" in the `sliot@cse.mrt.ac.lk` My Drive, uploaded as that account through OAuth (stored refresh token; Internal consent screen, so it doesn't expire). A service account can't be used for this: it has no storage of its own. The service account remains for the Sheets export. File ID and link stored in the database |
 | D5 | Database | SQLite with better-sqlite3 + Drizzle ORM |
 | D6 | Backups | Litestream to R2 + nightly encrypted snapshot to R2 (free tier) |
 | D7 | Sheets export | One master sheet, one-way refresh on button press; CSV download too |

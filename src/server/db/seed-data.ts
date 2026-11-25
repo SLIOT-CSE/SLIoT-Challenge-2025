@@ -333,7 +333,7 @@ export function buildSeedData(): SeedData {
 
   // A little organizer activity for the audit log
   audit({ actorType: "admin", actorId: 2, action: "admin.login", targetType: "admin", targetId: "2", ip: SEED_IP, createdAt: devNow - 3 * DAY });
-  audit({ actorType: "admin", actorId: 2, action: "export.csv", details: { rows: data.teams.length }, ip: SEED_IP, createdAt: devNow - 3 * DAY + 10 * 60 * 1000 });
+  audit({ actorType: "admin", actorId: 2, action: "export.csv", details: { count: data.teams.length }, ip: SEED_IP, createdAt: devNow - 3 * DAY + 10 * 60 * 1000 });
   audit({ actorType: "anonymous", actorId: null, action: "admin.login_failed", details: { username: "admin2" }, ip: SEED_IP, createdAt: devNow - DAY });
   audit({ actorType: "admin", actorId: superAdmin.id, action: "admin.login", targetType: "admin", targetId: "1", ip: SEED_IP, createdAt: devNow - 2 * HOUR });
 
