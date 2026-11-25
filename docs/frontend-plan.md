@@ -110,25 +110,25 @@ The header links jump to section anchors; the URL hash updates as you scroll.
   - Title: "Build the connected island"
   - One sentence: "Sri Lanka's national IoT competition for school students, undergraduates and innovators."
   - Buttons: **Register** and **How it works**, the same at every stage
-  - No countdown line: the next date is in the live callout below
+  - No countdown line: the countdown and the next date are in the live callout below
 - **Background:** the aurora. Slow-moving gradient bands (CSS, GPU-cheap), with a sparse field of sensor dots that blink in sequence.
 - **Load sequence:** the aurora fades up. The title lines rise out of a mask, one after another. The figure resolves from blur with its breathing glow (coming-soon motion). Total about 1.4s.
 - **On scroll:** the figure drifts up slower than the text (parallax), and the aurora darkens toward the next section.
 
 ### 5.3 Live round callout, from SpiritX
 
-A wide panel right under the hero. **It changes with the competition's state**, read from the deadlines in settings (sample settings for now):
+A wide band right under the hero. **It changes with the competition's state**, read from the deadlines in settings (sample settings for now):
 
 | State | Headline | Actions |
 |---|---|---|
-| Before registration | Registrations open on 1 June | Follow on WhatsApp |
-| Registration open | Registrations are open | Register your team · Download guidelines |
+| Before registration | Registration ends in (countdown), with the opening and closing dates | Register |
+| Registration open | Registration ends in (countdown), with the closing date | Register |
 | Proposal round | Proposal round is live: due 30 July, 11:59 PM | Submit proposal (→ team portal) · Download template |
 | Shortlisting | Proposals are in. Shortlist announced on 20 August | Follow on WhatsApp |
 | Prototype round | Shortlisted teams: prototypes due 30 September | Submit prototype (→ team portal) |
 | After the finale | See you at SLIoT 2028 | Browse memories |
 
-The date sits large in Bebas, with a small pulsing aqua dot for "live" and a days-left counter.
+Until registration closes there is **no panel**: the countdown sits straight on the page over a soft aurora bloom. A heading and one **Register** button, then days, hours, minutes and seconds in very large Bebas (sensor-node colons, digits roll as they change, the seconds glow aqua as the live part), then a signal trace from the opening date to the closing date, lit up to now. Reduced motion swaps the digits without rolling; screen readers get the dates, not the ticking digits. From the proposal round on it is a panel with the date large in Bebas and a days-left counter. A small pulsing aqua dot marks "live".
 
 ### 5.4 Kinetic band
 

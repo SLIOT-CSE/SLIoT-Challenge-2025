@@ -41,6 +41,44 @@ export function showsTeamLogin(stage: Stage): boolean {
   return STAGES.indexOf(stage) >= STAGES.indexOf("proposal");
 }
 
+/** While registration is still to close, the live callout counts down to that moment */
+export function countsDownToRegistrationClose(stage: Stage): stage is "before-registration" | "registration" {
+  return stage === "before-registration" || stage === "registration";
+}
+
+const SECOND = 1000;
+const MINUTE = 60 * SECOND;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+
+export interface CountdownParts {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  /** The moment has passed */
+  done: boolean;
+}
+
+export function countdownParts(msLeft: number): CountdownParts {
+  if (msLeft <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, done: true };
+  return {
+    days: Math.floor(msLeft / DAY),
+    hours: Math.floor((msLeft % DAY) / HOUR),
+    minutes: Math.floor((msLeft % HOUR) / MINUTE),
+    seconds: Math.floor((msLeft % MINUTE) / SECOND),
+    done: false,
+  };
+}
+
+/** How far `now` is from `from` towards `to`, from 0 (not started) to 1 (reached) */
+export function progressBetween(now: number, from: string, to: string): number {
+  const start = Date.parse(from);
+  const span = Date.parse(to) - start;
+  if (span <= 0) return now >= start ? 1 : 0;
+  return Math.min(1, Math.max(0, (now - start) / span));
+}
+
 /** Whole days from now until `at` (0 on the day itself), never negative */
 export function daysUntil(now: Date, at: string): number {
   const ms = Date.parse(at) - now.getTime();

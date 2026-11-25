@@ -3,14 +3,23 @@ import type { ReactNode } from "react";
 import { ArrowUpRight, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LiveDot } from "@/components/site/live-dot";
+import { RegistrationCountdown } from "@/components/site/registration-countdown";
 import { SocialIcon } from "@/components/site/social-icon";
 import { deadlines, proposalTemplateUrl, type Deadlines } from "@/content/deadlines";
 import { routes } from "@/content/navigation";
 import { whatsappChannel } from "@/content/socials";
-import { dateParts, daysUntil, formatDayMonth, formatTime, type Stage } from "@/lib/competition";
+import {
+  countsDownToRegistrationClose,
+  dateParts,
+  daysUntil,
+  formatDayMonth,
+  formatTime,
+  type Stage,
+} from "@/lib/competition";
 
 type Action = { label: string; href: string; kind: "primary" | "secondary"; icon?: "arrow" | "download" | "whatsapp"; external?: boolean };
 type CalloutContent = { status: string; date: string; headline: string; body: string; actions: Action[] };
+type LaterStage = Exclude<Stage, "before-registration" | "registration">;
 
 const whatsapp: Action = {
   label: "Follow on WhatsApp",
@@ -21,25 +30,9 @@ const whatsapp: Action = {
 };
 const template: Action = { label: "Download proposal template", href: proposalTemplateUrl, kind: "secondary", icon: "download" };
 
-/** What the callout says at each stage of the competition */
-export function calloutContent(stage: Stage, d: Deadlines): CalloutContent {
+/** What the callout says once registration has closed (before that it is a countdown) */
+export function calloutContent(stage: LaterStage, d: Deadlines): CalloutContent {
   switch (stage) {
-    case "before-registration":
-      return {
-        status: "Coming up",
-        date: d.registrationOpens,
-        headline: `Registrations open on ${formatDayMonth(d.registrationOpens)}`,
-        body: "Gather a team of up to five and pick a problem worth solving. Follow the WhatsApp channel to hear the moment registration opens.",
-        actions: [whatsapp, { label: "How it works", href: "#how-it-works", kind: "secondary" }],
-      };
-    case "registration":
-      return {
-        status: "Registrations are open",
-        date: d.registrationCloses,
-        headline: `Register your team by ${formatDayMonth(d.registrationCloses)}`,
-        body: "It takes about five minutes. The team leader gets a team code by email, and uses it to submit your proposal.",
-        actions: [{ label: "Register your team", href: routes.register, kind: "primary", icon: "arrow" }, template],
-      };
     case "proposal":
       return {
         status: "Proposal round is live",
@@ -94,6 +87,16 @@ const ICONS: Record<NonNullable<Action["icon"]>, ReactNode> = {
  * visitor always sees the one thing to do now and the date it has to happen by.
  */
 export function LiveCallout({ stage, now }: { stage: Stage; now: Date }) {
+  if (countsDownToRegistrationClose(stage)) {
+    return (
+      <RegistrationCountdown
+        opensAt={deadlines.registrationOpens}
+        closesAt={deadlines.registrationCloses}
+        serverNow={now.getTime()}
+      />
+    );
+  }
+
   const c = calloutContent(stage, deadlines);
   const { day, month } = dateParts(c.date);
   const days = daysUntil(now, c.date);

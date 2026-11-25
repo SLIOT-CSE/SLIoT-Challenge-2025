@@ -1,4 +1,4 @@
-import { formatDayMonth, formatTime } from "@/lib/competition";
+import { countdownParts, formatDayMonth, formatTime, type CountdownParts } from "@/lib/competition";
 import type { CompetitionState, Submission, TeamDetail } from "@/lib/data";
 import { hasPdfHeader } from "@/lib/schemas";
 import { MAX_PROPOSAL_BYTES, type TeamStage } from "@/lib/team-rules";
@@ -126,30 +126,9 @@ export function prototypePanel(team: TeamDetail, comp: CompetitionState): Protot
 
 // ---- Countdown ----
 
-const SECOND = 1000;
-const MINUTE = 60 * SECOND;
-const HOUR = 60 * MINUTE;
-const DAY = 24 * HOUR;
+export { countdownParts, type CountdownParts };
 
-export interface CountdownParts {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-  /** The moment has passed */
-  done: boolean;
-}
-
-export function countdownParts(msLeft: number): CountdownParts {
-  if (msLeft <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, done: true };
-  return {
-    days: Math.floor(msLeft / DAY),
-    hours: Math.floor((msLeft % DAY) / HOUR),
-    minutes: Math.floor((msLeft % HOUR) / MINUTE),
-    seconds: Math.floor((msLeft % MINUTE) / SECOND),
-    done: false,
-  };
-}
+const DAY = 24 * 3600 * 1000;
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 

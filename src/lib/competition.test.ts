@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { deadlines } from "@/content/deadlines";
-import { showsTeamLogin, stageAt, STAGES } from "@/lib/competition";
+import {
+  countsDownToRegistrationClose,
+  progressBetween,
+  showsTeamLogin,
+  stageAt,
+  STAGES,
+} from "@/lib/competition";
 
 describe("stageAt", () => {
   it("is before-registration before the opening time", () => {
@@ -25,5 +31,26 @@ describe("showsTeamLogin", () => {
     const closes = Date.parse(deadlines.registrationCloses);
     expect(showsTeamLogin(stageAt(new Date(closes), deadlines))).toBe(false);
     expect(showsTeamLogin(stageAt(new Date(closes + 1), deadlines))).toBe(true);
+  });
+});
+
+describe("countsDownToRegistrationClose", () => {
+  it("covers only the stages before registration has closed", () => {
+    expect(STAGES.filter(countsDownToRegistrationClose)).toEqual(["before-registration", "registration"]);
+  });
+});
+
+describe("progressBetween", () => {
+  const from = "2027-01-01T00:00:00+05:30";
+  const to = "2027-01-11T00:00:00+05:30";
+
+  it("runs from 0 to 1 and stays inside that range", () => {
+    expect(progressBetween(Date.parse("2026-12-01T00:00:00+05:30"), from, to)).toBe(0);
+    expect(progressBetween(Date.parse("2027-01-06T00:00:00+05:30"), from, to)).toBe(0.5);
+    expect(progressBetween(Date.parse("2027-02-01T00:00:00+05:30"), from, to)).toBe(1);
+  });
+
+  it("copes with a window that closes before it opens", () => {
+    expect(progressBetween(Date.parse(to), to, from)).toBe(1);
   });
 });
