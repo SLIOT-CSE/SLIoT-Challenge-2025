@@ -17,7 +17,7 @@ export function SiteFooter() {
       <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-7 px-4 pb-8 pt-20 text-center sm:px-8 lg:grid lg:min-h-[28rem] lg:grid-cols-[minmax(0,1.15fr)_minmax(16rem,20rem)_minmax(0,1.15fr)] lg:items-end lg:gap-8 lg:pb-2 lg:pt-14 lg:text-left xl:min-h-[30rem] xl:grid-cols-[minmax(0,1fr)_minmax(20rem,26rem)_minmax(0,1fr)]">
         {/* Left: brand logo + concise competition description */}
         <div className="relative z-10 flex flex-col items-center gap-4 lg:items-start lg:pb-10">
-          <img src={logo} alt="SLIoT Challenge" width={1518} height={813} className="h-11 w-auto sm:h-12" />
+          <img src={logo} alt="SLIoT Challenge" width={1518} height={813} className="h-14 w-auto sm:h-16" />
           <p className="max-w-[38ch] text-pretty text-small text-haze">{site.description}</p>
         </div>
 
@@ -90,9 +90,15 @@ export function SiteFooter() {
       {/* The edition, kept huge as the page's last word */}
       <p
         aria-hidden="true"
-        className="text-outline pointer-events-none relative z-10 mx-auto -mb-[0.22em] max-w-7xl select-none px-4 text-center font-display text-[clamp(5rem,22vw,20rem)] leading-none opacity-60 sm:px-8 lg:-mt-6"
+        className="pointer-events-none relative z-10 mx-auto -mb-[0.22em] grid max-w-7xl select-none px-4 text-center font-display text-[clamp(5rem,22vw,20rem)] leading-none sm:px-8 lg:-mt-6"
       >
-        {edition.shortName}
+        {/* Three copies stacked in one cell: dots, the light crossing them, then the outline.
+            The dots thin out towards the bottom, where the word runs off the page */}
+        <span className="grid [grid-area:1/1] [mask-image:linear-gradient(to_bottom,#000_40%,rgb(0_0_0/0.2)_80%)]">
+          <span className="dot-fill [grid-area:1/1]">{edition.shortName}</span>
+          <span className="dot-signal [grid-area:1/1]">{edition.shortName}</span>
+        </span>
+        <span className="text-outline opacity-60 [grid-area:1/1]">{edition.shortName}</span>
       </p>
 
       {/* Bottom hairline bar: extra bottom/right clearance so fixed BackToTop never overlaps socials */}

@@ -192,11 +192,11 @@ A single marquee band between the callout and About: "Sense · Connect · Act ·
 
 ### 5.11 Sponsors (calm)
 
-Organizers first (CSE, University of Moratuwa), then partners by tier (SLT-MOBITEL, IESL ...), as large logos on a quiet panel. Logos are shown in their own colours on a light chip where they need it, never forced to white. A slow logo marquee appears only if there are more than 6 partners.
+Organizers first (CSE, University of Moratuwa), then partners by tier (SLT-MOBITEL, IESL ...), as large logos. The section title is left-aligned like the others; the tier headings and logos are centred. Logos sit straight on the page in their own colours, with no box behind them; a soft light rim around each keeps dark lettering readable. They are never forced to white. A slow logo marquee appears only if there are more than 6 partners.
 
 ### 5.12 FAQ (calm), mascot from hackX
 
-- **Content:** the questions are grouped by registration, proposal, prototype and finals.
+- **Content:** six questions in one list, ordered registration, proposal, prototype.
 - **Layout:** an accordion on the left and a smaller SLIoT figure on the right.
 - **Accordion:** one item open at a time, animated height via Motion. Answers are always in the DOM, so they're searchable with Ctrl+F.
 - **Contact link:** at the end, "Still unsure? Contact the organizers" links to Contact.
@@ -204,14 +204,14 @@ Organizers first (CSE, University of Moratuwa), then partners by tier (SLT-MOBIT
 ### 5.13 Contact (calm)
 
 - **Backdrop:** a soft aurora glow and fine grain, no photo.
-- **People:** framed portrait cards in a narrower (`max-w-5xl`) column with photo, name, role, and pills showing the WhatsApp number and email (compact rows below the `lg` breakpoint). There are 3 photos today; anyone without a photo gets an initials tile in aurora tones, and a photo where the person is small can set `framing` in `people.ts`.
-- **Below the cards:** a "Follow SLIoT" banner with signal rings and a "Follow on WhatsApp" button, then a slim row with the department address (map link) and the other social links.
+- **People:** framed portrait cards in a narrower (`max-w-5xl`) column with photo, name, role, and round WhatsApp and email icon links (compact rows below the `lg` breakpoint). There are 3 photos today; anyone without a photo gets an initials tile in aurora tones, and a photo where the person is small can set `framing` in `people.ts`.
+- **Below the cards:** one framed card with the department address (map link) and the social links, with the WhatsApp channel first and highlighted.
 
 ### 5.14 Footer
 
 - **Desktop layout:** Three-zone monumental stage — logo and one-line description on the left, centered SLIoT robot figure framed by an SVG concentric IoT circuit ring in the middle, and organizer credit with partner logos on the right — flowing into the giant outlined `SLIoT 2027` wordmark and a bottom hairline bar (copyright and circular social icons).
 - **Wordmark:** The thin outline holds a fine grid of round dots that thins out towards the cut-off bottom. One soft aqua light crosses the dots every 9 seconds; with reduced motion it rests over the year.
-- **Phone layout:** The robot figure and circuit ring sit centered behind a dark contrast scrim with the logo, description, organizer credit, partner logos, `SLIoT 2027`, copyright/links, and social icons stacked cleanly.
+- **Below 1024px:** The robot figure and circuit ring sit centered as a dimmed backdrop, with the logo, description, organizer credit, partner logos, `SLIoT 2027`, copyright/links, and social icons stacked cleanly.
 - **Back to top:** A button with scroll progress shown as a ring around it.
 
 ## 6. App screens (product register, sample data)

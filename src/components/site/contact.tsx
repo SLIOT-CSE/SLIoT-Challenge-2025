@@ -4,14 +4,11 @@ import { ArrowUpRight, Mail, MapPin } from "lucide-react";
 import { address, contacts, type Person } from "@/content/people";
 import { socials, whatsappChannel } from "@/content/socials";
 import { SocialIcon } from "@/components/site/social-icon";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // A framed surface: a faint outer tray holding a solid inner plate, with matching curves
 const SHELL = "rounded-2xl bg-foam/[0.04] p-1.5 ring-1 ring-foam/10";
 const PLATE = "h-full rounded-photo bg-night shadow-[inset_0_1px_0_rgb(221_247_239/0.08)]";
-
-const otherSocials = socials.filter((s) => s.id !== whatsappChannel.id);
 
 /** Contact: the organizers to reach, the department's address and the official channels */
 export function Contact() {
@@ -39,90 +36,62 @@ export function Contact() {
           ))}
         </ul>
 
-        <FollowBanner />
-
-        {/* Where to find the department, and the other channels: quiet, on the page itself */}
-        <div className="mt-10 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-start gap-4">
-            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-foam/5 text-mint ring-1 ring-foam/15">
-              <MapPin className="size-5" strokeWidth={1.5} aria-hidden="true" />
-            </span>
-            <div className="min-w-0">
-              <address className="text-small not-italic text-haze">
-                <span className="block text-pretty font-semibold text-foam">{address.lines[0]}</span>
-                <span className="block text-pretty">{address.lines.slice(1).join(", ")}</span>
-              </address>
-              <a
-                href={address.mapUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex min-h-11 items-center gap-1.5 text-small font-semibold text-mint underline-offset-4 hover:underline"
-              >
-                Open in Google Maps<span className="sr-only"> (opens in a new tab)</span>
-                <ArrowUpRight
-                  className="size-4 transition-transform duration-300 ease-out-quart group-hover:-translate-y-px group-hover:translate-x-0.5 motion-reduce:transition-none"
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                />
-              </a>
-            </div>
-          </div>
-
-          <ul className="flex shrink-0 flex-wrap gap-2" aria-label="More SLIoT channels">
-            {otherSocials.map((s) => (
-              <li key={s.id}>
+        {/* Where to find the department, and the official channels with WhatsApp first */}
+        <div className={`${SHELL} mt-4 lg:mt-6`}>
+          <div className={`${PLATE} flex flex-col gap-6 p-4 sm:p-8 md:flex-row md:items-center md:justify-between`}>
+            <div className="flex items-start gap-3 sm:gap-4">
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-foam/5 text-mint ring-1 ring-foam/15 sm:size-11">
+                <MapPin className="size-5" strokeWidth={1.5} aria-hidden="true" />
+              </span>
+              <div className="min-w-0">
+                <address className="text-small not-italic text-haze">
+                  <span className="block text-pretty font-semibold text-foam">{address.lines[0]}</span>
+                  <span className="block text-pretty">{address.lines.slice(1).join(", ")}</span>
+                </address>
                 <a
-                  href={s.url}
+                  href={address.mapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={`${s.label} (opens in a new tab)`}
-                  className="grid size-11 place-items-center rounded-full bg-foam/5 text-foam ring-1 ring-foam/15 transition-colors duration-200 hover:bg-foam/10 hover:text-mint"
+                  className="group inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap text-small font-semibold text-mint underline-offset-4 hover:underline"
                 >
-                  <SocialIcon id={s.id} />
+                  Open in Google Maps<span className="sr-only"> (opens in a new tab)</span>
+                  <ArrowUpRight
+                    className="size-4 shrink-0 transition-transform duration-300 ease-out-quart group-hover:-translate-y-px group-hover:translate-x-0.5 motion-reduce:transition-none"
+                    strokeWidth={1.5}
+                    aria-hidden="true"
+                  />
                 </a>
-              </li>
-            ))}
-          </ul>
+              </div>
+            </div>
+
+            <ul
+              className="grid w-fit shrink-0 grid-cols-3 gap-2 min-[360px]:flex min-[360px]:flex-wrap min-[360px]:gap-1 sm:gap-2"
+              aria-label="Follow SLIoT"
+            >
+              {socials.map((s) => (
+                <li key={s.id}>
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${s.label} (opens in a new tab)`}
+                    title={s.label}
+                    className={cn(
+                      "grid size-11 place-items-center rounded-full ring-1 transition-colors duration-200",
+                      s.id === whatsappChannel.id
+                        ? "bg-mint text-abyss ring-mint hover:bg-aqua"
+                        : "bg-foam/5 text-foam ring-foam/15 hover:bg-foam/10 hover:text-mint",
+                    )}
+                  >
+                    <SocialIcon id={s.id} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </section>
-  );
-}
-
-/** The one loud thing under the cards: announcements land on the WhatsApp channel first */
-function FollowBanner() {
-  return (
-    <div className={`${SHELL} mt-4 lg:mt-6`}>
-      <div className="relative isolate overflow-hidden rounded-photo bg-night bg-[radial-gradient(70%_130%_at_85%_50%,rgb(31_150_150/0.5),rgb(11_90_109/0.18)_55%,transparent_100%)] shadow-[inset_0_1px_0_rgb(221_247_239/0.1)]">
-        {/* A signal going out: rings spreading from one node at the right edge */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-10 top-1/2 -z-10 hidden size-80 -translate-y-1/2 place-items-center sm:right-6 sm:grid"
-        >
-          <span className="absolute size-full rounded-full border border-mint/10" />
-          <span className="absolute size-3/4 rounded-full border border-mint/20" />
-          <span className="absolute size-1/2 rounded-full border border-mint/30" />
-          <span className="absolute size-1/4 rounded-full border border-aqua/45" />
-          <span className="grid size-14 place-items-center rounded-full bg-mint text-abyss shadow-signal">
-            <SocialIcon id={whatsappChannel.id} />
-          </span>
-        </div>
-
-        <div className="flex flex-col items-start gap-6 p-5 sm:max-w-[34rem] sm:p-10">
-          <div className="flex flex-col gap-3">
-            <h3 className="text-balance font-display text-display-md text-foam">Follow SLIoT</h3>
-            <p className="max-w-[38ch] text-pretty text-body text-haze">
-              Announcements land on the WhatsApp channel first.
-            </p>
-          </div>
-          <Button asChild size="sm" trailingIcon={<ArrowUpRight className="size-4" strokeWidth={1.5} />}>
-            <a href={whatsappChannel.url} target="_blank" rel="noopener noreferrer">
-              Follow on WhatsApp<span className="sr-only"> (opens in a new tab)</span>
-            </a>
-          </Button>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -134,12 +103,11 @@ function PersonCard({ person: p }: { person: Person }) {
     .slice(0, 2)
     .join("");
   const zoom = p.framing?.zoom ?? 1;
-  const [user, domain] = p.email.split("@");
 
   return (
     <li className={`${SHELL} group min-w-0 transition-[box-shadow] duration-500 ease-out-quart hover:ring-mint/35`}>
       <div
-        className={`${PLATE} grid grid-cols-[5rem_minmax(0,1fr)] content-start items-center gap-x-4 gap-y-3 p-3 lg:flex lg:flex-col lg:items-stretch lg:gap-0 lg:p-0`}
+        className={`${PLATE} grid grid-cols-[5.25rem_minmax(0,1fr)] content-start items-center gap-x-3.5 p-3 sm:grid-cols-[6rem_minmax(0,1fr)] sm:gap-x-4 lg:flex lg:flex-col lg:items-stretch lg:gap-0 lg:p-0`}
       >
         <div className="relative aspect-square overflow-hidden rounded-photo lg:aspect-[5/4] lg:rounded-b-none">
           {p.photo ? (
@@ -153,7 +121,7 @@ function PersonCard({ person: p }: { person: Person }) {
                   alt=""
                   fill
                   // A zoomed photo needs a larger source to stay sharp
-                  sizes={`(min-width: 1024px) ${Math.ceil(19 * zoom)}rem, ${Math.ceil(5 * zoom)}rem`}
+                  sizes={`(min-width: 1024px) ${Math.ceil(19 * zoom)}rem, ${Math.ceil(6 * zoom)}rem`}
                   className="object-cover object-top saturate-[0.82] transition-[scale,filter] duration-700 ease-out-quart group-hover:scale-[1.04] group-hover:saturate-100 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 />
               </div>
@@ -173,68 +141,63 @@ function PersonCard({ person: p }: { person: Person }) {
           )}
         </div>
 
-        <div className="flex min-w-0 flex-col gap-1 lg:relative lg:-mt-5 lg:px-4">
-          <h3 className="text-pretty text-body-lg font-semibold text-foam lg:text-title">{p.name}</h3>
-          <p className="text-small text-haze">{p.role}</p>
-        </div>
+        <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4 md:pr-2 lg:relative lg:-mt-5 lg:flex-col lg:items-stretch lg:gap-4 lg:px-4 lg:pb-4 lg:pr-4">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-pretty text-body-lg font-semibold text-foam lg:text-title">{p.name}</h3>
+            <p className="text-small text-haze">{p.role}</p>
+          </div>
 
-        <div className="col-span-2 flex min-w-0 flex-col gap-2 lg:mt-auto lg:p-3 lg:pt-4">
-          {p.whatsapp && (
-            <ContactLink
-              href={`https://wa.me/${p.whatsapp.replace(/\D/g, "")}`}
-              label={`WhatsApp ${p.name}`}
-              external
-              icon={<SocialIcon id="whatsapp" />}
-              iconClassName="bg-mint text-abyss"
+          <div className="flex shrink-0 gap-2">
+            {p.whatsapp && (
+              <ContactIcon
+                href={`https://wa.me/${p.whatsapp.replace(/\D/g, "")}`}
+                label={`WhatsApp ${p.name} (opens in a new tab)`}
+                external
+                className="bg-mint text-abyss ring-mint hover:bg-aqua"
+              >
+                <SocialIcon id="whatsapp" />
+              </ContactIcon>
+            )}
+            <ContactIcon
+              href={`mailto:${p.email}`}
+              label={`Email ${p.name}`}
+              className="bg-foam/5 text-mint ring-foam/15 hover:bg-foam/10 hover:ring-mint/40"
             >
-              {p.whatsapp}
-            </ContactLink>
-          )}
-          <ContactLink
-            href={`mailto:${p.email}`}
-            label={`Email ${p.name}`}
-            icon={<Mail className="size-4" strokeWidth={1.5} />}
-            iconClassName="bg-foam/10 text-mint"
-          >
-            {/* If it has to wrap, it wraps at the @ */}
-            {user}
-            <wbr />@{domain}
-          </ContactLink>
+              <Mail className="size-5" strokeWidth={1.5} aria-hidden="true" />
+            </ContactIcon>
+          </div>
         </div>
       </div>
     </li>
   );
 }
 
-/** One way to reach a person: the whole pill is the link, and it shows the number or address */
-function ContactLink({
+/** One way to reach a person, as a round icon. The label names it for screen readers and on hover */
+function ContactIcon({
   href,
   label,
   external = false,
-  icon,
-  iconClassName,
+  className,
   children,
 }: {
   href: string;
-  /** What the link does, read before the number or address */
   label: string;
   external?: boolean;
-  icon: ReactNode;
-  iconClassName: string;
+  className: string;
   children: ReactNode;
 }) {
   return (
     <a
       href={href}
+      aria-label={label}
+      title={label}
       {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className="flex min-h-12 min-w-0 items-center gap-3 rounded-full bg-foam/5 py-1.5 pl-1.5 pr-3 text-caption font-semibold text-foam ring-1 ring-foam/15 transition-[background-color,scale,box-shadow] duration-300 ease-out-quart hover:bg-foam/10 hover:ring-mint/40 active:scale-[0.98] motion-reduce:transition-none"
+      className={cn(
+        "grid size-12 shrink-0 place-items-center rounded-full ring-1 transition-[background-color,scale,box-shadow] duration-300 ease-out-quart active:scale-[0.96] motion-reduce:transition-none",
+        className,
+      )}
     >
-      <span aria-hidden="true" className={cn("grid size-9 shrink-0 place-items-center rounded-full", iconClassName)}>
-        {icon}
-      </span>
-      <span className="sr-only">{label}: </span>
-      <span className="min-w-0 break-words">{children}</span>
-      {external && <span className="sr-only"> (opens in a new tab)</span>}
+      {children}
     </a>
   );
 }

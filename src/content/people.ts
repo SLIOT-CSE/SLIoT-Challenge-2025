@@ -5,7 +5,7 @@ export type Person = {
   name: string;
   role: string;
   email: string;
-  /** As shown on the card, e.g. "+94 77 123 4567" */
+  /** e.g. "+94 77 123 4567". The card's WhatsApp icon opens a chat with it */
   whatsapp?: string;
   photo?: string;
   /** Zooms into a photo where the person is small. `origin` is the point that stays put */
