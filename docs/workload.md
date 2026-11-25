@@ -33,7 +33,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | U | Registration and team portal backend | **Done, waiting for review** (Drive and Turnstile need their keys) |
 | V | Admin and shortlisting backend | **Done, waiting for review** (V6 open) |
 | W | Security hardening | **Code done**; nginx and server steps at deploy |
-| X | Backups and operations | **Code done, waiting for review** (R2 rehearsal to run; server setup at launch) |
+| X | Backups and operations | **Code done, waiting for review** (R2 rehearsal passed; X3 in Cloudflare, server setup at launch) |
 | Y | Testing, content and launch | To do                         |
 | Z | After launch | To do                         |
 
@@ -244,7 +244,7 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - [x] R4. Master Google Sheet "SLIoT 2027 Teams" shared with the service account as editor. Done 2026-11-25; verified with an export of the 20 seeded teams to the `Teams` tab
 - [ ] R5. Cloudflare: R2 bucket `sliot-backups`, bucket-scoped token, Turnstile widget for sliot.cse.mrt.ac.lk, billing alert
   - [x] R5a. Turnstile widget "SLIoT registration" (Managed; hostnames sliot.cse.mrt.ac.lk and localhost). Keys in `.env.local`. Verified 2026-11-25: the real widget renders under the CSP, and a registration passed the check
-  - [x] R5b. R2 bucket `sliot-backups` (private) and a token `sliot-backups-server` limited to it (Object Read & Write). Done 2026-11-25; keys in the password manager, for step X. Not yet tested with a write
+  - [x] R5b. R2 bucket `sliot-backups` (private) and a token `sliot-backups-server` limited to it (Object Read & Write). Done 2026-11-25; keys in the password manager, for step X. Writes and reads verified by the backup rehearsal, 2026-11-25
   - [ ] R5c. Billing alert (deferred by the user; email sliot@cse.mrt.ac.lk above $1, or R2 storage above 5 GB)
 - [x] R6. healthchecks.io check for backups (on sliot@, cron 30 2 * * * Asia/Colombo, 2 h grace; ping URL in the password manager for step X)
 - [ ] R7. Ask dept IT to add a DMARC record for `cse.mrt.ac.lk` (recommended, not blocking)
@@ -294,12 +294,12 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 ## X. Backups and operations
 
 - [ ] X1. Litestream service streaming to R2 (10-second interval, 7 days of history). Config written (`deploy/backup/litestream.yml.example`); **installed on the server at launch**
-- [ ] X2. Nightly snapshot timer: sqlite3 backup → integrity check → gzip → age encrypt → rclone to R2. Written (`sliot-snapshot.sh`, service and timer, 02:30); local tests pass, laptop rehearsal still to run; timer enabled at launch
+- [ ] X2. Nightly snapshot timer: sqlite3 backup → integrity check → gzip → age encrypt → rclone to R2. Written (`sliot-snapshot.sh`, service and timer, 02:30); local tests and the R2 rehearsal pass; timer enabled at launch
 - [ ] X3. R2 lifecycle (90 days) and bucket lock on `snapshots/` if available (**Cloudflare dashboard**)
 - [x] X4. healthchecks ping (in the snapshot script); `/api/health` with database and outbox checks
 - [x] X5. Deploy step: pre-migration snapshot first, then `pnpm db:migrate`; the deploy's final check calls `/api/health`. First real run at launch
-- [ ] X6. First restore drill from R2 to a laptop. `sliot-restore.sh` and `rehearse.sh` written; rehearsal with test data before launch, the real drill at launch (Y)
-- [ ] X7. Laptop tests in WSL. `test-local.sh` (folder as storage) passed 2026-11-25: 51 checks as root, 46 as a normal user. Still to run: `rehearse.sh` against the real bucket under `rehearsal/`, then delete the rehearsal files
+- [ ] X6. First restore drill from R2 to a laptop. `sliot-restore.sh` and `rehearse.sh` written; Rehearsal with test data passed 2026-11-25; the real drill is at launch (Y8)
+- [x] X7. Laptop tests in WSL, 2026-11-25. `test-local.sh` (folder as storage): 51 checks as root, 46 as a normal user. `rehearse.sh` against the real bucket under `rehearsal/`: both backups restored 20 of 20 seeded teams, integrity ok. Delete the rehearsal files (R2 `rehearsal/`, `~/sliot-rehearsal`, `data/rehearsal.db`)
 
 ## Y. Testing, content and launch
 
