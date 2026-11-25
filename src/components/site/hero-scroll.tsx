@@ -1,11 +1,12 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { gsap, useGSAP, ScrollTrigger, PIN_QUERY } from "@/lib/motion/gsap";
+import { gsap, useGSAP, ScrollTrigger, PIN_QUERY, FULL_MOTION_QUERY } from "@/lib/motion/gsap";
 
 /**
- * Scroll behaviour of the hero (desktop, full motion only): as the page scrolls away,
- * the figure drifts up slower than the text and the aurora fades into the next section.
+ * Scroll behaviour of the hero. Full motion, every width: as the page scrolls away the portal
+ * rings slide out sideways, left off the left edge and right off the right. Desktop also: the
+ * figure drifts up slower than the text and the aurora fades into the next section.
  */
 export function HeroScroll({ children }: { children: ReactNode }) {
   const scope = useRef<HTMLDivElement>(null);
@@ -13,6 +14,12 @@ export function HeroScroll({ children }: { children: ReactNode }) {
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
+      mm.add(FULL_MOTION_QUERY, () => {
+        // Gone by the time 60% of the hero has scrolled past; scrubbed, so they return on the way up
+        const trigger = { trigger: scope.current, start: "top top", end: "60% top", scrub: true };
+        gsap.to('[data-portal-side="left"]', { xPercent: -60, ease: "power1.in", scrollTrigger: trigger });
+        gsap.to('[data-portal-side="right"]', { xPercent: 60, ease: "power1.in", scrollTrigger: trigger });
+      });
       mm.add(PIN_QUERY, () => {
         const trigger = { trigger: scope.current, start: "top top", end: "bottom top", scrub: true };
         gsap.to("[data-hero-figure]", { yPercent: -10, ease: "none", scrollTrigger: trigger });

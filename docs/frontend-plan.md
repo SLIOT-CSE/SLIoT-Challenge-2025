@@ -104,16 +104,16 @@ The header links jump to section anchors; the URL hash updates as you scroll.
 
 ### 5.2 Hero: "the figure and the title", from hackX
 
-- **Layout desktop:** asymmetric. The title on the left, the SLIoT figure large on the right, rising past the fold line.
-- **Layout phone:** the figure on top, bleeding off the right edge (the coming-soon treatment), with the title and CTAs below, all within the first screen.
+- **Layout (all widths):** centred, after the hackX astronaut. The SLIoT avatar floats centred with its head over the aqua title line: the whole title sits behind the avatar. The upper-right cloth (cloth-mid) is at 80% opacity so the title shows through it. The avatar runs past the bottom of the hero and fades out. The lead, buttons and credit sit below, over the avatar's lower body, on a soft dark pool that keeps them readable over the fabric. On phones the avatar is wider than the screen and bleeds off both edges; the buttons come before the lead there.
+- **Avatar (`src/components/HeroAvatar.tsx`):** four layers on one canvas in `public/images/hero-avatar/` (cloth-back, cloth-mid, body, cloth-front). The body stays still; the cloth layers wave in a WebGL shader, the ripple growing from zero where the cloth meets the body so the seams never move. Paused off screen. Without WebGL and under reduced motion the stacked still images show.
 - **Content:**
   - Title: "Build the connected island"
   - One sentence: "Sri Lanka's national IoT competition for school students, undergraduates and innovators."
   - Buttons: **Register** and **How it works**, the same at every stage
   - No countdown line: the countdown and the next date are in the live callout below
-- **Background:** the aurora. Slow-moving gradient bands (CSS, GPU-cheap), with a sparse field of sensor dots that blink in sequence.
-- **Load sequence:** the aurora fades up. The title lines rise out of a mask, one after another. The figure resolves from blur with its breathing glow (coming-soon motion). Total about 1.4s.
-- **On scroll:** the figure drifts up slower than the text (parallax), and the aurora darkens toward the next section.
+- **Background:** the aurora. Slow-moving gradient bands (CSS, GPU-cheap), with a sparse field of sensor dots that blink in sequence. Over the aurora, a cyan particle nebula (`src/components/ui/quantum-nebula.tsx`, three.js, loaded lazily through `src/components/site/hero-nebula.tsx`) gives cosmic depth: fine particles flow through a swirling field and gather into wisps, bright strands and a soft core that keep re-forming, spread across the whole hero. It drifts slowly and sits behind the content at 75% opacity and fades out towards the bottom. The flow is a small CPU simulation (11,000 particles on desktop, 5,000 on phones stepped every other frame, sines from a lookup table, under 1 ms a frame on a desktop); it is pre-flowed in slices before fading in, pauses off screen, and under reduced motion shows one still frame. Without WebGL it is simply absent. Two portal rings (`public/images/arcane-circle.webp`, a neon arcane tech circle with runes and four compass spikes) sit centred on the left and right edges, so half of each shows, turning slowly (90 s a turn) in opposite directions at 50% opacity, each with a portal in its opening: a deep cyan well with a breathing light at the centre (smaller and 30% on phones); they stop under reduced motion.
+- **Load sequence:** the aurora fades up. The title lines rise out of a mask, one after another. The avatar resolves from blur with its breathing glow, and its cloth starts waving. Total about 1.4s.
+- **On scroll:** the figure drifts up slower than the text (parallax), and the aurora darkens toward the next section. The portal rings slide out sideways (left ring off the left edge, right ring off the right), gone by the time 60% of the hero has scrolled past and back on the way up; at every width, full motion only.
 
 ### 5.3 Live round callout, from SpiritX
 

@@ -18,8 +18,8 @@ export const site = {
 };
 
 export const hero = {
-  /** The display title as lines of words. Phones show each line on one row; from lg every
-   *  word gets its own row. Words rise in one after another. */
+  /** The display title as lines of words, centred, one row per line (the last line in aqua).
+   *  Words rise in one after another. */
   titleLines: [["Build the"], ["connected", "island"]],
   lead: "Sri Lanka's national IoT competition for school students, undergraduates and innovators. Find a real problem, design a device that senses, connects and acts, and build it with mentors from industry.",
 };

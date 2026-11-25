@@ -305,6 +305,75 @@
   opacity: 0.05;
 }
 
+/* Hero particle nebula: dim, and fading out towards the bottom so the hero hands over cleanly */
+.nebula-mask {
+  opacity: 0.75;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 55%, transparent 92%);
+  mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 55%, transparent 92%);
+}
+
+/* Hero portal rings: centred on the left and right edges so half of each shows, turning
+   slowly in opposite directions. Dim, behind the content. */
+.portal-ring {
+  position: absolute;
+  top: 50%;
+  width: min(80svh, 46rem);
+  aspect-ratio: 1;
+  opacity: 0.5;
+}
+.portal-ring--left {
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+.portal-ring--right {
+  right: 0;
+  transform: translate(50%, -50%);
+}
+.portal-spin {
+  animation: portal-spin 90s linear infinite;
+}
+.portal-ring--right .portal-spin {
+  animation-direction: reverse;
+}
+@keyframes portal-spin {
+  to { transform: rotate(360deg); }
+}
+/* The portal inside each ring: a deep cyan well with a soft light breathing at the centre. Sized to the ring's
+   opening (~51% of the ring box) and tucked just under its inner edge. */
+.portal-core {
+  position: absolute;
+  inset: 24%;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: radial-gradient(
+    circle,
+    rgb(133 255 240 / 0.3) 0%,
+    rgb(40 150 220 / 0.22) 28%,
+    rgb(4 40 80 / 0.5) 58%,
+    rgb(1 10 24 / 0.7) 72%
+  );
+}
+.portal-eye {
+  position: absolute;
+  inset: 34%;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgb(221 247 239 / 0.55), rgb(133 255 240 / 0.25) 40%, transparent 70%);
+  filter: blur(6px);
+  animation: portal-breathe 7s ease-in-out infinite alternate;
+}
+@keyframes portal-breathe {
+  from { transform: scale(0.85); opacity: 0.7; }
+  to { transform: scale(1.15); opacity: 1; }
+}
+
+/* Phones: smaller and fainter, as the rings sit behind the text there */
+@media (max-width: 39.99rem) {
+  .portal-ring {
+    width: 72vw;
+    opacity: 0.3;
+  }
+}
+
 /* Sensor nodes blinking in sequence (each sets --delay) */
 .signal-node {
   animation: signal-node 4.8s ease-in-out var(--delay, 0s) infinite;
@@ -409,6 +478,8 @@
     animation: intro-fade 0.3s ease-out both;
   }
   .aurora-band,
+  .portal-spin,
+  .portal-eye,
   .signal-node,
   .live-ping {
     animation: none;
