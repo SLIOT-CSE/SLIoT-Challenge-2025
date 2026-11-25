@@ -182,13 +182,11 @@ A single marquee band between the callout and About: "Sense · Connect · Act ·
 - **Other awards:** listed in a quiet row below (category awards, best school team, and so on, to be supplied).
 - **Phone:** 1st first, then 2nd and 3rd side by side.
 
-### 5.10 Memories: photo wall, from SpiritX
+### 5.10 Memories: asymmetric bento highlights
 
-- **Desktop:** a tilted 3D wall of past-edition photos. On scroll it straightens and zooms toward the viewer while the title "Moments from past editions" fades through.
-- **Edition tabs:** All, 2025, 2023, 2022, 2019. They filter the wall with a layout animation.
-- **Photo viewer:** clicking a photo opens a full-screen dialog with arrows, swipe, Esc to close, and captions (event and year).
-- **Phone:** a swipeable strip per edition, with the same viewer.
-- **Images:** the existing 116 photos, through `next/image` (AVIF/WebP, lazy, sized per breakpoint). Only the first wall's photos load early.
+- **Desktop:** Left sticky editorial header with a `"View all moments"` lightbox trigger beside an 8-tile asymmetric bento grid (`01` tall spanning two rows, `02`–`07` paired across the grid with persistent numbered labels, plus an 8th `"View full album on Facebook"` tile).
+- **Phone:** Full-width `01` lead tile above a 2-column grid for `02`–`07` and a full-width Facebook album tile at the bottom.
+- **Photo viewer:** Clicking any tile or `"View all moments"` opens the full-screen dialog scoped to those 7 curated highlight shots (arrows, swipe, Esc to close, event and year captions).
 
 ### 5.11 Sponsors (calm)
 

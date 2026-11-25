@@ -19,6 +19,19 @@ export const editions: Edition[] = [
   { year: 2019, albums: [{ event: "Highlights", folder: "SLIoT2019", count: 11, ext: "jpg" }] },
 ];
 
+/** Curated seven-shot bento highlights shown in the Memories section and lightbox */
+export const highlights: Photo[] = [
+  { src: "/images/gallery/SLIoT2025/finals/1.jpeg", year: 2025, event: "Grand finale", n: 1 },
+  { src: "/images/gallery/SLIoT2025/finals/4.jpeg", year: 2025, event: "Champions", n: 4 },
+  { src: "/images/gallery/SLIoT2025/schoolworkshop/1.jpg", year: 2025, event: "School workshop", n: 1 },
+  { src: "/images/gallery/SLIoT2025/semi/1.jpg", year: 2025, event: "Semi-finals", n: 1 },
+  { src: "/images/gallery/SLIoT2025/uniworkshop/1.jpg", year: 2025, event: "University workshop", n: 1 },
+  { src: "/images/gallery/SLIoT2023/1.jpg", year: 2023, event: "SLIoT 2023", n: 1 },
+  { src: "/images/gallery/SLIoT2019/1.jpg", year: 2019, event: "SLIoT 2019", n: 1 },
+];
+
+export const albumBackdropSrc = "/images/gallery/SLIoT2022/1.jpg";
+
 export function editionPhotos(edition: Edition): Photo[] {
   return edition.albums.flatMap((a) =>
     Array.from({ length: a.count }, (_, i) => ({
