@@ -299,7 +299,7 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - [x] X4. healthchecks ping (in the snapshot script); `/api/health` with database and outbox checks
 - [x] X5. Deploy step: pre-migration snapshot first, then `pnpm db:migrate`; the deploy's final check calls `/api/health`. First real run at launch
 - [ ] X6. First restore drill from R2 to a laptop. `sliot-restore.sh` and `rehearse.sh` written; Rehearsal with test data passed 2026-11-25; the real drill is at launch (Y8)
-- [x] X7. Laptop tests in WSL, 2026-11-25. `test-local.sh` (folder as storage): 51 checks as root, 46 as a normal user. `rehearse.sh` against the real bucket under `rehearsal/`: both backups restored 20 of 20 seeded teams, integrity ok. Delete the rehearsal files (R2 `rehearsal/`, `~/sliot-rehearsal`, `data/rehearsal.db`)
+- [x] X7. Laptop tests in WSL, 2026-11-25. `test-local.sh` (folder as storage): 51 checks as root, 46 as a normal user. `rehearse.sh` against the real bucket under `rehearsal/`: both backups restored 20 of 20 seeded teams, integrity ok. Local rehearsal files deleted; the R2 `rehearsal/` folder still to delete (dashboard)
 
 ## Y. Testing, content and launch
 
