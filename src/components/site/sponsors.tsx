@@ -14,7 +14,7 @@ export function Sponsors() {
           Partners
         </h2>
 
-        <div className="mt-12 flex flex-wrap items-start justify-center gap-x-20 gap-y-12">
+        <div className="mt-12 flex flex-wrap items-start justify-center gap-x-16 gap-y-14 sm:gap-y-16 md:gap-x-24 lg:gap-x-32 xl:gap-x-44">
           {partnerTiers.map((tier) => (
             <div key={tier.title} className="flex min-w-0 flex-col items-center gap-6 text-center">
               <h3 className="text-small font-semibold text-haze">{tier.title}</h3>
