@@ -182,7 +182,7 @@ export function ShortlistScreen() {
       {candidates.length === 0 ? (
         <EmptyState
           title="No proposals yet"
-          description="Teams appear here once they submit a proposal. In development, switch the sample clock to a later stage or add teams."
+          description="Teams appear here once they submit a proposal. In development, move the dev clock to a later stage in the test-data panel."
         />
       ) : (
         <>

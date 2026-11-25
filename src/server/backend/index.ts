@@ -6,7 +6,7 @@ import type { DriveUploader, RequestContext, Service, Services, SheetsExporter }
 import { teamBackend, type TurnstileVerifier } from "./team";
 
 // The whole backend for one request: the same functions, names and return shapes the
-// screens used with the sample store (src/lib/data), now backed by SQLite.
+// screens import from src/lib/data, backed by SQLite.
 
 export type { RequestContext } from "./context";
 

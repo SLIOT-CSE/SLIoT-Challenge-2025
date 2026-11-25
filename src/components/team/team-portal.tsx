@@ -16,7 +16,7 @@ type Loaded = { team: TeamDetail | null; comp: CompetitionState };
 
 /**
  * /team: the login before you're in, the dashboard after. Reads the session and the competition
- * state on load and again whenever the sample store changes (an upload, the dev switcher), and
+ * state on load and again whenever data changes (dataVersion) (an upload, the dev switcher), and
  * keeps showing what it has while it does, so the dashboard never flashes away mid-upload.
  */
 export function TeamPortal() {

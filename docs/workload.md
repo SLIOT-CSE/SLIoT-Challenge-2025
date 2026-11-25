@@ -29,7 +29,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | Q | Frontend polish and verification | To do                         |
 | R | Accounts and access (department) | In progress (R1–R4 done; R3d judges later) |
 | S | Database layer | **Done, waiting for review**  |
-| T | Email system | **Done, waiting for review** (T4 needs SMTP settings) |
+| T | Email system | **Done, waiting for review** (T4: Gmail passed; Outlook and phone to do) |
 | U | Registration and team portal backend | **Done, waiting for review** (Drive and Turnstile need their keys) |
 | V | Admin and shortlisting backend | **Done, waiting for review** (V6 open) |
 | W | Security hardening | **Code done**; nginx and server steps at deploy |
@@ -263,7 +263,7 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - [x] T1. Outbox and background worker started from `src/instrumentation.ts` (`src/server/email/worker.ts`): one email every 2 s; retries at 1 min, 5 min, 30 min, 2 h, 12 h, then `failed`. Schedules by real time (new emails are due at once). Also deletes expired sessions daily
 - [x] T2. React Email templates in `src/emails/` (react-email 6; inline styles from the aurora palette rather than its Tailwind wrapper, for client support): registration confirmed, code reminder, proposal received, shortlisted, prototype received, finalist. The header uses `/icon.png`, since Gmail doesn't show SVG. TODO(2027): a PNG wordmark
 - [x] T3. nodemailer over Workspace SMTP (`src/server/email/transport.ts`); `pnpm email:dev` preview on port 3200. **Changed:** no console transport. Decided 2026-11-24: until the SMTP variables are set, emails wait in the outbox as `pending` with `last_error` "SMTP not configured"; production refuses to start without them
-- [ ] T4. Test sends to real Gmail and Outlook inboxes on phone and desktop
+- [ ] T4. Test sends to real Gmail and Outlook inboxes on phone and desktop. Gmail desktop passed 2026-11-25 (inbox; SPF and DKIM pass, DMARC fails because the domain has no record, see R7; logo broken only with a localhost SITE_URL). Outlook skipped for now by the user; Outlook and phone checks still to do
 
 ## U. Registration and team portal backend
 

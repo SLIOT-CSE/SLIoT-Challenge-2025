@@ -11,7 +11,7 @@ export interface AdminData {
 
 /**
  * Teams, settings and shortlist history for the Shortlist and Finalists screens. Loads on mount and
- * again whenever the sample store changes, keeping what it has while it does; only a failed first
+ * again whenever data changes (dataVersion), keeping what it has while it does; only a failed first
  * load reports `offline`.
  */
 export function useAdminData(): { data: AdminData | null; offline: boolean; retry: () => void } {

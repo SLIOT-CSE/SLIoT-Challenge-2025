@@ -87,7 +87,7 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
   const [turnstileKey, setTurnstileKey] = useState(0);
   const [honeypot, setHoneypot] = useState("");
 
-  // Keep the competition state fresh: on load, and whenever the sample store changes (the dev
+  // Keep the competition state fresh: on load, and whenever data changes (dataVersion) (the dev
   // switcher moves the clock). A refresh that fails never takes the form away once it's showing.
   const storeVersion = useSyncExternalStore(dataVersion.subscribe, dataVersion.get, () => 0);
   const done = phase.kind === "success";
@@ -188,6 +188,9 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
 
     // A filled honeypot means a bot: look like it worked, save nothing
     if (honeypot) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn("Registration not sent: the hidden bot field was filled (autofill?). The code shown is fake.");
+      }
       setPhase({
         kind: "success",
         code: generateTeamCode(),
@@ -326,11 +329,18 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
         {/* Bait for bots: invisible and unreachable for people */}
         <div aria-hidden="true" className="absolute -left-[9999px] size-0 overflow-hidden">
           <label>
-            Website
+            Leave this empty
+            {/* A name no autofill or password manager recognises: "website" got autofilled, which
+                made real people look like bots (fake success, nothing saved) */}
             <input
-              name="website"
+              name="sliot_hp_ref"
+              type="text"
               tabIndex={-1}
               autoComplete="off"
+              data-1p-ignore
+              data-lpignore="true"
+              data-bwignore
+              data-form-type="other"
               value={honeypot}
               onChange={(e) => setHoneypot(e.target.value)}
             />

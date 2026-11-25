@@ -175,7 +175,7 @@ export function TeamsScreen() {
       const result = await exportToSheets(actor);
       if (!result.ok) return toast({ tone: "error", title: "Couldn't export", description: result.error.message });
       setLastSheetExportAt(result.data.exportedAt);
-      toast({ tone: "success", title: "Exported to Google Sheets", description: `${result.data.count} teams. Sample data: nothing was sent.` });
+      toast({ tone: "success", title: "Exported to Google Sheets", description: `${result.data.count} teams written to the Teams tab.` });
     } catch (e) {
       toast({ tone: "error", title: "Couldn't export", description: e instanceof NetworkError ? NETWORK_TEXT : "Something went wrong." });
     } finally {
@@ -231,7 +231,7 @@ export function TeamsScreen() {
         <EmptyState
           icon={<Users />}
           title="No teams yet"
-          description="Teams show up here as they register. In development, use “Add teams” in the sample panel to fill the table."
+          description="Teams show up here as they register. In development, use “Reset test data” in the test-data panel."
         />
       ) : (
         <>
