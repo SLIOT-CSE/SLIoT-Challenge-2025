@@ -27,7 +27,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | O | Team portal screens (`/team`) | Done                          |
 | P | Admin dashboard screens (`/admin`) | **Done, waiting for review** (all 4 slices) |
 | Q | Frontend polish and verification | To do                         |
-| R | Accounts and access (department) | **Paused at R3c** (R1, R2, R3a, R3b done) |
+| R | Accounts and access (department) | In progress (R1–R4 done; R3d judges later) |
 | S | Database layer | **Done, waiting for review**  |
 | T | Email system | **Done, waiting for review** (T4 needs SMTP settings) |
 | U | Registration and team portal backend | **Done, waiting for review** (Drive and Turnstile need their keys) |
@@ -232,18 +232,21 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - [ ] Q4. Lighthouse mobile within budget (LCP < 2.5s, CLS < 0.05, INP < 200ms, first-view JS ≲ 180 KB gzip)
 - [ ] Q5. `/impeccable audit` and `polish` passes; fix findings
 
-## R. Accounts and access (department) (paused at R3c, 2026-11-24)
+## R. Accounts and access (department)
 
 - [x] R1. `sliot@cse.mrt.ac.lk` mailbox with 2-Step Verification and an app password (Workspace admin). App password "SL-IOT-Web" created 2026-11-24; SMTP sending still to be confirmed in step T3
 - [x] R2. Google Cloud project with Drive and Sheets APIs; service account and JSON key (project `sliot-2027`, service account `sliot-website@sliot-2027.iam.gserviceaccount.com`; key stored privately, never in the repo)
 - [ ] R3. Drive storage for proposals. Plan changed 2026-11-24: no permission to create a Shared Drive, so use a folder "SLIoT 2027 Proposals" in the `sliot@cse.mrt.ac.lk` My Drive, with uploads made through OAuth as that account (refresh token, scope `drive`), not the service account (service accounts have no storage quota). Judges get viewer access to the folder. The service account is still used for Sheets only
   - [x] R3a. Create the folder (folder ID `1YHcUQvkxhelSOxpg-lnk8S1D0mBGjao7`)
   - [x] R3b. OAuth consent screen (Internal if available, so the refresh token does not expire). Internal was available
-  - [ ] R3c. OAuth client (Web application) and refresh token via OAuth Playground
+  - [x] R3c. OAuth client (Web application) and refresh token via OAuth Playground. Done 2026-11-25; values in `.env.local`. Verified: token refresh works (scope `drive`), and the app's uploader put a test PDF in `SLIoT 2027 Proposals/School/`
   - [ ] R3d. Judges as viewers on the folder (can wait)
-- [ ] R4. Master Google Sheet shared with the service account
+- [x] R4. Master Google Sheet "SLIoT 2027 Teams" shared with the service account as editor. Done 2026-11-25; verified with an export of the 20 seeded teams to the `Teams` tab
 - [ ] R5. Cloudflare: R2 bucket `sliot-backups`, bucket-scoped token, Turnstile widget for sliot.cse.mrt.ac.lk, billing alert
-- [ ] R6. healthchecks.io check for backups
+  - [x] R5a. Turnstile widget "SLIoT registration" (Managed; hostnames sliot.cse.mrt.ac.lk and localhost). Keys in `.env.local`. Verified 2026-11-25: the real widget renders under the CSP, and a registration passed the check
+  - [x] R5b. R2 bucket `sliot-backups` (private) and a token `sliot-backups-server` limited to it (Object Read & Write). Done 2026-11-25; keys in the password manager, for step X. Not yet tested with a write
+  - [ ] R5c. Billing alert (deferred by the user; email sliot@cse.mrt.ac.lk above $1, or R2 storage above 5 GB)
+- [x] R6. healthchecks.io check for backups (on sliot@, cron 30 2 * * * Asia/Colombo, 2 h grace; ping URL in the password manager for step X)
 - [ ] R7. Ask dept IT to add a DMARC record for `cse.mrt.ac.lk` (recommended, not blocking)
 
 ## S. Database layer
