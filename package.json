@@ -21,10 +21,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx --env-file-if-exists=.env.local scripts/migrate.ts",
+    "db:migrate": "tsx --env-file-if-exists=.env.production.local --env-file-if-exists=.env.local scripts/migrate.ts",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx --env-file-if-exists=.env.local scripts/seed.ts",
-    "email:dev": "email dev --dir src/emails/preview --port 3200"
+    "db:seed": "tsx --env-file-if-exists=.env.production.local --env-file-if-exists=.env.local scripts/seed.ts",
+    "email:dev": "email dev --dir src/emails/preview --port 3200",
+    "admin:create": "tsx --env-file-if-exists=.env.production.local --env-file-if-exists=.env.local scripts/admin-create.ts"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

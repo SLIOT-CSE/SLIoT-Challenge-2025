@@ -39,7 +39,7 @@ import { StepRail } from "./step-rail";
 import type { StepProps } from "./step-props";
 import { SuccessScreen } from "./success-screen";
 import { TeamStep } from "./team-step";
-import { TurnstilePlaceholder } from "./turnstile-placeholder";
+import { Turnstile } from "./turnstile";
 
 type Phase =
   | { kind: "loading" }
@@ -82,7 +82,8 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
   const [focusErrorTick, setFocusErrorTick] = useState(0);
 
   const [submitting, setSubmitting] = useState(false);
-  const [turnstileOk, setTurnstileOk] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileOk = turnstileToken !== null;
   const [turnstileKey, setTurnstileKey] = useState(0);
   const [honeypot, setHoneypot] = useState("");
 
@@ -199,7 +200,7 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
     setSubmitting(true);
     setBanner(null);
     try {
-      const result = await registerTeam(toInput(values));
+      const result = await registerTeam(toInput(values), { turnstileToken: turnstileToken ?? undefined, honeypot });
       if (result.ok) {
         setPhase({
           kind: "success",
@@ -391,7 +392,7 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
                       goTo(target);
                     }}
                   />
-                  <TurnstilePlaceholder onVerified={setTurnstileOk} resetKey={turnstileKey} />
+                  <Turnstile onToken={setTurnstileToken} resetKey={turnstileKey} />
                 </div>
               )}
             </StepContent>

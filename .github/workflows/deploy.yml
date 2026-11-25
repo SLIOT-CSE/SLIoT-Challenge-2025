@@ -42,6 +42,11 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Apply database migrations
+        # DATABASE_PATH comes from .env.production.local (linked to /etc/sliot/sliot.env).
+        # TODO(step X5): take a snapshot of the database before migrating.
+        run: pnpm db:migrate
+
       - name: Restart server
         run: |
           # When a job ends, the self-hosted runner kills every process that carries this

@@ -1,0 +1,18 @@
+# Dependency alerts and update pull requests (workload W5). Updates target full-site while the
+# rebuild is unmerged; switch target-branch to main after launch.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: full-site
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: full-site
+    schedule:
+      interval: monthly
