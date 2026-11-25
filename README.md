@@ -70,7 +70,7 @@ src/
     utils.ts          cn() class-name helper (knows the custom token names)
 public/images/        All site images, served as-is
 docs/                 architecture.md, frontend-plan.md, workload.md
-deploy/               Server configuration examples
+deploy/               Server configuration examples; backup/ holds the backup scripts and setup guide
 ecosystem.config.cjs  PM2 process definition
 ```
 
@@ -110,11 +110,13 @@ Copy an event's photos into `public/images/gallery/<folder>/`, numbered `1.jpg`,
 
 Pushing to `main` deploys automatically through `.github/workflows/deploy.yml` on the self-hosted runner in `/var/www/sliot/SLIoT-Challenge-2025`:
 
-1. `git reset --hard origin/main`
-2. `pnpm install --frozen-lockfile`
-3. `pnpm build`
-4. `pm2 reload ecosystem.config.cjs`
-5. Health check on `http://127.0.0.1:3000/`
+1. Snapshot of the database (stops the deploy if it can't be made; see `deploy/backup/README.md`)
+2. `git reset --hard origin/main`
+3. `pnpm install --frozen-lockfile`
+4. `pnpm build`
+5. `pnpm db:migrate`
+6. `pm2 reload ecosystem.config.cjs`
+7. Health check on `http://127.0.0.1:3000/api/health`
 
 The Next.js server listens on `127.0.0.1:3000` and nginx proxies public traffic to it. See `deploy/nginx.conf.example`.
 
@@ -133,3 +135,5 @@ pm2 startup   # prints a sudo command: run it so PM2 runs as a systemd service a
 Start PM2 from an SSH session or systemd, never only from a workflow run. The self-hosted runner kills the processes a job started when the job ends, which takes the site down (502) right after a "successful" deploy. The workflow's restart step clears `RUNNER_TRACKING_ID` so the processes it reloads are left alone.
 
 Then update the nginx site: replace the location that served the old `dist/` folder with the proxy blocks from `deploy/nginx.conf.example`, keep the existing redirect locations, and reload nginx (`sudo nginx -t && sudo systemctl reload nginx`).
+
+The database backups have their own setup: `deploy/backup/README.md`. Do it before the first deploy that creates a database.

@@ -111,7 +111,7 @@ Tailwind 4 trade-off: it needs Safari 16.4+ (iPhones updated since 2023), Chrome
             ├──► SQLite file  /var/lib/sliot/sliot.db   (WAL mode)
             │        ▲
             │        └── Litestream (systemd) ──► R2: continuous copy
-            │        └── nightly timer ──────────► R2: encrypted snapshot
+            │        └── nightly and pre-deploy snapshots ──► R2: encrypted
             │
             ├──► Google Workspace SMTP  (sliot@cse.mrt.ac.lk)
             ├──► Google Drive API       (Shared Drive: proposals)
@@ -508,7 +508,7 @@ Stored on the server in `/etc/sliot/sliot.env` (owner: app user, mode 600), link
 
 `DATABASE_PATH`, `SITE_URL`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` (the app password), `EMAIL_FROM`, `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN`, `GOOGLE_DRIVE_FOLDER_ID`, `GOOGLE_SERVICE_ACCOUNT_KEY_FILE` (`/etc/sliot/google-sa.json`), `GOOGLE_SHEET_ID`, `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`. The list with notes is `.env.example`; `src/server/env.ts` checks them, and production refuses to start while a required one is missing (the Sheets pair is optional).
 
-R2 credentials live only in `/etc/litestream.yml` and the rclone config, both mode 600.
+R2 credentials live only in `/etc/litestream.yml` and `/etc/sliot-backup/rclone.conf`, both owned by root with mode 600, so the app user can't read them.
 
 ## 9. Backup and recovery
 
@@ -519,22 +519,24 @@ R2 credentials live only in `/etc/litestream.yml` and the rclone config, both mo
 | Data | Where it lives | How it's protected |
 |---|---|---|
 | Database (teams, submissions, admins, settings, logs) | `/var/lib/sliot/sliot.db` | Litestream + nightly snapshot to R2 |
-| Proposal PDFs | Google Shared Drive | Google's storage; Drive keeps deleted files 30 days in trash |
+| Proposal PDFs | Google Drive (a folder in the `sliot@` My Drive, decision D4) | Google's storage; Drive keeps deleted files 30 days in trash |
 | Prototype videos | YouTube (teams' own accounts) | Only the link is ours; it's in the database |
 | Code | GitHub | Git |
 | Secrets | `/etc/sliot/` | Copy in the organizers' password manager |
 
 ### How the backup runs
 
+Both run as root (decided 2026-11-25). Scripts, configs and the server setup guide are in `deploy/backup/`.
+
 1. **Litestream** runs as a systemd service next to the app. It watches the database's WAL and uploads new changes to `r2:sliot-backups/litestream/`, at most every 10 seconds, only when something changed. It keeps 7 days of point-in-time history.
-2. **Nightly snapshot:** a systemd timer runs every night at 02:00 Sri Lanka time:
+2. **Nightly snapshot:** a systemd timer runs `sliot-snapshot nightly` at 02:30 Sri Lanka time:
    - takes a consistent copy with `sqlite3 sliot.db ".backup ..."`
-   - runs `PRAGMA integrity_check` on the copy
+   - runs `PRAGMA integrity_check` on the copy and checks the teams table is there
    - compresses it, then encrypts it with `age` using a public key (the private key is kept offline in the password manager, never on the server)
-   - uploads it with rclone to `r2:sliot-backups/snapshots/YYYY-MM-DD.db.gz.age`
-3. **Retention:** an R2 lifecycle rule deletes snapshots after 90 days. If R2 bucket locks are available on the account, a 30-day lock on `snapshots/` stops even a compromised server from deleting recent snapshots.
-4. **Monitoring:** after each successful snapshot the script pings a free dead-man's-switch check (healthchecks.io). If no ping arrives in 26 hours, organizers get an email.
-5. **Before every migration** the deploy takes an extra snapshot, so a bad schema change can be undone.
+   - uploads it with rclone to `r2:sliot-backups/snapshots/nightly/<date and time>.db.gz.age`
+3. **Retention:** an R2 lifecycle rule deletes snapshots after 90 days. If R2 bucket locks are available on the account, a 30-day lock on `snapshots/` stops even a compromised server from deleting recent snapshots. File names carry the time, so a rerun never overwrites a locked file.
+4. **Monitoring:** after each successful nightly snapshot the script pings a free dead-man's-switch check (healthchecks.io, cron `30 2 * * *` Asia/Colombo with 2 hours' grace), and reports a failed run at once. Organizers get an email on a failure or a missing ping. Deploys never ping it.
+5. **Before every deploy** the first workflow step runs `sliot-snapshot pre-migrate` (allowed by a one-line sudo rule), so a bad schema change can be undone. If the copy can't be made or fails its check, the deploy stops with the running site untouched. The last 10 copies stay in `/var/backups/sliot` (root only); if only the upload to `snapshots/pre-migrate/` fails, the deploy continues with a warning. With no database yet, the step is skipped.
 
 ### Cost
 
@@ -547,29 +549,33 @@ Free on R2's free tier: 10 GB storage, 1 million writes and 10 million reads a m
 
 ### Restore runbook (VPS lost)
 
+Commands for every kind of restore are in `deploy/backup/README.md`.
+
 1. Get a server with Node 24, pnpm, PM2, nginx, Litestream, sqlite3, age and rclone.
 2. Clone the repository to `/var/www/sliot/SLIoT-Challenge-2025`, `pnpm install`, `pnpm build`.
 3. Restore secrets to `/etc/sliot/` from the password manager.
-4. `litestream restore -o /var/lib/sliot/sliot.db s3://sliot-backups/litestream` (or, if that fails, download the latest snapshot, decrypt with the age private key, decompress).
-5. Run `PRAGMA integrity_check`, start Litestream and the app with PM2, apply the nginx config and TLS certificate.
+4. Set up the backup tools (`deploy/backup/README.md`), then `sliot-restore litestream <file>` (or, if that fails, `sliot-restore snapshot latest <file>` with the age private key). Both check the file's integrity.
+5. Move the restored file into place, start Litestream and the app with PM2, apply the nginx config and TLS certificate.
 6. If the server IP changed, ask university IT to point `sliot.cse.mrt.ac.lk` at the new IP.
 7. Check: home page loads, an admin can log in, the team count matches.
 
-**Restore drill:** once a month during the competition, restore the latest backup to a laptop and compare team counts with the live dashboard.
+**Restore drill:** before registration opens, then once a month during the competition, restore both backups to a laptop with a read-only R2 token, compare team counts with the live dashboard, and delete the restored files.
+
+**Testing before launch:** the server is set up at launch. Until then, `deploy/backup/test-local.sh` tests the scripts with a folder standing in for R2, and `deploy/backup/rehearse.sh` runs both backups and restores against the real bucket under `rehearsal/`, from a laptop with seeded data.
 
 ## 10. Deployment changes
 
 The existing pipeline (push to `main` → self-hosted runner → install → build → PM2 reload → health check) stays, with these additions:
 
-- **Database migrations:** a step before the restart takes a pre-migration snapshot and runs `pnpm db:migrate`. The migrate step is in `deploy.yml`; the snapshot comes with step X5.
-- **Health check:** the existing check moves to `/api/health`, which also checks the database is readable and reports how many emails are waiting in the outbox.
+- **Database snapshot and migrations:** the first step takes a pre-migration snapshot; `pnpm db:migrate` runs after the build, before the restart.
+- **Health check:** the check calls `/api/health`, which returns 503 when the database can't be read. It also reports the number of waiting and failed emails; those don't fail the deploy. The route is public and returns nothing else.
 - **nginx:**
   - `client_max_body_size 12m` on `/api/team/proposal`
   - `limit_req` zones for the team and admin login endpoints (POSTs only) and registration
   - security headers are sent by Next.js itself (`next.config.ts`), so nginx doesn't add them
   - the old `/register` redirect must be removed at launch, since `/register` is now the app's page
   - all of it is in `deploy/nginx.conf.example`
-- **One-time server setup** (documented in `deploy/`): the `/var/lib/sliot` and `/etc/sliot` folders, the Litestream service, the snapshot timer and the rclone config.
+- **One-time server setup** (`deploy/backup/README.md`): the `/var/lib/sliot`, `/etc/sliot` and `/etc/sliot-backup` folders, the Litestream service, the snapshot timer, the sudo rule and the rclone config.
 
 ## 11. Accounts and access needed before the build
 
@@ -617,7 +623,7 @@ The existing pipeline (push to `main` → self-hosted runner → install → bui
 | D3 | Admin login | Username + argon2 password, no authenticator app; roles super admin and admin |
 | D4 | Proposal storage | **Changed 2026-11-24:** no permission to create a Shared Drive, so proposals go to the folder "SLIoT 2027 Proposals" in the `sliot@cse.mrt.ac.lk` My Drive, uploaded as that account through OAuth (stored refresh token; Internal consent screen, so it doesn't expire). A service account can't be used for this: it has no storage of its own. The service account remains for the Sheets export. File ID and link stored in the database |
 | D5 | Database | SQLite with better-sqlite3 + Drizzle ORM |
-| D6 | Backups | Litestream to R2 + nightly encrypted snapshot to R2 (free tier) |
+| D6 | Backups | Litestream to R2 + nightly encrypted snapshot to R2 (free tier). **Added 2026-11-25:** both run as root; a deploy stops if its snapshot can't be made or checked, and only warns if the upload fails; the server is set up at launch, after a laptop rehearsal against the real bucket |
 | D7 | Sheets export | One master sheet, one-way refresh on button press; CSV download too |
 | D8 | Bot protection | Cloudflare Turnstile + honeypot + rate limit |
 | D9 | Language | TypeScript (strict) for the whole project, version 6.0.x until lint tooling supports 7; migration is the first build step |

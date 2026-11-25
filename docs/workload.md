@@ -1,6 +1,6 @@
 # SLIoT Challenge 2027: Workload
 
-Every step of the project from A to Z, split into substeps. Last updated 2026-11-24.
+Every step of the project from A to Z, split into substeps. Last updated 2026-11-25.
 
 - `[x]` done · `[ ]` to do · **(now)** in progress
 - Details live in [architecture.md](architecture.md) (backend, security, backups) and [frontend-plan.md](frontend-plan.md) (design, sections, screens).
@@ -33,7 +33,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | U | Registration and team portal backend | **Done, waiting for review** (Drive and Turnstile need their keys) |
 | V | Admin and shortlisting backend | **Done, waiting for review** (V6 open) |
 | W | Security hardening | **Code done**; nginx and server steps at deploy |
-| X | Backups and operations | To do                         |
+| X | Backups and operations | **Code done, waiting for review** (laptop tests to run; server setup at launch) |
 | Y | Testing, content and launch | To do                         |
 | Z | After launch | To do                         |
 
@@ -293,12 +293,13 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 
 ## X. Backups and operations
 
-- [ ] X1. Litestream service streaming to R2 (10-second interval, 7 days of history)
-- [ ] X2. Nightly snapshot timer: sqlite3 backup → integrity check → gzip → age encrypt → rclone to R2
-- [ ] X3. R2 lifecycle (90 days) and bucket lock on snapshots if available
-- [ ] X4. healthchecks ping; `/api/health` with database and outbox checks
-- [ ] X5. Deploy step: pre-migration snapshot, then `pnpm db:migrate`
-- [ ] X6. First restore drill from R2 to a laptop
+- [ ] X1. Litestream service streaming to R2 (10-second interval, 7 days of history). Config written (`deploy/backup/litestream.yml.example`); **installed on the server at launch**
+- [ ] X2. Nightly snapshot timer: sqlite3 backup → integrity check → gzip → age encrypt → rclone to R2. Written (`sliot-snapshot.sh`, service and timer, 02:30); local test and laptop rehearsal still to run; timer enabled at launch
+- [ ] X3. R2 lifecycle (90 days) and bucket lock on `snapshots/` if available (**Cloudflare dashboard**)
+- [x] X4. healthchecks ping (in the snapshot script); `/api/health` with database and outbox checks
+- [x] X5. Deploy step: pre-migration snapshot first, then `pnpm db:migrate`; the deploy's final check calls `/api/health`. First real run at launch
+- [ ] X6. First restore drill from R2 to a laptop. `sliot-restore.sh` and `rehearse.sh` written; rehearsal with test data before launch, the real drill at launch (Y)
+- [ ] X7. Laptop tests in WSL: `test-local.sh` (folder as storage), then `rehearse.sh` against the real bucket under `rehearsal/`; delete the rehearsal files afterwards
 
 ## Y. Testing, content and launch
 
@@ -307,8 +308,10 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - [ ] Y3. Metadata and share image for the full site (Open Graph 1200×630), favicon check
 - [ ] Y4. Privacy notice page/text
 - [ ] Y5. Final check on staging data: full run-through on phone and desktop
-- [ ] Y6. Merge `full-site` into `main`; watch the deploy and health check
-- [ ] Y7. Create the first super admin on the server; set the deadlines
+- [ ] Y6. Before merging: set up the backups on the server (`deploy/backup/README.md`, steps 1–6; confirm Ubuntu/systemd, the app and runner user, and that it has no password-free sudo). The deploy stops if a database exists without them
+- [ ] Y7. Merge `full-site` into `main`; watch the deploy and health check
+- [ ] Y8. After the first deploy: start Litestream, run a snapshot, check file ownership and healthchecks, then pass a restore drill **before registration opens** (X1, X2, X6)
+- [ ] Y9. Create the first super admin on the server; set the deadlines
 
 ## Z. After launch
 

@@ -19,6 +19,20 @@ jobs:
         working-directory: /var/www/sliot/SLIoT-Challenge-2025
 
     steps:
+      - name: Snapshot the database
+        # Runs before anything changes, so a failure leaves the running site as it was.
+        # Stops the deploy if the copy can't be made or fails its check; a failed upload only
+        # warns (docs/architecture.md section 9; server setup in deploy/backup/README.md).
+        run: |
+          if [ -x /usr/local/sbin/sliot-snapshot ]; then
+            sudo -n /usr/local/sbin/sliot-snapshot pre-migrate
+          elif [ -e /var/lib/sliot/sliot.db ]; then
+            echo "::error::There is a database but the backup tool isn't installed. See deploy/backup/README.md."
+            exit 1
+          else
+            echo "::warning::Backups aren't installed and there is no database yet."
+          fi
+
       - name: Pull latest changes
         run: |
           echo "=== Pulling latest changes ==="
@@ -44,7 +58,7 @@ jobs:
 
       - name: Apply database migrations
         # DATABASE_PATH comes from .env.production.local (linked to /etc/sliot/sliot.env).
-        # TODO(step X5): take a snapshot of the database before migrating.
+        # The snapshot taken at the start of this job can undo a bad migration.
         run: pnpm db:migrate
 
       - name: Restart server
@@ -59,10 +73,11 @@ jobs:
           pm2 save
 
       - name: Health check
+        # /api/health is 200 only when the app is up and can read its database
         run: |
           for i in $(seq 1 30); do
-            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/ || true)
-            if [ "$code" = "200" ]; then echo "=== Deployment complete ==="; exit 0; fi
+            code=$(curl -s -o /tmp/sliot-health.json -w "%{http_code}" http://127.0.0.1:3000/api/health || true)
+            if [ "$code" = "200" ]; then cat /tmp/sliot-health.json; echo; echo "=== Deployment complete ==="; exit 0; fi
             sleep 2
           done
-          echo "Site did not respond with 200 after restart"; pm2 logs sliot-web --lines 50 --nostream; exit 1
+          echo "Health check failed after restart (last status: $code)"; pm2 logs sliot-web --lines 50 --nostream; exit 1

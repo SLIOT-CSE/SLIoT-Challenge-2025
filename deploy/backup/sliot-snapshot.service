@@ -1,0 +1,12 @@
+# /etc/systemd/system/sliot-snapshot.service: the nightly snapshot, run as root by the timer
+[Unit]
+Description=SLIoT nightly database snapshot to R2
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/sliot-snapshot nightly
+TimeoutStartSec=15min
+Nice=10
+PrivateTmp=true

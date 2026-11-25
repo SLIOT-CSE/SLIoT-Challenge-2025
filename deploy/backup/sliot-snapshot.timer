@@ -1,0 +1,13 @@
+# /etc/systemd/system/sliot-snapshot.timer: sudo systemctl enable --now sliot-snapshot.timer
+# 02:30 matches the healthchecks.io check (cron "30 2 * * *", Asia/Colombo, 2 hours' grace).
+# Change both together.
+[Unit]
+Description=SLIoT nightly database snapshot at 02:30 Sri Lanka time
+
+[Timer]
+OnCalendar=*-*-* 02:30:00 Asia/Colombo
+# If the server was off at 02:30, run once it is back
+Persistent=true
+
+[Install]
+WantedBy=timers.target

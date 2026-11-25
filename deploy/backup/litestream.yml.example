@@ -1,0 +1,22 @@
+# /etc/litestream.yml on the server: owner root, mode 600. Written for Litestream 0.5.18.
+# No real values in Git. For the laptop rehearsal use path: rehearsal/litestream.
+
+# Restore to any moment in the last 7 days
+snapshot:
+  interval: 24h
+  retention: 168h
+
+dbs:
+  - path: /var/lib/sliot/sliot.db
+    # Wait for the app's writes instead of giving up after the 1-second default
+    busy-timeout: 5s
+    replica:
+      type: s3
+      bucket: sliot-backups
+      path: litestream
+      endpoint: ACCOUNT_ID.r2.cloudflarestorage.com
+      region: auto
+      access-key-id: ""
+      secret-access-key: ""
+      # Upload changes at most this often (about 10 seconds of data at risk; stays in the free tier)
+      sync-interval: 10s
