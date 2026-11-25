@@ -19,6 +19,8 @@ t="$(mktemp -d /tmp/sliot-backup-test.XXXXXX)"
 pids=()
 cleanup() {
   for pid in "${pids[@]}"; do kill "$pid" 2>/dev/null; done
+  # Litestream syncs once more as it stops, so wait before removing its files
+  wait 2>/dev/null
   rm -rf -- "$t"
 }
 trap cleanup EXIT
@@ -121,6 +123,7 @@ check "the latest snapshot" succeeds env AGE_IDENTITY="$t/key.txt" SLIOT_BACKUP_
 check "  with every team" said "teams:       3"
 check "never overwrites a file" fails env AGE_IDENTITY="$t/key.txt" SLIOT_BACKUP_CONF="$t/good.env" bash "$restore" snapshot latest "$t/restored/latest.db"
 check "needs the right key" fails env AGE_IDENTITY="$t/other-key.txt" SLIOT_BACKUP_CONF="$t/good.env" bash "$restore" snapshot latest "$t/restored/wrong.db"
+check "  and says what failed" said "couldn't decrypt or unpack"
 check "  and writes nothing without it" test ! -e "$t/restored/wrong.db"
 check "needs a key at all" fails run good "$restore" snapshot latest "$t/restored/nokey.db"
 check "lists the snapshots" succeeds run good "$restore" list
@@ -166,6 +169,7 @@ sqlite3 "$t/data/corrupt.db" "PRAGMA wal_checkpoint(TRUNCATE);" >/dev/null
 dd if=/dev/urandom of="$t/data/corrupt.db" bs=4096 seek=1 count=1 conv=notrunc status=none
 rm -rf "$t/local/pre-migrate"
 check "stops the deploy" fails run corrupt "$snapshot" pre-migrate
+check "  because of the damage" grep -qE "couldn't copy the database|failed its integrity check|couldn't check the copy" "$t/out"
 check "  and keeps no copy of it" test "$(count "$t/local/pre-migrate" '*.db.gz')" = 0
 
 as_app() { runuser -u nobody -- "$@"; }
@@ -212,11 +216,12 @@ EOF
   # An app connection that stays open, as the running site's does
   mkfifo "$t/app-sql"
   "${writer[@]}" sqlite3 "$db" <"$t/app-sql" >/dev/null &
-  pids+=($!)
+  app_connection=$!
   exec 9>"$t/app-sql"
   echo "SELECT count(*) FROM teams;" >&9
 
-  litestream replicate -config "$t/litestream.yml" >"$t/litestream.log" 2>&1 &
+  # 9>&- so Litestream doesn't hold the app connection's input open
+  litestream replicate -config "$t/litestream.yml" >"$t/litestream.log" 2>&1 9>&- &
   pids+=($!)
   sleep 4
   before="$(teams_in "$db")"
@@ -233,7 +238,9 @@ EOF
     check "the app can still write with Litestream running" succeeds insert
     check "root owns neither the database nor its WAL files" test -z "$(find "$t/app" -maxdepth 1 -type f -name 'sliot.db*' -user root)"
   fi
+  # Closing its input ends the app connection
   exec 9>&-
+  wait "$app_connection"
   if [ "$failed" -gt 0 ]; then sed 's/^/  litestream | /' "$t/litestream.log" | tail -n 30; fi
 fi
 

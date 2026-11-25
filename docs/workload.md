@@ -33,7 +33,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | U | Registration and team portal backend | **Done, waiting for review** (Drive and Turnstile need their keys) |
 | V | Admin and shortlisting backend | **Done, waiting for review** (V6 open) |
 | W | Security hardening | **Code done**; nginx and server steps at deploy |
-| X | Backups and operations | **Code done, waiting for review** (laptop tests to run; server setup at launch) |
+| X | Backups and operations | **Code done, waiting for review** (R2 rehearsal to run; server setup at launch) |
 | Y | Testing, content and launch | To do                         |
 | Z | After launch | To do                         |
 
@@ -294,12 +294,12 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 ## X. Backups and operations
 
 - [ ] X1. Litestream service streaming to R2 (10-second interval, 7 days of history). Config written (`deploy/backup/litestream.yml.example`); **installed on the server at launch**
-- [ ] X2. Nightly snapshot timer: sqlite3 backup → integrity check → gzip → age encrypt → rclone to R2. Written (`sliot-snapshot.sh`, service and timer, 02:30); local test and laptop rehearsal still to run; timer enabled at launch
+- [ ] X2. Nightly snapshot timer: sqlite3 backup → integrity check → gzip → age encrypt → rclone to R2. Written (`sliot-snapshot.sh`, service and timer, 02:30); local tests pass, laptop rehearsal still to run; timer enabled at launch
 - [ ] X3. R2 lifecycle (90 days) and bucket lock on `snapshots/` if available (**Cloudflare dashboard**)
 - [x] X4. healthchecks ping (in the snapshot script); `/api/health` with database and outbox checks
 - [x] X5. Deploy step: pre-migration snapshot first, then `pnpm db:migrate`; the deploy's final check calls `/api/health`. First real run at launch
 - [ ] X6. First restore drill from R2 to a laptop. `sliot-restore.sh` and `rehearse.sh` written; rehearsal with test data before launch, the real drill at launch (Y)
-- [ ] X7. Laptop tests in WSL: `test-local.sh` (folder as storage), then `rehearse.sh` against the real bucket under `rehearsal/`; delete the rehearsal files afterwards
+- [ ] X7. Laptop tests in WSL. `test-local.sh` (folder as storage) passed 2026-11-25: 51 checks as root, 46 as a normal user. Still to run: `rehearse.sh` against the real bucket under `rehearsal/`, then delete the rehearsal files
 
 ## Y. Testing, content and launch
 

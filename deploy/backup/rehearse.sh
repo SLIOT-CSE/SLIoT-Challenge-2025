@@ -48,9 +48,11 @@ case "${1:-}" in
     stamp="$(date -u +%Y%m%dT%H%M%SZ)"
     work="$home/run-$stamp"
     mkdir -p "$work/data"
-    # A copy inside Linux: SQLite's WAL files don't work reliably on /mnt/c or /mnt/d
+    # A copy inside Linux, made with cp before SQLite opens it: SQLite's WAL files don't work
+    # reliably on /mnt/c or /mnt/d. Nothing else may be writing to the test database
     db="$work/data/sliot.db"
-    sqlite3 "$2" ".backup '$db'"
+    cp -- "$2" "$db"
+    if [ -f "$2-wal" ]; then cp -- "$2-wal" "$db-wal"; fi
     sqlite3 "$db" "PRAGMA journal_mode = WAL;" >/dev/null
     expected="$(sqlite3 "$db" 'SELECT count(*) FROM teams;')"
     log "test database: $expected teams"
@@ -83,7 +85,11 @@ EOF
     export AGE_IDENTITY="$home/age-key.txt"
     stream_pid=""
     finish() {
-      if [ -n "$stream_pid" ]; then kill "$stream_pid" 2>/dev/null || true; fi
+      if [ -n "$stream_pid" ]; then
+        # Litestream syncs once more as it stops
+        kill "$stream_pid" 2>/dev/null || true
+        wait "$stream_pid" 2>/dev/null || true
+      fi
       # The generated file holds the keys
       rm -f -- "$work/litestream.yml"
     }
