@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LiveCallout } from "@/components/site/live-callout";
-import { LiveChip } from "@/components/site/live-chip";
 import { deadlines } from "@/content/deadlines";
 import { STAGES, stageAt, type Stage } from "@/lib/competition";
 
@@ -33,7 +32,6 @@ export default function CalloutStatesPage() {
             <div className="flex flex-wrap items-center gap-4 px-4 text-caption text-haze sm:px-8">
               <span className="font-semibold text-foam">{stage}</span>
               {actual !== stage && <span className="text-danger">sample date is in {actual}</span>}
-              <LiveChip stage={stage} now={now} />
             </div>
             <LiveCallout stage={stage} now={now} />
           </div>

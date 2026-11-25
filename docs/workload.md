@@ -105,8 +105,8 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 ## I. Sections 1: nav, hero, live callout, kinetic band
 
 - [x] I1. Content files: `src/content/site.ts` (edition, hero copy, band words), `navigation.ts`, `socials.ts`, `deadlines.ts`; stage logic in `src/lib/competition.ts`
-- [x] I2. Floating pill nav: active section indicator, Team login + Register, hide on scroll down, full-screen phone menu with focus trap
-- [x] I3. Hero: figure and title, assembling load sequence, live "next deadline" chip, aurora background, parallax on scroll
+- [x] I2. Floating pill nav: active section indicator, Team login (from the proposal round) + Register, hide on scroll down, full-screen phone menu with focus trap
+- [x] I3. Hero: figure and title, assembling load sequence, aurora background, parallax on scroll
 - [x] I4. Live round callout that changes with the competition stage (seven states, previewable at `/design-system/callouts`), driven by sample dates in `src/content/deadlines.ts`
 - [x] I5. Kinetic band (single marquee reacting to scroll velocity)
 - [x] I6. Phone layouts (title and Register button on the first screen down to 320px), reduced-motion versions, screenshots for review

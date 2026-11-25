@@ -19,8 +19,9 @@ import { cn } from "@/lib/utils";
  * - Highlights the section in view (a mint pill slides between links).
  * - Slides away while scrolling down, returns on scroll up.
  * - Below 1280px the links move into a full-screen menu.
+ * - "Team login" appears only when `showTeamLogin` is set (see `showsTeamLogin`).
  */
-export function SiteNav() {
+export function SiteNav({ showTeamLogin }: { showTeamLogin: boolean }) {
   const active = useActiveSection();
   const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -75,16 +76,15 @@ export function SiteNav() {
         </ul>
 
         <div className="flex items-center gap-1.5">
-          <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
-            <Link href={routes.teamPortal}>Team login</Link>
-          </Button>
+          {showTeamLogin && (
+            <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
+              <Link href={routes.teamPortal}>Team login</Link>
+            </Button>
+          )}
           <Button asChild size="sm">
-            <Link href={routes.register}>
-              <span className="sm:hidden">Register</span>
-              <span className="hidden sm:inline">Register your team</span>
-            </Link>
+            <Link href={routes.register}>Register</Link>
           </Button>
-          <MobileMenu open={menuOpen} onOpenChange={setMenuOpen} active={active} />
+          <MobileMenu open={menuOpen} onOpenChange={setMenuOpen} active={active} showTeamLogin={showTeamLogin} />
         </div>
       </motion.nav>
     </header>
@@ -130,10 +130,12 @@ function MobileMenu({
   open,
   onOpenChange,
   active,
+  showTeamLogin,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   active: string | null;
+  showTeamLogin: boolean;
 }) {
   const lenis = useLenis();
   const reduceMotion = useReducedMotion();
@@ -242,11 +244,13 @@ function MobileMenu({
                 >
                   <div className="flex flex-col gap-3 sm:flex-row">
                     <Button asChild size="lg" trailingIcon={<ArrowUpRight className="size-4" strokeWidth={1.75} />}>
-                      <Link href={routes.register}>Register your team</Link>
+                      <Link href={routes.register}>Register</Link>
                     </Button>
-                    <Button asChild size="lg" variant="secondary">
-                      <Link href={routes.teamPortal}>Team login</Link>
-                    </Button>
+                    {showTeamLogin && (
+                      <Button asChild size="lg" variant="secondary">
+                        <Link href={routes.teamPortal}>Team login</Link>
+                      </Button>
+                    )}
                   </div>
                   <ul className="flex flex-wrap gap-2" aria-label="Follow SLIoT">
                     {socials.map((s) => (

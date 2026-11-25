@@ -213,7 +213,7 @@
   animation: intro-line 1.15s var(--ease-out-expo) var(--delay, 0s) both;
 }
 
-/* Hero copy, chip and buttons rise in after the title */
+/* Hero copy and buttons rise in after the title */
 .intro-rise {
   animation: intro-rise 0.9s var(--ease-out-expo) var(--delay, 0s) both;
 }

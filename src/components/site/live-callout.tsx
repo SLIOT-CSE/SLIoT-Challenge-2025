@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowUpRight, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { LiveDot } from "@/components/site/live-chip";
+import { LiveDot } from "@/components/site/live-dot";
 import { SocialIcon } from "@/components/site/social-icon";
 import { deadlines, proposalTemplateUrl, type Deadlines } from "@/content/deadlines";
 import { routes } from "@/content/navigation";

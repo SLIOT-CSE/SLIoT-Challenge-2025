@@ -13,9 +13,9 @@ import { Faq } from "@/components/site/faq";
 import { Contact } from "@/components/site/contact";
 import { SiteFooter } from "@/components/site/site-footer";
 import { deadlines } from "@/content/deadlines";
-import { stageAt } from "@/lib/competition";
+import { showsTeamLogin, stageAt } from "@/lib/competition";
 
-// The stage, countdowns and "days to go" are worked out on the server. Regenerating the
+// The stage, the navigation buttons and "days to go" are worked out on the server. Regenerating the
 // page every hour keeps them current without making every request dynamic.
 export const revalidate = 3600;
 
@@ -31,9 +31,9 @@ export default function HomePage() {
       >
         Skip to content
       </a>
-      <SiteNav />
+      <SiteNav showTeamLogin={showsTeamLogin(stage)} />
       <main id="main" tabIndex={-1} className="outline-hidden">
-        <Hero stage={stage} now={now} />
+        <Hero />
         <LiveCallout stage={stage} now={now} />
         <KineticBand />
         <About />

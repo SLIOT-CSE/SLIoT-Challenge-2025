@@ -2,11 +2,9 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import HeroFigure from "@/components/HeroFigure";
 import { Button } from "@/components/ui/button";
-import { LiveChip } from "@/components/site/live-chip";
 import { HeroScroll } from "@/components/site/hero-scroll";
 import { hero, site } from "@/content/site";
 import { routes } from "@/content/navigation";
-import type { Stage } from "@/lib/competition";
 import { cn } from "@/lib/utils";
 
 /**
@@ -15,7 +13,7 @@ import { cn } from "@/lib/utils";
  * Phone: figure on top bleeding off the right edge, title and actions below.
  * The load sequence is CSS (intro-* classes), so it plays before JavaScript arrives.
  */
-export function Hero({ stage, now }: { stage: Stage; now: Date }) {
+export function Hero() {
   return (
     <section id="top" aria-labelledby="hero-title" className="relative isolate overflow-hidden">
       <HeroScroll>
@@ -44,8 +42,6 @@ export function Hero({ stage, now }: { stage: Stage; now: Date }) {
           </div>
 
           <div className="relative flex max-w-[40rem] flex-col items-start gap-5 sm:gap-6 lg:gap-8">
-            <LiveChip stage={stage} now={now} className="intro-rise [--delay:0.9s]" />
-
             <h1 id="hero-title" className="font-display text-display-xl text-foam">
               <span className="sr-only">{hero.titleLines.flat().join(" ")}</span>
               <span aria-hidden="true">
@@ -73,7 +69,7 @@ export function Hero({ stage, now }: { stage: Stage; now: Date }) {
 
             <div className="intro-rise flex flex-wrap items-center gap-3 max-sm:order-3 [--delay:0.7s]">
               <Button asChild size="lg" trailingIcon={<ArrowUpRight className="size-[1.125rem]" strokeWidth={1.75} />}>
-                <Link href={routes.register}>Register your team</Link>
+                <Link href={routes.register}>Register</Link>
               </Button>
               <Button asChild size="lg" variant="secondary">
                 <a href="#how-it-works">How it works</a>

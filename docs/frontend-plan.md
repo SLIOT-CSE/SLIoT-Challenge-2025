@@ -97,7 +97,8 @@ The header links jump to section anchors; the URL hash updates as you scroll.
 
 ### 5.1 Navigation (floating pill), from SpiritX
 
-- **Desktop:** a floating pill detached from the top. Logo on the left; section links in the middle, with a mint pill sliding under the active section (Motion `layoutId`); **Team login** (ghost) and **Register your team** (filled mint) on the right. The pill hides on scroll down and returns on scroll up.
+- **Desktop:** a floating pill detached from the top. Logo on the left; section links in the middle, with a mint pill sliding under the active section (Motion `layoutId`); **Team login** (ghost, from the proposal round on) and **Register** (filled mint) on the right. The pill hides on scroll down and returns on scroll up.
+- **Team login:** hidden before registration opens and while it is open; shown from the moment registration closes (the proposal round) to the end of the edition, here and in the phone menu (`showsTeamLogin` in `src/lib/competition.ts`). The footer link is always there, and teams can already log in and upload during registration.
 - **Phone:** logo + Register + menu button. The menu opens full screen: links stagger up from a mask, the icon morphs from bars to an X, and focus is trapped inside.
 - **Glass:** blur only here and in dialogs.
 
@@ -108,10 +109,10 @@ The header links jump to section anchors; the URL hash updates as you scroll.
 - **Content:**
   - Title: "Build the connected island"
   - One sentence: "Sri Lanka's national IoT competition for school students, undergraduates and innovators."
-  - Buttons: **Register your team** and **How it works**
-  - A live chip: "Registrations close in 12 days"
+  - Buttons: **Register** and **How it works**, the same at every stage
+  - No countdown line: the next date is in the live callout below
 - **Background:** the aurora. Slow-moving gradient bands (CSS, GPU-cheap), with a sparse field of sensor dots that blink in sequence.
-- **Load sequence:** the aurora fades up. The title lines rise out of a mask, one after another. The figure resolves from blur with its breathing glow (coming-soon motion). The chip ticks in last. Total about 1.4s.
+- **Load sequence:** the aurora fades up. The title lines rise out of a mask, one after another. The figure resolves from blur with its breathing glow (coming-soon motion). Total about 1.4s.
 - **On scroll:** the figure drifts up slower than the text (parallax), and the aurora darkens toward the next section.
 
 ### 5.3 Live round callout, from SpiritX
@@ -301,7 +302,7 @@ These follow the product side of the design system: same tokens and fonts, calme
 
 Built on shadcn/ui (Radix) where it gives accessibility for free, restyled to the aurora tokens:
 
-- **Site:** `Nav`, `MobileMenu`, `Button` (primary filled mint, secondary outline, ghost), `LiveChip`, `Countdown`, `SectionTitle`, `Marquee`, `IslandMap`, `CategoryStack`, `SignalPath`, `TimelineRail`, `Podium`, `PhotoWall`, `Lightbox`, `Accordion`, `PersonCard`, `LogoWall`, `BackToTop`.
+- **Site:** `Nav`, `MobileMenu`, `Button` (primary filled mint, secondary outline, ghost), `LiveDot`, `Countdown`, `SectionTitle`, `Marquee`, `IslandMap`, `CategoryStack`, `SignalPath`, `TimelineRail`, `Podium`, `PhotoWall`, `Lightbox`, `Accordion`, `PersonCard`, `LogoWall`, `BackToTop`.
 - **Forms:** `Field` (label above, helper, error below), `Input`, `Select`, `UniversitySelect` (+ Other), `PhoneInput`, `NicInput`, `CodeInput`, `Stepper`, `Dropzone`, `YouTubeField`.
 - **App:** `AppShell`, `DataTable`, `Drawer`, `Dialog`, `ConfirmByTyping`, `StatusTracker`, `Badge`, `Toast`, `Skeleton`, `EmptyState`, `PasswordReveal`.
 - **Icons:** lucide-react (already installed) at a single 1.5 stroke width.

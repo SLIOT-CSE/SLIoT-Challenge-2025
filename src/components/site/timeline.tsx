@@ -1,7 +1,7 @@
 import { ArrowDown, Check } from "lucide-react";
 import { timeline } from "@/content/timeline";
 import { dateParts, daysUntil, formatTime, relativeDays } from "@/lib/competition";
-import { LiveDot } from "@/components/site/live-chip";
+import { LiveDot } from "@/components/site/live-dot";
 import { TimelineScene } from "@/components/site/timeline-scene";
 import { cn } from "@/lib/utils";
 

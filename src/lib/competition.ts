@@ -1,7 +1,7 @@
 import type { Deadlines } from "@/content/deadlines";
 
 // Where the competition stands at a given moment, worked out from the key dates.
-// Drives the live callout, the hero's deadline chip and (later) the timeline marker.
+// Drives the live callout and which buttons the navigation shows.
 
 export type Stage =
   | "before-registration"
@@ -35,24 +35,10 @@ export function stageAt(now: Date, d: Deadlines): Stage {
   return "over";
 }
 
-/** The next date that matters for the stage, and what it is called */
-export function nextMilestone(stage: Stage, d: Deadlines): { label: string; at: string } | null {
-  switch (stage) {
-    case "before-registration":
-      return { label: "Registrations open", at: d.registrationOpens };
-    case "registration":
-      return { label: "Registrations close", at: d.registrationCloses };
-    case "proposal":
-      return { label: "Proposals due", at: d.proposalDue };
-    case "shortlisting":
-      return { label: "Shortlist announced", at: d.shortlistAnnounced };
-    case "prototype":
-      return { label: "Prototypes due", at: d.prototypeDue };
-    case "finale":
-      return { label: "Grand finale", at: d.finale };
-    case "over":
-      return null;
-  }
+/** The navigation offers "Team login" from the start of the proposal round onwards.
+ *  (The portal itself already accepts uploads from registered teams before that.) */
+export function showsTeamLogin(stage: Stage): boolean {
+  return STAGES.indexOf(stage) >= STAGES.indexOf("proposal");
 }
 
 /** Whole days from now until `at` (0 on the day itself), never negative */
