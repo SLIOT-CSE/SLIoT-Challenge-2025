@@ -86,7 +86,8 @@ export function queueEmail(
   props: Record<string, string>,
 ): void {
   tx.insert(schema.emailOutbox)
-    .values({ teamId, toEmail, template, props, status: "pending", attempts: 0, nextAttemptAt: now, createdAt: now })
+    // Due at once: the worker schedules by real time, so the dev clock never holds an email back
+    .values({ teamId, toEmail, template, props, status: "pending", attempts: 0, nextAttemptAt: 0, createdAt: now })
     .run();
 }
 
