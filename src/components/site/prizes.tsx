@@ -21,15 +21,9 @@ const LAYOUT: Record<Placing, string> = {
 };
 
 const HEIGHT: Record<Placing, string> = {
-  first: "min-h-60 sm:min-h-64 lg:min-h-[22rem]",
-  second: "min-h-52 sm:min-h-56 lg:min-h-[17.5rem]",
-  third: "min-h-52 sm:min-h-56 lg:min-h-[15rem]",
-};
-
-const RANK_NUM: Record<Placing, string> = {
-  first: "01",
-  second: "02",
-  third: "03",
+  first: "min-h-64 sm:min-h-72 lg:min-h-[24rem]",
+  second: "min-h-56 sm:min-h-64 lg:min-h-[19.5rem]",
+  third: "min-h-56 sm:min-h-64 lg:min-h-[17rem]",
 };
 
 /**
@@ -174,8 +168,8 @@ export function Prizes({ amounts = prizes }: { amounts?: typeof prizes } = {}) {
                           : "bg-gradient-to-b from-night/95 to-abyss/95",
                       )}
                     >
-                      <div className="flex flex-col items-center gap-2.5">
-                        <RankMedallion placing={p.id} />
+                      <div className="flex flex-col items-center gap-3">
+                        <PrizeEmblem medal={p.medal} placing={p.id} />
 
                         <div className="flex flex-col items-center gap-0.5">
                           <p
@@ -236,31 +230,26 @@ export function Prizes({ amounts = prizes }: { amounts?: typeof prizes } = {}) {
   );
 }
 
-/** Aurora-matched machined rank medallion seated at the top of each podium plate */
-function RankMedallion({ placing }: { placing: Placing }) {
+/** Precision-machined rank emblem seated cleanly inside each podium plate */
+function PrizeEmblem({ medal, placing }: { medal: string; placing: Placing }) {
   const isFirst = placing === "first";
   return (
     <div
       aria-hidden="true"
       className={cn(
-        "relative grid place-items-center rounded-full",
-        isFirst ? "size-14 bg-mint/12 text-aqua ring-1 ring-aqua/45" : "size-12 bg-foam/5 text-haze ring-1 ring-foam/15",
+        "relative overflow-hidden rounded-full bg-abyss shadow-lift ring-1",
+        isFirst ? "size-24 sm:size-28 ring-aqua/50" : "size-20 sm:size-22 ring-foam/20",
       )}
     >
-      <svg viewBox="0 0 48 48" fill="none" className="absolute inset-0 size-full">
-        <circle
-          cx="24"
-          cy="24"
-          r="20"
-          stroke="currentColor"
-          strokeOpacity={isFirst ? 0.45 : 0.25}
-          strokeWidth="1"
-          strokeDasharray={isFirst ? "6 4" : "3 5"}
-        />
-      </svg>
-      <span className={cn("relative font-display leading-none tabular-nums", isFirst ? "text-title text-aqua" : "text-body-lg text-foam/80")}>
-        {RANK_NUM[placing]}
-      </span>
+      <Image
+        src={medal}
+        alt=""
+        fill
+        sizes={isFirst ? "7rem" : "5.5rem"}
+        quality={88}
+        className="scale-[1.18] object-cover select-none"
+        draggable={false}
+      />
     </div>
   );
 }
@@ -315,9 +304,9 @@ function Amount({ value, highlight }: { value: number | null; highlight: boolean
   }
 
   return (
-    <p className="flex items-baseline gap-2 font-display leading-none">
-      <span className="text-[clamp(1.25rem,2vw,1.75rem)] text-haze">LKR</span>
-      <span ref={ref} className={cn("text-[clamp(2rem,4vw,3rem)] tabular-nums", highlight ? "text-mint" : "text-foam")}>
+    <p className="flex items-baseline gap-1.5 font-display leading-none sm:gap-2">
+      <span className="text-[clamp(1.1rem,2vw,1.75rem)] text-haze">LKR</span>
+      <span ref={ref} className={cn("text-[clamp(1.75rem,4vw,3rem)] tabular-nums", highlight ? "text-mint" : "text-foam")}>
         {lkr.format(value)}
       </span>
     </p>

@@ -177,7 +177,7 @@ A single marquee band between the callout and About: "Sense · Connect · Act ·
 
 ### 5.9 Prizes: stage-lit podium
 
-- **Layout:** Three Double-Bezel podium columns over a generated dark-aurora IoT showcase arena backdrop (`prizes-arena.webp`), with 2nd on the left, 1st raised in the centre under the arena spotlight, and 3rd on the right, each topped by a machined SVG rank medallion (`01`–`03`).
+- **Layout:** Three Double-Bezel podium columns over a generated dark-aurora IoT showcase arena backdrop (`prizes-arena.webp`), with 2nd on the left, 1st raised in the centre under the arena spotlight, and 3rd on the right, each topped by a machined rank medallion (`1`, `2`, `3` in `rank-1.webp`–`rank-3.webp`).
 - **Motion:** The LKR amounts count up when the podium enters view, the podium rises from the stage baseline in order 3rd → 2nd → 1st, and category tabs (`School`, `University`, `Open`) smoothly transition the amounts.
 - **Other awards:** Listed in a quiet Double-Bezel row below (hidden while empty).
 - **Phone:** 1st spans full width on top, then 2nd and 3rd side by side.

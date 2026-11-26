@@ -1,20 +1,20 @@
 import type { CategoryId } from "@/lib/team-rules";
 
 // Prize money per category, in LKR. null shows "To be announced".
-// TODO(2027): real amounts. Never ship sample figures as if they were real.
+// TODO(2027): mock placeholder amounts for preview — replace with confirmed 2027 prize figures before launch.
 
 export type Placing = "first" | "second" | "third";
 
 export const placings: { id: Placing; label: string; title: string; medal: string }[] = [
-  { id: "first", label: "1st", title: "Champions", medal: "/images/prizes/first.png" },
-  { id: "second", label: "2nd", title: "1st runners-up", medal: "/images/prizes/second.png" },
-  { id: "third", label: "3rd", title: "2nd runners-up", medal: "/images/prizes/third.png" },
+  { id: "first", label: "1st", title: "Champions", medal: "/images/prizes/rank-1.webp" },
+  { id: "second", label: "2nd", title: "1st runners-up", medal: "/images/prizes/rank-2.webp" },
+  { id: "third", label: "3rd", title: "2nd runners-up", medal: "/images/prizes/rank-3.webp" },
 ];
 
 export const prizes: Record<CategoryId, Record<Placing, number | null>> = {
-  school: { first: null, second: null, third: null },
-  university: { first: null, second: null, third: null },
-  open: { first: null, second: null, third: null },
+  school: { first: 100000, second: 75000, third: 50000 },
+  university: { first: 250000, second: 150000, third: 100000 },
+  open: { first: 200000, second: 125000, third: 75000 },
 };
 
 /** Extra awards shown under the podium; the row is hidden while this is empty. TODO(2027) */
