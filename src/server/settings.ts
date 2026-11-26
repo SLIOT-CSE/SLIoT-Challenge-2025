@@ -16,8 +16,6 @@ export const SETTING_KEYS = {
   prototypeDue: "prototype_due_at",
   shortlistState: "shortlist_state",
   lastSheetExportAt: "last_sheet_export_at",
-  /** Development only: the moment the app treats as now. Ignored in production */
-  devNow: "dev_now",
 } as const;
 
 const COLOMBO_OFFSET_MS = 5.5 * 3600 * 1000;
@@ -38,10 +36,6 @@ export function writeSetting(db: Tx, key: string, value: unknown, updatedBy: num
     .values({ key, value: json, updatedBy, updatedAt: now })
     .onConflictDoUpdate({ target: settings.key, set: { value: json, updatedBy, updatedAt: now } })
     .run();
-}
-
-export function deleteSetting(db: Tx, key: string): void {
-  db.delete(settings).where(eq(settings.key, key)).run();
 }
 
 /** All key dates: the stored deadlines over the fixed ones from the content file */
@@ -66,21 +60,4 @@ export function writeDeadlines(db: Tx, next: DeadlineSettings, updatedBy: number
 
 export function readShortlistState(db: Tx): ShortlistState {
   return readSetting<ShortlistState>(db, SETTING_KEYS.shortlistState) ?? "draft";
-}
-
-/**
- * The dev clock, or null when the real clock is used (always null in production). It keeps
- * running from the moment it was set (the row's `updated_at`, real time), so rate-limit windows
- * still pass in development.
- */
-export function readDevNow(db: Tx, production: boolean, realNow: number = Date.now()): number | null {
-  if (production) return null;
-  const row = db.select().from(settings).where(eq(settings.key, SETTING_KEYS.devNow)).get();
-  if (!row) return null;
-  return (JSON.parse(row.value) as number) + Math.max(0, realNow - row.updatedAt);
-}
-
-/** Sets the dev clock to `at`, from now on running forward in real time */
-export function writeDevNow(db: Tx, at: number, realNow: number = Date.now()): void {
-  writeSetting(db, SETTING_KEYS.devNow, at, null, realNow);
 }

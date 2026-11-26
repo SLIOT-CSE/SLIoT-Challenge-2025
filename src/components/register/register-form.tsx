@@ -87,8 +87,8 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
   const [turnstileKey, setTurnstileKey] = useState(0);
   const [honeypot, setHoneypot] = useState("");
 
-  // Keep the competition state fresh: on load, and whenever data changes (dataVersion) (the dev
-  // switcher moves the clock). A refresh that fails never takes the form away once it's showing.
+  // Keep the competition state fresh: on load, and whenever data changes (dataVersion).
+  // A refresh that fails never takes the form away once it's showing.
   const storeVersion = useSyncExternalStore(dataVersion.subscribe, dataVersion.get, () => 0);
   const done = phase.kind === "success";
   useEffect(() => {

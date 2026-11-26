@@ -40,8 +40,8 @@ export function SettingsScreen() {
   const storeVersion = useSyncExternalStore(dataVersion.subscribe, dataVersion.get, () => 0);
 
   const [saved, setSaved] = useState<DeadlineSettings | null>(null);
-  /** The server's "now" (the dev clock in development), for the "in 3 days" hints */
-  const [serverNow, setServerNow] = useState<number | null>(null);
+  /** When the settings were loaded, for the "in 3 days" hints */
+  const [loadedAt, setLoadedAt] = useState<number | null>(null);
   const [offline, setOffline] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [values, setValues] = useState<Values | null>(null);
@@ -60,7 +60,7 @@ export function SettingsScreen() {
           prototypeDue: s.deadlines.prototypeDue,
         };
         setSaved(d);
-        setServerNow(s.now ?? Date.now());
+        setLoadedAt(Date.now());
         // Fill the form once; later refreshes must not overwrite what is being typed
         setValues((current) => current ?? toValues(d));
         setOffline(false);
@@ -96,7 +96,7 @@ export function SettingsScreen() {
 
   const savedValues = toValues(saved);
   const dirty = FIELDS.some((f) => values[f.key] !== savedValues[f.key]);
-  const now = serverNow ?? 0;
+  const now = loadedAt ?? 0;
 
   async function save(event: FormEvent) {
     event.preventDefault();

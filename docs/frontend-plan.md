@@ -275,7 +275,7 @@ These follow the product side of the design system: same tokens and fonts, calme
 - **Data access:** `src/lib/data/` exposes typed functions (`getTeams()`, `getTeam(code)`, `uploadProposal()`, `finaliseShortlist()` ...). Today they're backed by `src/lib/mock/`; later they become server actions and route handlers with the same signatures.
 - **Sample teams:** 200 generated from curated lists of Sri Lankan names, schools and universities, with a fixed seed so screenshots are stable. They span every stage: no proposal, multiple versions, shortlisted, not shortlisted, prototype submitted.
 - **Mock behaviour:** kept in memory per browser session, so the flows can be clicked through end to end. Register → get a code → log in → upload → (admin) shortlist → finalise → submit prototype.
-- **A demo switcher** (development only) sets the competition state, to preview every callout and portal state.
+- **No demo switcher** (removed 2026-11-26): the screens show what is in the database, and the stage follows the real time and the deadlines.
 - **Coming-soon:** while `COMING_SOON` is on, `/register` and `/team` stay redirected in production. `/admin` stays reachable (architecture decision), but shows the sample-data badge until the backend lands.
 
 ## 7. Copy

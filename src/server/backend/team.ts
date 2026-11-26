@@ -6,7 +6,7 @@ import { generateTeamCode } from "@/lib/team-code";
 import type { CompetitionState, Result, Settings, TeamDetail } from "@/lib/data/types";
 import { createSession, deleteSession, SESSION_COOKIE, SESSION_TTL_MS } from "../auth/sessions";
 import * as schema from "../db/schema";
-import { readDeadlines, readDevNow, readSetting, readShortlistState, SETTING_KEYS } from "../settings";
+import { readDeadlines, readSetting, readShortlistState, SETTING_KEYS } from "../settings";
 import {
   BEFORE_DECISION,
   REGISTRATION_LIMIT,
@@ -49,7 +49,6 @@ export function teamBackend(ctx: RequestContext, verifyTurnstile: TurnstileVerif
 
     async getSettings(): Promise<Settings> {
       return {
-        now: readDevNow(ctx.db, ctx.production),
         shortlistState: readShortlistState(ctx.db),
         deadlines: readDeadlines(ctx.db),
         lastSheetExportAt: readSetting<number>(ctx.db, SETTING_KEYS.lastSheetExportAt),

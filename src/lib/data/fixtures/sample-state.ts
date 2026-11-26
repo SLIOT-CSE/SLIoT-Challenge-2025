@@ -2,7 +2,6 @@ import { deadlines } from "@/content/deadlines";
 import { universities } from "@/content/universities";
 import { generateTeamCode } from "@/lib/team-code";
 import type { CategoryId, InstitutionType, TeamStage } from "@/lib/team-rules";
-import { sampleTimeForStage } from "../clock";
 import type {
   Admin,
   AdminActor,
@@ -31,8 +30,7 @@ export const SAMPLE_SUPER_ADMIN: AdminActor = { id: 1, name: "Sample Super Admin
 
 /**
  * The seeded organizer accounts. The passwords are invented and exist only in this sample
- * layer (the dev switcher and the login page show them in development); the store keeps
- * only a fake hash. Admin ids are their own numbering, separate from team ids.
+ * layer; the store keeps only a fake hash. Admin ids are their own numbering, separate from team ids.
  */
 export const SAMPLE_ADMIN_ACCOUNTS = [
   { id: 1, username: "super", displayName: SAMPLE_SUPER_ADMIN.name, role: "super_admin", password: "sample-super-1" },
@@ -376,8 +374,6 @@ export function generateSampleState(): SampleState {
     members,
     submissions,
     settings: {
-      // Registration is open, so /register works straight away. Change it from the switcher.
-      now: sampleTimeForStage("registration", d),
       shortlistState: "finalised",
       deadlines: { ...d },
       lastSheetExportAt: null,

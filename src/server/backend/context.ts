@@ -1,5 +1,4 @@
 import type { Db } from "../db/client";
-import { readDevNow } from "../settings";
 
 // Everything a backend call needs from the request it runs in. Server actions and route
 // handlers build it from Next's cookies and headers; tests build it from plain objects.
@@ -44,15 +43,16 @@ export interface RequestContext {
   services: Services;
   /** The real clock. Replaceable in tests */
   clock?: () => number;
+  /** Tests only: the time the competition rules see, so a test can sit in any stage while sessions stay on `clock` */
+  appClock?: () => number;
 }
 
-/** Real time. Sessions use it, so moving the dev clock never signs anyone out */
+/** Real time. Sessions use it, so a test that moves the app clock never signs anyone out */
 export function realNow(ctx: RequestContext): number {
   return (ctx.clock ?? Date.now)();
 }
 
-/** The moment the app treats as now: the dev clock when one is set (never in production), otherwise the real time */
+/** The moment the competition rules treat as now. Always the real time outside tests */
 export function nowFor(ctx: RequestContext): number {
-  const real = realNow(ctx);
-  return readDevNow(ctx.db, ctx.production, real) ?? real;
+  return ctx.appClock?.() ?? realNow(ctx);
 }

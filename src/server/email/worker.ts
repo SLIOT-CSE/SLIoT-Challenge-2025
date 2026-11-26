@@ -10,7 +10,7 @@ import { readDeadlines } from "../settings";
 // outbox about one every two seconds and retries failures with growing gaps, then gives up and
 // marks the email failed for the dashboard. Started once from instrumentation.ts.
 //
-// Times here are real time, never the dev clock: a new email is due at once (next_attempt_at 0)
+// Times here are always real time: a new email is due at once (next_attempt_at 0)
 // and retries are scheduled from the real clock.
 
 /** Gaps before attempts 2 to 6. After the sixth failure the email is marked failed */

@@ -36,7 +36,7 @@ Other scripts:
 
 ### Database and settings
 
-The app stores everything in one SQLite file: `./data/sliot.db` in development (created and migrated on first use), `DATABASE_PATH` in production. For test data, run `pnpm db:seed`. It writes 20 teams in the prototype round and prints the organizer logins and team codes. The test-data switcher in the corner of `/register`, `/team` and `/admin` (development only) moves the competition clock, signs in as any team or organizer, and reseeds.
+The app stores everything in one SQLite file: `./data/sliot.db` in development (created and migrated on first use), `DATABASE_PATH` in production. For test data, run `pnpm db:seed`. It writes 20 teams in the prototype round and prints the organizer logins and team codes. The app always uses the real clock, so to see another stage in development, change the deadlines in `/admin/settings`.
 
 Outside services are configured with environment variables, listed with notes in `.env.example`. Copy it to `.env.local` in development, or to `/etc/sliot/sliot.env` linked as `.env.production.local` on the server. Until a service's variables are set:
 

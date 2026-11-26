@@ -289,7 +289,6 @@ The keys:
 | `prototype_due_at` | Time | Super admins |
 | `shortlist_state` | `draft` \| `finalised` | Shortlist page (Finalise / Reopen) |
 | `last_sheet_export_at` | Time | Sheets export |
-| `dev_now` | Time | Development only: the moment the app treats as now (seed, dev switcher). Ignored in production |
 
 ### `shortlist_finalisations`
 

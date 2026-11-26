@@ -52,7 +52,7 @@ pnpm email:dev           # preview the email templates (port 3200)
 ### Routes (`src/app/`)
 
 - `page.tsx`: the public one-page site. Its sections live in `src/components/site/`, and the page changes with the competition stage (`src/lib/competition.ts` works out the stage and countdowns from the key dates).
-- `(app)/`: route group for `/register`, `/team` and `/admin`. Its layout adds the dev-only test-data switcher (`src/components/dev/`). Admin is split into `admin/login/` (outside the shell) and `admin/(shell)/` (signed-in pages with a role-aware sidebar).
+- `(app)/`: route group for `/register`, `/team` and `/admin`. Admin is split into `admin/login/` (outside the shell) and `admin/(shell)/` (signed-in pages with a role-aware sidebar).
 - `design-system/`: dev-only reference pages (tokens, contrast, callouts, prizes, sample data, admin UI gallery). They return 404 in production.
 - Route files stay thin. Screens live in `src/components/{register,team,admin}/`.
 
@@ -65,11 +65,10 @@ All public-page copy and data lives in `src/content/*.ts` (dates in `deadlines.t
 - `src/lib/data/index.ts` is what screens import (`registerTeam`, `loginWithCode`, `listTeams`, `finaliseShortlist`, `adminLogin`, ...). It wraps the server actions in `src/server/actions.ts`: a call that gets no answer throws `NetworkError`, and after a write `dataVersion` ticks so screens refresh (`useSyncExternalStore(dataVersion.subscribe, dataVersion.get, ...)`). Screens import only from `@/lib/data`, and read data in effects or on user action, never during render. The proposal PDF goes to `POST /api/team/proposal` (XHR, for progress).
 - `src/server/backend/` holds the business rules: `team.ts` (registration, code login, portal, uploads) and `admin.ts` (organizer functions), built per request by `createBackend(ctx)`. The `RequestContext` carries the database, clock, IP, cookies and outside services, so tests run it on a seeded in-memory database (`test-context.ts`). Calls return `Result` objects with `DataError` codes.
 - The organizer comes from the session cookie, never from arguments: the `actor` parameters screens pass are ignored. Roles are enforced in the backend; draft shortlist ticks are hidden from plain admins there.
-- Sessions (`src/server/auth/sessions.ts`) are hashed tokens in httpOnly cookies and always use real time. The **dev clock** (`dev_now` setting, ignored in production) moves the app's "now" for stage testing and keeps running from when it was set.
+- Sessions (`src/server/auth/sessions.ts`) are hashed tokens in httpOnly cookies and always use real time. The app has no fake clock or test-data panel: it shows what is in the database, and the stage follows the real time and the deadlines. Tests set their own time through `RequestContext.appClock` (`test-context.ts`).
 - Every audited action and email goes through `record()` and `queueEmail()` in `backend/common.ts`. Emails are sent by the worker in `src/server/email/` (started from `src/instrumentation.ts`), with templates in `src/emails/`.
 - Outside services (Drive via OAuth, Sheets via the service account, YouTube oEmbed, Turnstile) live in `src/server/services/`. There is no fallback: until their env variables exist (see `.env.example`, checked by `src/server/env.ts`), uploads and the Sheets export fail with `not_configured` and emails wait as `pending`. Production refuses to start without the required ones.
 - Schema: `src/server/db/schema.ts` (Drizzle, nine tables from architecture §5). After changing it run `pnpm db:generate` and commit the migration. Development databases migrate themselves on first use.
-- `src/server/dev-actions.ts` powers the dev-only switcher and the login page's dev box (dev clock, sign in as, reseed). Each action refuses to run in production.
 - Zod schemas shared by the forms and the backend live in `src/lib/schemas/`. `src/lib/data/fixtures/sample-state.ts` is test-only data for the pure screen-logic tests.
 
 ### Competition process (affects shortlist and finalist code)

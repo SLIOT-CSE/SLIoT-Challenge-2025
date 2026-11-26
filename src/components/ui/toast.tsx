@@ -7,7 +7,7 @@ import { DURATION, EASE_OUT_EXPO, EASE_OUT_QUART } from "@/lib/motion/ease";
 import { cn } from "@/lib/utils";
 
 // Short messages that answer an action ("Shortlist finalised. 12 teams emailed."). One stack at
-// the top right (the sample switcher owns the bottom right). They close by themselves after 5
+// the top right. They close by themselves after 5
 // seconds, wait while hovered or focused, and can be closed by hand. Errors stay for 10.
 
 export type ToastTone = "success" | "error" | "info";
