@@ -59,11 +59,16 @@ export function Hero() {
             </div>
             <p className="intro-rise max-w-[46ch] text-pretty text-body text-foam/85 max-sm:order-2 sm:text-body-lg [--delay:0.55s]">{hero.lead}</p>
 
-            <div className="intro-rise flex flex-wrap items-center justify-center gap-3 max-sm:order-1 [--delay:0.7s]">
-              <Button asChild size="lg" trailingIcon={<ArrowUpRight className="size-[1.125rem]" strokeWidth={1.75} />}>
+            <div className="intro-rise flex flex-wrap items-center justify-center gap-2.5 max-sm:order-1 sm:gap-3 [--delay:0.7s]">
+              <Button
+                asChild
+                size="lg"
+                className="max-sm:h-11 max-sm:px-4 max-sm:text-small max-sm:[&>span:last-child]:-mr-2 max-sm:[&>span:last-child]:size-8"
+                trailingIcon={<ArrowUpRight className="size-4 sm:size-[1.125rem]" strokeWidth={1.75} />}
+              >
                 <Link href={routes.register}>Register</Link>
               </Button>
-              <Button asChild size="lg" variant="secondary">
+              <Button asChild size="lg" variant="secondary" className="max-sm:h-11 max-sm:px-4 max-sm:text-small">
                 <a href="#how-it-works">How it works</a>
               </Button>
             </div>
