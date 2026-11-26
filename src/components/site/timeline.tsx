@@ -1,9 +1,9 @@
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import { ArrowDown, Check } from "lucide-react";
 import { timelineBackdrop } from "@/assets";
 import { timeline, type TimelineEvent } from "@/content/timeline";
-import { dateParts, daysUntil, formatTime, relativeDays } from "@/lib/competition";
-import { LiveDot } from "@/components/site/live-dot";
+import { dateParts } from "@/lib/competition";
 import { TimelineScene } from "@/components/site/timeline-scene";
 import { cn } from "@/lib/utils";
 
@@ -11,9 +11,10 @@ type Status = "past" | "next" | "future";
 
 /**
  * The road to the finale (Option 3: Alternating Chronology Spine).
- * - Desktop full-motion (`scene:`): pinned sideways scroll with Double-Bezel milestone cards
- *   alternating above and below a graduated central telemetry spine over the corridor backdrop.
- * - Mobile / tablet / reduced motion: clean left-rail vertical stack of the same cards.
+ * - Desktop full-motion (`scene:`): height-safe 100svh pinned sideways scroll with Double-Bezel
+ *   milestone cards alternating above and below a graduated central spine over the corridor backdrop.
+ * - Mobile / tablet full-motion (`diag:`): 100svh pinned camera gliding 1:1 along a 45° SE diagonal rail.
+ * - Reduced motion: clean static left-rail vertical stack of the same cards.
  */
 export function Timeline({ now }: { now: Date }) {
   const nextIndex = timeline.findIndex((e) => Date.parse(e.at) >= now.getTime());
@@ -40,29 +41,35 @@ export function Timeline({ now }: { now: Date }) {
           <div className="grain absolute inset-0" />
         </div>
 
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-end justify-between gap-4 px-4 pt-20 sm:gap-5 sm:px-8 md:pt-24 scene:pt-0">
-          <div className="flex max-w-3xl flex-col gap-3 scene:gap-1.5">
-            <h2 id="timeline-title" className="font-display text-display-lg text-foam">
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-end justify-between gap-3 px-4 pt-20 sm:gap-5 sm:px-8 md:pt-24 diag:pt-0 scene:pt-0">
+          <div className="flex max-w-3xl flex-col gap-2.5 diag:gap-1 scene:gap-1">
+            <h2
+              id="timeline-title"
+              className="font-display text-display-lg text-foam diag:text-[clamp(2rem,5.4svh,3rem)] diag:leading-[0.9] scene:text-[clamp(2.125rem,5.4svh,4.25rem)] scene:leading-[0.9]"
+            >
               The road to the finale
             </h2>
-            <p className="max-w-[56ch] text-pretty text-body-lg text-haze">
+            <p className="max-w-[56ch] text-pretty text-body-lg text-haze diag:text-[clamp(0.8125rem,1.8svh,1rem)] diag:leading-snug scene:text-[clamp(0.875rem,1.8svh,1.0625rem)] scene:leading-snug">
               {timeline.length} dates from registration to the grand finale. All times are Sri Lanka time.
             </p>
           </div>
           <a
             href="#prizes"
-            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-night/75 px-4 py-2 text-small font-semibold text-haze ring-1 ring-edge/40 transition-colors duration-200 hover:text-foam hover:ring-mint/50"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-night/75 px-4 py-2 text-small font-semibold text-haze ring-1 ring-edge/40 transition-colors duration-200 hover:text-foam hover:ring-mint/50 diag:min-h-9 diag:px-3.5 diag:py-1.5 diag:text-caption"
           >
             Skip timeline
             <ArrowDown className="size-4" strokeWidth={1.75} aria-hidden="true" />
           </a>
         </div>
 
-        {/* Natively scrollable sideways if the scene never starts; GSAP takes over on `scene:` */}
-        <div data-timeline-viewport className="mt-10 pb-20 md:pb-24 scene:mt-4 scene:overflow-x-auto scene:pb-0 xl:scene:mt-6">
+        {/* Diagonal 45° SE track on mobile/tablet (`diag:`), horizontal alternating spine on desktop (`scene:`), plain stack when reduced-motion */}
+        <div
+          data-timeline-viewport
+          className="mt-10 pb-20 md:pb-24 diag:relative diag:mt-2 diag:min-h-0 diag:flex-1 diag:overflow-hidden diag:pb-0 scene:mt-[clamp(0.5rem,1.6svh,1.5rem)] scene:overflow-x-auto scene:pb-0"
+        >
           <ol
             data-timeline-track
-            className="relative mx-auto flex max-w-3xl flex-col px-4 sm:px-8 scene:mx-0 scene:w-max scene:max-w-none scene:flex-row scene:items-stretch scene:px-[max(2rem,calc((100vw-80rem)/2+2rem))]"
+            className="relative mx-auto flex max-w-3xl flex-col px-4 sm:px-8 diag:mx-0 diag:block diag:h-full diag:w-full diag:max-w-none diag:px-0 scene:mx-0 scene:w-max scene:max-w-none scene:flex-row scene:items-stretch scene:px-[max(2rem,calc((100vw-80rem)/2+2rem))]"
           >
             {timeline.map((event, i) => {
               const s = status(i);
@@ -75,33 +82,68 @@ export function Timeline({ now }: { now: Date }) {
                 <li
                   key={event.title}
                   data-timeline-item
+                  style={{ "--i": i } as CSSProperties}
                   className={cn(
                     "relative pb-6 pl-11 last:pb-0 sm:pl-12",
-                    "scene:grid scene:w-[22.5rem] scene:shrink-0 scene:grid-rows-[1fr_2rem_1fr] scene:pb-0 scene:pl-0 xl:scene:w-[24rem]",
+                    "diag:absolute diag:left-[calc(var(--diag-ox,28px)+var(--i)*var(--diag-step,240px))] diag:top-[calc(var(--diag-oy,32px)+var(--i)*var(--diag-step,240px))] diag:w-[var(--diag-card-w,17rem)] diag:p-0",
+                    "scene:grid scene:w-[22.5rem] scene:shrink-0 scene:grid-rows-[1fr_clamp(1.5rem,3.4svh,2.25rem)_1fr] scene:pb-0 scene:pl-0 xl:scene:w-[24.5rem]",
                   )}
                 >
-                  {/* Mobile left vertical rail */}
+                  {/* Reduced-motion mobile vertical rail */}
                   {!isLast && (
                     <span
                       aria-hidden="true"
                       className={cn(
-                        "absolute bottom-0 left-[13px] top-6 w-px scene:hidden",
+                        "absolute bottom-0 left-[13px] top-6 w-px diag:hidden scene:hidden",
                         s === "past" ? "bg-mint" : "bg-ocean",
                       )}
                     />
                   )}
 
-                  {/* Mobile left node */}
+                  {/* Reduced-motion mobile left node */}
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "absolute left-0 top-1 grid size-[27px] place-items-center rounded-full border-2 bg-abyss scene:hidden",
+                      "absolute left-0 top-1 grid size-[27px] place-items-center rounded-full border-2 bg-abyss diag:hidden scene:hidden",
                       s === "past" && "border-mint text-mint",
                       s === "next" && "border-aqua shadow-signal",
                       s === "future" && "border-ocean",
                     )}
                   >
                     {s === "past" && <Check className="size-3.5" strokeWidth={3} />}
+                    {s === "next" && <span className="size-2 rounded-full bg-aqua" />}
+                  </span>
+
+                  {/* Mobile / tablet 45° SE diagonal connector + graduated ticks (`diag:`) */}
+                  {!isLast && (
+                    <span
+                      aria-hidden="true"
+                      style={{ width: "calc(var(--diag-step, 240px) * 1.4142)" }}
+                      className={cn(
+                        "pointer-events-none absolute -left-2 -top-2 z-0 hidden h-px origin-left rotate-45 diag:block",
+                        s === "past" ? "bg-mint/85 shadow-[0_0_8px_rgb(115_218_190/0.45)]" : "bg-ocean",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 opacity-45 [background-image:repeating-linear-gradient(to_right,currentColor_0_1px,transparent_1px_10px)]",
+                          s === "past" ? "text-mint" : "text-edge",
+                        )}
+                      />
+                    </span>
+                  )}
+
+                  {/* Mobile / tablet 45° corner node (`diag:`) */}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "pointer-events-none absolute -left-5 -top-5 z-20 hidden size-6 place-items-center rounded-full border-2 bg-abyss diag:grid",
+                      s === "past" && "border-mint text-mint",
+                      s === "next" && "border-aqua shadow-signal",
+                      s === "future" && "border-ocean",
+                    )}
+                  >
+                    {s === "past" && <Check className="size-3" strokeWidth={3} />}
                     {s === "next" && <span className="size-2 rounded-full bg-aqua" />}
                   </span>
 
@@ -116,12 +158,14 @@ export function Timeline({ now }: { now: Date }) {
                           stepNum={stepNum}
                           total={timeline.length}
                           status={s}
-                          now={now}
                         />
                         <div className="flex justify-center">
                           <span
                             aria-hidden="true"
-                            className={cn("h-3.5 w-px xl:h-4", s === "past" ? "bg-mint/70" : s === "next" ? "bg-aqua" : "bg-ocean")}
+                            className={cn(
+                              "h-[clamp(0.5rem,1.4svh,1rem)] w-px",
+                              s === "past" ? "bg-mint/70" : s === "next" ? "bg-aqua" : "bg-ocean",
+                            )}
                           />
                         </div>
                       </>
@@ -130,14 +174,12 @@ export function Timeline({ now }: { now: Date }) {
 
                   {/* Desktop Row 2 (central graduated telemetry spine + crosshair node) */}
                   <div aria-hidden="true" className="relative hidden items-center justify-center scene:flex">
-                    {/* Horizontal graduated tick marks */}
                     <span
                       className={cn(
                         "absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 opacity-45 [background-image:repeating-linear-gradient(to_right,currentColor_0_1px,transparent_1px_10px)]",
                         s === "past" ? "text-mint" : "text-edge",
                       )}
                     />
-                    {/* Continuous center rail line */}
                     <span
                       className={cn(
                         "absolute top-1/2 h-px -translate-y-1/2",
@@ -145,7 +187,6 @@ export function Timeline({ now }: { now: Date }) {
                         s === "past" ? "bg-mint shadow-[0_0_10px_rgb(115_218_190/0.5)]" : "bg-ocean",
                       )}
                     />
-                    {/* Crosshair node */}
                     <span
                       className={cn(
                         "relative z-10 grid size-7 place-items-center rounded-full border-2 bg-abyss",
@@ -157,18 +198,6 @@ export function Timeline({ now }: { now: Date }) {
                       {s === "past" && <Check className="size-3.5" strokeWidth={3} />}
                       {s === "next" && <span className="size-2.5 rounded-full bg-aqua" />}
                     </span>
-                    {/* Active marker anchored on the spine */}
-                    {s === "next" && (
-                      <span
-                        className={cn(
-                          "absolute left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full bg-night/95 px-3 py-1 text-caption font-semibold text-aqua ring-1 ring-aqua/45 shadow-lift",
-                          isTopLane ? "top-full mt-2" : "bottom-full mb-2",
-                        )}
-                      >
-                        <LiveDot />
-                        You are here
-                      </span>
-                    )}
                   </div>
 
                   {/* Desktop Row 3 (bottom lane: even milestones 02, 04, 06, 08) */}
@@ -178,7 +207,10 @@ export function Timeline({ now }: { now: Date }) {
                         <div className="flex justify-center">
                           <span
                             aria-hidden="true"
-                            className={cn("h-3.5 w-px xl:h-4", s === "past" ? "bg-mint/70" : s === "next" ? "bg-aqua" : "bg-ocean")}
+                            className={cn(
+                              "h-[clamp(0.5rem,1.4svh,1rem)] w-px",
+                              s === "past" ? "bg-mint/70" : s === "next" ? "bg-aqua" : "bg-ocean",
+                            )}
                           />
                         </div>
                         <MilestoneCard
@@ -188,14 +220,13 @@ export function Timeline({ now }: { now: Date }) {
                           stepNum={stepNum}
                           total={timeline.length}
                           status={s}
-                          now={now}
                         />
                       </>
                     )}
                   </div>
 
-                  {/* Mobile / reduced-motion card */}
-                  <div className="scene:hidden">
+                  {/* Mobile / tablet card (for both 45° `diag:` and reduced-motion stack) */}
+                  <div className="relative z-10 scene:hidden">
                     <MilestoneCard
                       event={event}
                       day={day}
@@ -203,8 +234,6 @@ export function Timeline({ now }: { now: Date }) {
                       stepNum={stepNum}
                       total={timeline.length}
                       status={s}
-                      now={now}
-                      showMobileLiveBadge
                     />
                   </div>
                 </li>
@@ -213,8 +242,11 @@ export function Timeline({ now }: { now: Date }) {
           </ol>
         </div>
 
-        {/* Scroll progress through the track (desktop scene only) */}
-        <div aria-hidden="true" className="mx-auto mt-3.5 hidden w-full max-w-7xl px-8 scene:block xl:scene:mt-6">
+        {/* Scroll progress through the track (both desktop `scene:` and mobile 45° `diag:`) */}
+        <div
+          aria-hidden="true"
+          className="mx-auto mt-3 hidden w-full max-w-7xl px-4 sm:px-8 diag:mt-2 diag:block scene:mt-[clamp(0.5rem,1.6svh,1.25rem)] scene:block"
+        >
           <div className="h-px w-full bg-ocean/80">
             <div data-timeline-progress className="h-px w-full origin-left scale-x-0 bg-aqua shadow-[0_0_8px_rgb(133_255_240/0.8)]" />
           </div>
@@ -231,8 +263,6 @@ function MilestoneCard({
   stepNum,
   total,
   status,
-  now,
-  showMobileLiveBadge = false,
 }: {
   event: TimelineEvent;
   day: string;
@@ -240,8 +270,6 @@ function MilestoneCard({
   stepNum: string;
   total: number;
   status: Status;
-  now: Date;
-  showMobileLiveBadge?: boolean;
 }) {
   const isPast = status === "past";
   const isNext = status === "next";
@@ -249,7 +277,7 @@ function MilestoneCard({
   return (
     <article
       className={cn(
-        "rounded-2xl p-1.5 transition-[box-shadow,border-color] duration-300",
+        "rounded-2xl p-1.5 transition-[box-shadow,border-color] duration-300 scene:p-[clamp(0.25rem,0.45svh,0.375rem)]",
         isNext
           ? "bg-mint/14 ring-1 ring-aqua/65 shadow-[0_0_28px_-8px_rgb(133_255_240/0.35)]"
           : isPast
@@ -259,7 +287,7 @@ function MilestoneCard({
     >
       <div
         className={cn(
-          "relative flex flex-col gap-1.5 overflow-hidden rounded-[calc(1rem-0.375rem)] p-4 shadow-[inset_0_1px_0_rgb(221_247_239/0.12)] sm:p-5 scene:gap-1 scene:p-3.5 xl:scene:p-5",
+          "relative flex flex-col gap-1.5 overflow-hidden rounded-[calc(1rem-0.375rem)] p-4 shadow-[inset_0_1px_0_rgb(221_247_239/0.12)] sm:p-5 diag:gap-1 diag:p-3.5 scene:gap-[clamp(0.1875rem,0.5svh,0.375rem)] scene:p-[clamp(0.65rem,1.4svh,1.15rem)]",
           isNext ? "bg-gradient-to-b from-deep/90 via-night/95 to-abyss/95" : "bg-gradient-to-b from-night/92 to-abyss/95",
         )}
       >
@@ -267,7 +295,7 @@ function MilestoneCard({
         <span
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute right-3.5 top-2 select-none font-display text-[3.5rem] leading-none tabular-nums scene:text-[2.75rem] xl:scene:text-[3.25rem]",
+            "pointer-events-none absolute right-3.5 top-2 select-none font-display text-[3.5rem] leading-none tabular-nums diag:text-[2.75rem] scene:text-[clamp(2.25rem,4.5svh,3.25rem)]",
             isNext ? "text-aqua/18" : "text-foam/[0.08]",
           )}
         >
@@ -279,19 +307,13 @@ function MilestoneCard({
             {stepNum} / {String(total).padStart(2, "0")}
             {isPast && <span className="sr-only"> (done)</span>}
           </span>
-          {showMobileLiveBadge && isNext && (
-            <span className="inline-flex items-center gap-2 font-semibold text-aqua">
-              <LiveDot />
-              You are here
-            </span>
-          )}
         </p>
 
         <p className="flex items-baseline gap-2 pr-12 font-display leading-[0.88]">
           <time dateTime={event.at} className="flex items-baseline gap-2">
             <span
               className={cn(
-                "text-[clamp(2.5rem,4.4vw,3.5rem)] scene:text-[2.35rem] xl:scene:text-[2.85rem]",
+                "text-[clamp(2.5rem,4.4vw,3.5rem)] diag:text-[2.25rem] scene:text-[clamp(1.75rem,3.6svh,2.75rem)]",
                 isPast ? "text-haze" : isNext ? "text-aqua" : "text-foam",
               )}
             >
@@ -299,7 +321,7 @@ function MilestoneCard({
             </span>
             <span
               className={cn(
-                "text-[clamp(1.25rem,2.1vw,1.75rem)] scene:text-[1.25rem] xl:scene:text-[1.5rem]",
+                "text-[clamp(1.25rem,2.1vw,1.75rem)] diag:text-[1.2rem] scene:text-[clamp(1rem,2svh,1.45rem)]",
                 isPast ? "text-haze" : "text-mint",
               )}
             >
@@ -308,14 +330,12 @@ function MilestoneCard({
           </time>
         </p>
 
-        <h3 className="text-body-lg font-semibold leading-snug text-foam">{event.title}</h3>
-        <p className="max-w-[36ch] text-pretty text-small text-haze">{event.body}</p>
-
-        {isNext && (
-          <p className="mt-1 w-fit rounded-full bg-aqua/10 px-3 py-1 text-caption font-semibold text-aqua ring-1 ring-aqua/35 scene:mt-0.5">
-            {relativeDays(daysUntil(now, event.at)).replace(/^./, (c) => c.toUpperCase())}, {formatTime(event.at)}
-          </p>
-        )}
+        <h3 className="text-body-lg font-semibold leading-snug text-foam diag:text-body scene:text-[clamp(0.95rem,1.9svh,1.125rem)]">
+          {event.title}
+        </h3>
+        <p className="max-w-[36ch] text-pretty text-small text-haze diag:text-[0.8125rem] diag:leading-snug scene:text-[clamp(0.75rem,1.5svh,0.875rem)] scene:leading-[1.45]">
+          {event.body}
+        </p>
       </div>
     </article>
   );

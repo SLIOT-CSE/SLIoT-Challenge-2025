@@ -7,6 +7,8 @@
 /* Desktop scroll scenes (from lg, full motion): layouts that only make sense while a scene
    drives them, e.g. the sideways timeline. Everyone else gets the plain layout. */
 @custom-variant scene (@media (min-width: 64rem) and (prefers-reduced-motion: no-preference));
+/* Mobile / tablet scroll scene (below lg, full motion): 45-degree South-East pinned diagonal timeline. */
+@custom-variant diag (@media (max-width: 63.999rem) and (prefers-reduced-motion: no-preference));
 
 @theme {
   /* Extra small breakpoints below sm (640px) */
