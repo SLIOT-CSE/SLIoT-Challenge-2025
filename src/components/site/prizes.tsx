@@ -79,7 +79,7 @@ export function Prizes({ amounts = prizes }: { amounts?: typeof prizes } = {}) {
           alt=""
           fill
           sizes="100vw"
-          quality={85}
+          quality={75}
           className="object-cover object-center opacity-75 sm:opacity-85"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-abyss/40 via-transparent to-abyss/50" />
@@ -155,17 +155,17 @@ export function Prizes({ amounts = prizes }: { amounts?: typeof prizes } = {}) {
                     className={cn(
                       "rounded-t-2xl p-1.5 pb-0",
                       isFirst
-                        ? "bg-mint/10 ring-1 ring-mint/45"
-                        : "bg-foam/[0.04] ring-1 ring-foam/12",
+                        ? "bg-mint/12 ring-1 ring-mint/50"
+                        : "bg-foam/[0.06] ring-1 ring-edge/35",
                     )}
                   >
                     <div
                       className={cn(
-                        "relative flex w-full flex-col items-center justify-between gap-4 rounded-t-[calc(1rem-0.375rem)] px-3 pb-7 pt-6 text-center shadow-[inset_0_1px_0_rgb(221_247_239/0.12)] sm:px-6 sm:pb-8 sm:pt-7",
+                        "relative flex w-full flex-col items-center justify-between gap-4 rounded-t-[calc(1rem-0.375rem)] px-3 pb-7 pt-6 text-center shadow-[inset_0_1px_0_rgb(221_247_239/0.16)] sm:px-6 sm:pb-8 sm:pt-7",
                         HEIGHT[p.id],
                         isFirst
                           ? "bg-gradient-to-b from-deep/90 via-night/95 to-abyss/95"
-                          : "bg-gradient-to-b from-night/95 to-abyss/95",
+                          : "bg-gradient-to-b from-deep/65 via-night/95 to-abyss/95",
                       )}
                     >
                       <div className="flex flex-col items-center gap-3">
@@ -233,23 +233,39 @@ export function Prizes({ amounts = prizes }: { amounts?: typeof prizes } = {}) {
 /** Precision-machined rank emblem seated cleanly inside each podium plate */
 function PrizeEmblem({ medal, placing }: { medal: string; placing: Placing }) {
   const isFirst = placing === "first";
+  const isThird = placing === "third";
   return (
-    <div
-      aria-hidden="true"
-      className={cn(
-        "relative overflow-hidden rounded-full bg-abyss shadow-lift ring-1",
-        isFirst ? "size-24 sm:size-28 ring-aqua/50" : "size-20 sm:size-22 ring-foam/20",
-      )}
-    >
-      <Image
-        src={medal}
-        alt=""
-        fill
-        sizes={isFirst ? "7rem" : "5.5rem"}
-        quality={88}
-        className="scale-[1.18] object-cover select-none"
-        draggable={false}
+    <div aria-hidden="true" className="relative">
+      <div
+        className={cn(
+          "pointer-events-none absolute -inset-4 rounded-full",
+          isFirst
+            ? "bg-[radial-gradient(closest-side,rgb(133_255_240/0.24),transparent)]"
+            : "bg-[radial-gradient(closest-side,rgb(115_218_190/0.2),transparent)]",
+        )}
       />
+      <div
+        className={cn(
+          "relative overflow-hidden rounded-full bg-abyss shadow-lift ring-1",
+          isFirst
+            ? "size-24 sm:size-28 ring-aqua/55"
+            : isThird
+              ? "size-22 sm:size-26 ring-edge/60"
+              : "size-22 sm:size-26 ring-lagoon/55",
+        )}
+      >
+        <div className="absolute -inset-[9%]">
+          <Image
+            src={medal}
+            alt=""
+            fill
+            sizes="12rem"
+            quality={90}
+            className="object-cover select-none"
+            draggable={false}
+          />
+        </div>
+      </div>
     </div>
   );
 }

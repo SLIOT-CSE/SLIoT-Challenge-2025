@@ -7,8 +7,8 @@ export type Placing = "first" | "second" | "third";
 
 export const placings: { id: Placing; label: string; title: string; medal: string }[] = [
   { id: "first", label: "1st", title: "Champions", medal: "/images/prizes/rank-1.webp" },
-  { id: "second", label: "2nd", title: "1st runners-up", medal: "/images/prizes/rank-2.webp" },
-  { id: "third", label: "3rd", title: "2nd runners-up", medal: "/images/prizes/rank-3.webp" },
+  { id: "second", label: "2nd", title: "1st runners-up", medal: "/images/prizes/rank-2-clear.webp" },
+  { id: "third", label: "3rd", title: "2nd runners-up", medal: "/images/prizes/rank-3-clear.webp" },
 ];
 
 export const prizes: Record<CategoryId, Record<Placing, number | null>> = {
