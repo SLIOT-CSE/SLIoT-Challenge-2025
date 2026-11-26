@@ -53,21 +53,26 @@ export function RegistrationCountdown({
   ];
 
   return (
-    <section id="live" aria-labelledby="live-title" className="relative isolate overflow-hidden px-4 py-16 sm:px-8 lg:py-24">
+    <section id="live" aria-labelledby="live-title" className="relative isolate overflow-hidden px-4 py-14 sm:px-8 sm:py-16 lg:py-20">
       {/* A low bloom of aurora light behind the digits, with no edges of its own */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_55%_at_50%_52%,rgb(11_90_109/0.38),transparent_100%)]"
       />
 
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 lg:gap-12">
+      <div className="mx-auto flex max-w-6xl flex-col gap-7 lg:gap-10">
         <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:justify-between">
           <h2 id="live-title" className="inline-flex items-center gap-3 text-title font-semibold text-foam sm:text-[1.75rem] sm:leading-tight">
             {!left.done && <LiveDot />}
             {left.done ? "Registration has closed" : "Registration ends in"}
           </h2>
           {!left.done && (
-            <Button asChild size="lg" trailingIcon={<ArrowUpRight className="size-[1.125rem]" strokeWidth={1.75} />}>
+            <Button
+              asChild
+              size="lg"
+              className="hidden sm:inline-flex"
+              trailingIcon={<ArrowUpRight className="size-[1.125rem]" strokeWidth={1.75} />}
+            >
               <Link href={routes.register}>Register</Link>
             </Button>
           )}
@@ -78,10 +83,10 @@ export function RegistrationCountdown({
             {units.map((unit, i) => {
               const live = i === units.length - 1;
               return (
-                <div key={unit.label} className="relative flex min-w-0 flex-col items-center gap-2 sm:gap-4">
+                <div key={unit.label} className="relative flex min-w-0 flex-col items-center gap-2 sm:gap-3">
                   {/* Two sensor nodes stand in for the colon between units */}
                   {i > 0 && (
-                    <span className="absolute left-0 top-[clamp(1rem,5.4vw,3.9rem)] flex -translate-x-1/2 flex-col gap-[clamp(0.5rem,2.6vw,2rem)]">
+                    <span className="absolute left-0 top-[clamp(1rem,4.5vw,2.35rem)] flex -translate-x-1/2 flex-col gap-[clamp(0.5rem,2vw,1.15rem)]">
                       <span className="size-1 rounded-full bg-lagoon/70 sm:size-2" />
                       <span className="size-1 rounded-full bg-lagoon/70 sm:size-2" />
                     </span>
@@ -89,7 +94,7 @@ export function RegistrationCountdown({
                   <RollingNumber
                     value={String(unit.value).padStart(2, "0")}
                     className={cn(
-                      "font-display text-[clamp(3.5rem,17vw,12rem)]",
+                      "font-display text-[clamp(3.5rem,15vw,7.5rem)]",
                       live ? "text-aqua [text-shadow:0_0_40px_rgb(133_255_240/0.35)]" : "text-foam",
                     )}
                   />
@@ -100,7 +105,15 @@ export function RegistrationCountdown({
           </div>
         )}
 
-        <div className="flex flex-col gap-4">
+        {!left.done && (
+          <div className="flex justify-center sm:hidden">
+            <Button asChild size="lg" trailingIcon={<ArrowUpRight className="size-[1.125rem]" strokeWidth={1.75} />}>
+              <Link href={routes.register}>Register</Link>
+            </Button>
+          </div>
+        )}
+
+        <div className="sr-only sm:not-sr-only sm:flex sm:flex-col sm:gap-4">
           {/* The registration window as a signal trace: lit up to now */}
           <div aria-hidden="true" className="relative mx-1.5 h-3">
             <span className="absolute inset-x-0 top-1/2 h-px bg-ocean" />
