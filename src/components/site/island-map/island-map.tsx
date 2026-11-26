@@ -1,14 +1,15 @@
 import { COASTLINE, DISTRICT_NODES, HUB, MAP_HEIGHT, MAP_WIDTH } from "./geometry";
 import { cn } from "@/lib/utils";
 
-// A gentle curve from a district to the hub, bowing away from the island's centre line
+// A gentle curve from the hub out to a district, bowing away from the island's centre line.
+// It starts at the hub so a dash-offset draw runs from Moratuwa outward.
 function linkPath(x: number, y: number) {
   const mx = (x + HUB.x) / 2;
   const my = (y + HUB.y) / 2;
   const dx = HUB.x - x;
   const dy = HUB.y - y;
   const bow = 0.18;
-  return `M${x},${y} Q${(mx - dy * bow).toFixed(1)},${(my + dx * bow).toFixed(1)} ${HUB.x},${HUB.y}`;
+  return `M${HUB.x},${HUB.y} Q${(mx - dy * bow).toFixed(1)},${(my + dx * bow).toFixed(1)} ${x},${y}`;
 }
 
 /**
@@ -46,7 +47,7 @@ export function IslandMap({ className }: { className?: string }) {
 
       <g fill="none" stroke="#85fff0" strokeOpacity="0.38" strokeWidth="0.8" strokeLinecap="round">
         {DISTRICT_NODES.map((n) => (
-          <path key={n.name} d={linkPath(n.x, n.y)} pathLength={1} data-map-link />
+          <path key={n.name} d={linkPath(n.x, n.y)} pathLength={1} data-map-link data-dist={Math.hypot(n.x - HUB.x, n.y - HUB.y).toFixed(0)} />
         ))}
       </g>
 

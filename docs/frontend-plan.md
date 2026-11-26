@@ -140,12 +140,11 @@ A single marquee band between the callout and About: "Sense · Connect · Act ·
   - what SLIoT is
   - who runs it (CSE, University of Moratuwa, with SLT-MOBITEL and IESL)
   - the years of editions
-- **The visual:** an SVG outline of Sri Lanka on the right. As you scroll through the beats:
-  1. The coastline draws itself.
-  2. Sensor nodes light up in districts across the island.
-  3. Signal lines connect them back to Colombo.
-  4. The editions count up.
-- **Phone:** not pinned. The map sits above the text and plays its draw once when it scrolls into view.
+- **The visual:** an SVG outline of Sri Lanka on the right. The island, the 25 district nodes and the University of Moratuwa hub are already shown when the section scrolls in, so the map never shows up late. When the map comes into view, the signal lines play once on their own clock (not scroll-scrubbed), in about 2.3 s:
+  1. Each line draws from the Moratuwa hub out to its district, nearest districts first.
+  2. The district count runs up to 25.
+- **Desktop:** the section pins while the three beats brighten in turn and the rail fills as you scroll.
+- **Phone:** not pinned. The map sits above the text and plays the same draw once when it scrolls into view.
 - **Replaces:** the three.js globe and its four 3D libraries.
 
 ### 5.6 Categories, from SpiritX's sticky list + card stack
