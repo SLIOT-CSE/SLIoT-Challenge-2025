@@ -210,6 +210,31 @@
    Every element reads correctly without these; reduced motion gets a short fade.
    --------------------------------------------------------------------------- */
 
+/* First-visit Hero preloader curtain and intro pause sync */
+.hero-preloader {
+  display: none;
+}
+
+html[data-hero-loading="true"] .hero-preloader,
+.hero-preloader[data-exiting="true"] {
+  display: flex;
+}
+
+html[data-hero-loading="true"] body {
+  overflow: hidden;
+}
+
+html[data-hero-loading="true"] .intro-line,
+html[data-hero-loading="true"] .intro-rise,
+html[data-hero-loading="true"] .intro-figure,
+html[data-hero-loading="true"] .intro-fade {
+  animation-play-state: paused;
+}
+
+.hero-loader-orbit {
+  animation: portal-spin 22s linear infinite;
+}
+
 /* Hero title lines rise out of their own mask, one after another (each sets --delay) */
 .intro-line {
   animation: intro-line 1.15s var(--ease-out-expo) var(--delay, 0s) both;
@@ -482,6 +507,7 @@
   .aurora-band,
   .portal-spin,
   .portal-eye,
+  .hero-loader-orbit,
   .signal-node,
   .live-ping {
     animation: none;

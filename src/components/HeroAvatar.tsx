@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef } from "react";
+import { heroReadiness } from "@/lib/hero-readiness";
 import { usePrefersReducedMotion } from "@/lib/motion/use-reduced-motion";
 import { cn } from "@/lib/utils";
 
@@ -111,25 +112,39 @@ export default function HeroAvatar({ className, priority = false }: HeroAvatarPr
   useEffect(() => {
     const box = root.current;
     const canvas = canvasRef.current;
-    if (reduced || !box || !canvas) return;
+    if (reduced) {
+      heroReadiness.setAvatar(1);
+      return;
+    }
+    if (!box || !canvas) return;
 
     const gl = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false });
-    if (!gl) return;
+    if (!gl) {
+      heroReadiness.setAvatar(1);
+      return;
+    }
 
     let disposed = false;
     let frame = 0;
     let visible = true;
+    let reportedLive = false;
     let textures: WebGLTexture[] = [];
     const start = performance.now();
 
     const vs = compile(gl, gl.VERTEX_SHADER, VERTEX);
     const fs = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
     const program = gl.createProgram();
-    if (!vs || !fs || !program) return;
+    if (!vs || !fs || !program) {
+      heroReadiness.setAvatar(1);
+      return;
+    }
     gl.attachShader(program, vs);
     gl.attachShader(program, fs);
     gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      heroReadiness.setAvatar(1);
+      return;
+    }
     gl.useProgram(program);
 
     const buffer = gl.createBuffer();
@@ -179,6 +194,10 @@ export default function HeroAvatar({ className, priority = false }: HeroAvatarPr
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       });
       box.dataset.live = "true";
+      if (!reportedLive) {
+        reportedLive = true;
+        heroReadiness.setAvatar(1);
+      }
       frame = requestAnimationFrame(draw);
     };
 
@@ -203,7 +222,16 @@ export default function HeroAvatar({ className, priority = false }: HeroAvatarPr
     };
     canvas.addEventListener("webglcontextlost", onLost);
 
-    Promise.all(LAYERS.map((layer) => loadImage(layer.src)))
+    let loadedCount = 0;
+    Promise.all(
+      LAYERS.map((layer) =>
+        loadImage(layer.src).then((img) => {
+          loadedCount += 1;
+          heroReadiness.setAvatar((loadedCount / LAYERS.length) * 0.9);
+          return img;
+        }),
+      ),
+    )
       .then((images) => {
         if (disposed) return;
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
@@ -221,6 +249,7 @@ export default function HeroAvatar({ className, priority = false }: HeroAvatarPr
         play();
       })
       .catch(() => {
+        heroReadiness.setAvatar(1);
         // The static images stay in place
       });
 

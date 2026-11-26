@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { heroReadiness } from "@/lib/hero-readiness";
 import { cn } from "@/lib/utils";
 
 // A cosmic backdrop: tens of thousands of fine cyan particles flowing through a swirling
@@ -102,6 +103,7 @@ export default function QuantumNebula({ className }: QuantumNebulaProps) {
     try {
       renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: "low-power" });
     } catch {
+      heroReadiness.setNebula(1);
       return; // No WebGL: the rest of the backdrop carries the hero
     }
     const pixelRatio = Math.min(window.devicePixelRatio || 1, config.maxPixelRatio);
@@ -270,10 +272,12 @@ export default function QuantumNebula({ className }: QuantumNebulaProps) {
         warmed++;
       }
       if (warmed < config.warmup.steps) {
+        heroReadiness.setNebula(warmed / config.warmup.steps);
         warmFrame = requestAnimationFrame(warmUp);
         return;
       }
       warm = true;
+      heroReadiness.setNebula(1);
       render();
       canvas.style.opacity = "1";
       play();
