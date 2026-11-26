@@ -7,9 +7,9 @@ import { gsap, useGSAP, ScrollTrigger } from "@/lib/motion/gsap";
 const SCENE_QUERY = "(min-width: 64rem) and (prefers-reduced-motion: no-preference)";
 
 /**
- * Desktop timeline scene: the section pins and vertical scrolling slides the track sideways
- * until the last date is in view; a thin bar shows how far along you are.
- * Below lg or with reduced motion the timeline is a plain vertical list.
+ * Desktop timeline scene: the section pins and vertical scrolling slides the alternating
+ * chronology spine sideways until the last date is in view; a thin bar tracks progress.
+ * Below lg or with reduced motion the timeline is a plain vertical rail.
  */
 export function TimelineScene({ children }: { children: ReactNode }) {
   const scope = useRef<HTMLDivElement>(null);
@@ -54,7 +54,10 @@ export function TimelineScene({ children }: { children: ReactNode }) {
   );
 
   return (
-    <div ref={scope} className="relative bg-abyss scene:flex scene:min-h-[100svh] scene:flex-col scene:justify-center">
+    <div
+      ref={scope}
+      className="relative isolate overflow-hidden bg-abyss scene:flex scene:min-h-[100svh] scene:flex-col scene:justify-center scene:pt-[4.75rem] scene:pb-4 xl:scene:pt-20 xl:scene:pb-6"
+    >
       {children}
     </div>
   );

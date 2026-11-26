@@ -166,14 +166,12 @@ A single marquee band between the callout and About: "Sense · Connect · Act ·
 - **Download:** the proposal template sits beside step 2.
 - **Phone:** the trace runs vertically down the left edge.
 
-### 5.8 Timeline: "the road to the finale", from SpiritX
+### 5.8 Timeline: alternating chronology spine
 
-- **Desktop:** pinned. Vertical scroll moves the events sideways.
-  - Each event shows a huge Bebas date ("30 JUL"), its title and one line of detail.
-  - A progress rail with dots fills as you go. The current event is marked **"You are here"** in aqua, worked out from today's date.
-- **Skip timeline:** a link jumps past the pinned length.
-- **Phone and reduced motion:** a vertical list with a rail on the left, the same "you are here" marker, no pin.
-- **Data:** the registration, proposal and prototype dates come from settings, so the timeline and the deadline locks never disagree.
+- **Desktop:** Pinned over a generated dark architectural light-corridor backdrop (`timeline-corridor.webp`). Vertical scroll moves the horizontal track sideways (`TimelineScene`), with Double-Bezel milestone cards (`01`–`09` ghosted step numerals, Bebas dates) alternating above and below a graduated central telemetry spine. The active event carries the pulsing aqua **"You are here"** marker and countdown pill, plus a bottom scrub progress bar.
+- **Skip timeline:** A pill link jumps past the pinned length.
+- **Phone and reduced motion:** Collapses into a clean left-rail vertical stack of the same Double-Bezel cards with no pin.
+- **Data:** The registration, proposal and prototype dates come from settings, so the timeline and the deadline locks never disagree.
 
 ### 5.9 Prizes: stage-lit podium
 
