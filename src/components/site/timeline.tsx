@@ -11,9 +11,10 @@ type Status = "past" | "next" | "future";
 
 /**
  * The road to the finale (Option 3: Alternating Chronology Spine).
- * - Desktop full-motion (`scene:`): height-safe 100svh pinned sideways scroll with Double-Bezel
- *   milestone cards alternating above and below a graduated central spine over the corridor backdrop.
- * - Mobile / tablet full-motion (`diag:`): 100svh pinned camera gliding 1:1 along a 45° SE diagonal rail.
+ * - Desktop full-motion (`scene:`): 100svh pinned sideways scroll with Double-Bezel milestone cards
+ *   alternating above and below a scroll-colorized central spine over the corridor backdrop.
+ * - Mobile / tablet full-motion (`diag:`): 100svh pinned camera gliding 1:1 along a 45° SE track whose
+ *   diagonal line stays hidden initially and draws itself with scroll.
  * - Reduced motion: clean static left-rail vertical stack of the same cards.
  */
 export function Timeline({ now }: { now: Date }) {
@@ -71,6 +72,45 @@ export function Timeline({ now }: { now: Date }) {
             data-timeline-track
             className="relative mx-auto flex max-w-3xl flex-col px-4 sm:px-8 diag:mx-0 diag:block diag:h-full diag:w-full diag:max-w-none diag:px-0 scene:mx-0 scene:w-max scene:max-w-none scene:flex-row scene:items-stretch scene:px-[max(2rem,calc((100vw-80rem)/2+2rem))]"
           >
+            {/* Desktop scroll-colorized middle spine + progressive tick sweep (`scene:`) */}
+            <li aria-hidden="true" className="pointer-events-none hidden list-none scene:block">
+              <span
+                data-timeline-spine-fill
+                style={{ left: "var(--spine-left, 0px)", width: "var(--spine-width, 0px)" }}
+                className="pointer-events-none absolute top-1/2 z-[5] h-[2px] -translate-y-1/2 origin-left scale-x-0 bg-gradient-to-r from-mint via-aqua to-aqua shadow-[0_0_12px_rgb(133_255_240/0.65)]"
+              />
+              <span
+                data-timeline-spine-ticks
+                style={{
+                  left: "var(--spine-left, 0px)",
+                  width: "var(--spine-width, 0px)",
+                  clipPath: "inset(0 100% 0 0)",
+                }}
+                className="pointer-events-none absolute top-1/2 z-[5] h-2.5 -translate-y-1/2 text-aqua/90 [background-image:repeating-linear-gradient(to_right,currentColor_0_1px,transparent_1px_10px)]"
+              />
+            </li>
+
+            {/* Mobile/tablet self-drawing 45° SE diagonal rail + progressive tick sweep (`diag:`) */}
+            <li
+              aria-hidden="true"
+              style={{
+                left: "calc(var(--diag-ox, 32px) - 8px)",
+                top: "calc(var(--diag-oy, 20px) - 13px)",
+                width: "calc(var(--diag-step, 240px) * 11.3137)",
+              }}
+              className="pointer-events-none absolute z-0 hidden h-2.5 list-none origin-[0%_50%] rotate-45 diag:block"
+            >
+              <span
+                data-diag-rail-fill
+                className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2 origin-left scale-x-0 bg-gradient-to-r from-mint via-aqua to-aqua shadow-[0_0_12px_rgb(133_255_240/0.65)]"
+              />
+              <span
+                data-diag-rail-ticks
+                style={{ clipPath: "inset(0 100% 0 0)" }}
+                className="absolute inset-0 text-aqua/90 [background-image:repeating-linear-gradient(to_right,currentColor_0_1px,transparent_1px_10px)]"
+              />
+            </li>
+
             {timeline.map((event, i) => {
               const s = status(i);
               const { day, month } = dateParts(event.at);
@@ -85,7 +125,7 @@ export function Timeline({ now }: { now: Date }) {
                   style={{ "--i": i } as CSSProperties}
                   className={cn(
                     "relative pb-6 pl-11 last:pb-0 sm:pl-12",
-                    "diag:absolute diag:left-[calc(var(--diag-ox,28px)+var(--i)*var(--diag-step,240px))] diag:top-[calc(var(--diag-oy,32px)+var(--i)*var(--diag-step,240px))] diag:w-[var(--diag-card-w,17rem)] diag:p-0",
+                    "diag:absolute diag:left-[calc(var(--diag-ox,32px)+var(--i)*var(--diag-step,240px))] diag:top-[calc(var(--diag-oy,20px)+var(--i)*var(--diag-step,240px))] diag:w-[var(--diag-card-w,17rem)] diag:p-0",
                     "scene:grid scene:w-[22.5rem] scene:shrink-0 scene:grid-rows-[1fr_clamp(1.5rem,3.4svh,2.25rem)_1fr] scene:pb-0 scene:pl-0 xl:scene:w-[24.5rem]",
                   )}
                 >
@@ -114,37 +154,18 @@ export function Timeline({ now }: { now: Date }) {
                     {s === "next" && <span className="size-2 rounded-full bg-aqua" />}
                   </span>
 
-                  {/* Mobile / tablet 45° SE diagonal connector + graduated ticks (`diag:`) */}
-                  {!isLast && (
-                    <span
-                      aria-hidden="true"
-                      style={{ width: "calc(var(--diag-step, 240px) * 1.4142)" }}
-                      className={cn(
-                        "pointer-events-none absolute -left-2 -top-2 z-0 hidden h-px origin-left rotate-45 diag:block",
-                        s === "past" ? "bg-mint/85 shadow-[0_0_8px_rgb(115_218_190/0.45)]" : "bg-ocean",
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          "absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 opacity-45 [background-image:repeating-linear-gradient(to_right,currentColor_0_1px,transparent_1px_10px)]",
-                          s === "past" ? "text-mint" : "text-edge",
-                        )}
-                      />
-                    </span>
-                  )}
-
-                  {/* Mobile / tablet 45° corner node (`diag:`) */}
+                  {/* Mobile / tablet 45° corner node (`diag:`) — ignites as the drawn rail reaches it */}
                   <span
                     aria-hidden="true"
-                    className={cn(
-                      "pointer-events-none absolute -left-5 -top-5 z-20 hidden size-6 place-items-center rounded-full border-2 bg-abyss diag:grid",
-                      s === "past" && "border-mint text-mint",
-                      s === "next" && "border-aqua shadow-signal",
-                      s === "future" && "border-ocean",
-                    )}
+                    data-timeline-node="mobile"
+                    data-reached={i === 0 ? "true" : "false"}
+                    className="group pointer-events-none absolute -left-5 -top-5 z-20 hidden size-6 place-items-center rounded-full border-2 border-ocean bg-abyss text-ocean transition-[border-color,box-shadow,color] duration-200 data-[reached=true]:border-aqua data-[reached=true]:text-aqua data-[reached=true]:shadow-signal diag:grid"
                   >
-                    {s === "past" && <Check className="size-3" strokeWidth={3} />}
-                    {s === "next" && <span className="size-2 rounded-full bg-aqua" />}
+                    {s === "past" ? (
+                      <Check className="size-3" strokeWidth={3} />
+                    ) : (
+                      <span className="size-2 scale-75 rounded-full bg-ocean opacity-60 transition-[transform,background-color,opacity] duration-200 group-data-[reached=true]:scale-100 group-data-[reached=true]:bg-aqua group-data-[reached=true]:opacity-100" />
+                    )}
                   </span>
 
                   {/* Desktop Row 1 (top lane: odd milestones 01, 03, 05, 07, 09) */}
@@ -172,31 +193,28 @@ export function Timeline({ now }: { now: Date }) {
                     )}
                   </div>
 
-                  {/* Desktop Row 2 (central graduated telemetry spine + crosshair node) */}
+                  {/* Desktop Row 2 (unreached base spine + crosshair node that lights up with scroll) */}
                   <div aria-hidden="true" className="relative hidden items-center justify-center scene:flex">
+                    <span className="absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 text-edge opacity-35 [background-image:repeating-linear-gradient(to_right,currentColor_0_1px,transparent_1px_10px)]" />
                     <span
                       className={cn(
-                        "absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 opacity-45 [background-image:repeating-linear-gradient(to_right,currentColor_0_1px,transparent_1px_10px)]",
-                        s === "past" ? "text-mint" : "text-edge",
-                      )}
-                    />
-                    <span
-                      className={cn(
-                        "absolute top-1/2 h-px -translate-y-1/2",
+                        "absolute top-1/2 h-px -translate-y-1/2 bg-ocean/80",
                         i === 0 ? "left-1/2 right-0" : isLast ? "left-0 right-1/2" : "inset-x-0",
-                        s === "past" ? "bg-mint shadow-[0_0_10px_rgb(115_218_190/0.5)]" : "bg-ocean",
                       )}
                     />
                     <span
+                      data-timeline-node="desktop"
+                      data-reached={i === 0 ? "true" : "false"}
                       className={cn(
-                        "relative z-10 grid size-7 place-items-center rounded-full border-2 bg-abyss",
-                        s === "past" && "border-mint text-mint",
-                        s === "next" && "size-8 border-aqua shadow-signal",
-                        s === "future" && "border-ocean",
+                        "group relative z-10 grid place-items-center rounded-full border-2 border-ocean bg-abyss text-ocean transition-[border-color,box-shadow,color] duration-200 data-[reached=true]:border-aqua data-[reached=true]:text-aqua data-[reached=true]:shadow-signal",
+                        s === "next" ? "size-8" : "size-7",
                       )}
                     >
-                      {s === "past" && <Check className="size-3.5" strokeWidth={3} />}
-                      {s === "next" && <span className="size-2.5 rounded-full bg-aqua" />}
+                      {s === "past" ? (
+                        <Check className="size-3.5" strokeWidth={3} />
+                      ) : (
+                        <span className="size-2.5 scale-75 rounded-full bg-ocean opacity-50 transition-[transform,background-color,opacity] duration-200 group-data-[reached=true]:scale-100 group-data-[reached=true]:bg-aqua group-data-[reached=true]:opacity-100" />
+                      )}
                     </span>
                   </div>
 

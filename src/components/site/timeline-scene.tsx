@@ -8,9 +8,48 @@ const SCENE_QUERY = "(min-width: 64rem) and (prefers-reduced-motion: no-preferen
 const DIAG_QUERY = "(max-width: 63.999rem) and (prefers-reduced-motion: no-preference)";
 
 /**
+ * Syncs scroll progress (0..1) across the bottom progress bar, a beam fill element
+ * (scaleX), an un-squished tick band (clip-path inset), and per-milestone node activation.
+ */
+function syncRailProgress(
+  progress: number,
+  options: {
+    beam: HTMLElement | null;
+    ticks: HTMLElement | null;
+    nodes: HTMLElement[];
+  },
+) {
+  const p = Math.min(1, Math.max(0, progress));
+  const clipRight = `${((1 - p) * 100).toFixed(3)}%`;
+
+  gsap.set("[data-timeline-progress]", { scaleX: p });
+  if (options.beam) gsap.set(options.beam, { scaleX: p });
+  if (options.ticks) options.ticks.style.clipPath = `inset(0 ${clipRight} 0 0)`;
+
+  const segments = Math.max(1, options.nodes.length - 1);
+  options.nodes.forEach((node, index) => {
+    node.dataset.reached = p * segments >= index - 0.06 ? "true" : "false";
+  });
+}
+
+function clearRailProgress(options: {
+  beam: HTMLElement | null;
+  ticks: HTMLElement | null;
+  nodes: HTMLElement[];
+}) {
+  if (options.beam) gsap.set(options.beam, { clearProps: "scaleX" });
+  if (options.ticks) options.ticks.style.removeProperty("clip-path");
+  options.nodes.forEach((node) => {
+    delete node.dataset.reached;
+  });
+}
+
+/**
  * Responsive timeline scene:
- * - Desktop (`scene:`): pins at 100svh and slides the alternating chronology track horizontally.
- * - Mobile / tablet (`diag:`): pins at 100svh and glides 1:1 along a 45-degree South-East diagonal rail.
+ * - Desktop (`scene:`): pins at 100svh, slides the alternating track sideways, and sweeps color
+ *   along the central telemetry spine, ticks, and nodes.
+ * - Mobile / tablet (`diag:`): pins at 100svh, pans 1:1 at 45° SE, and progressively draws
+ *   the hidden diagonal rail and corner nodes with scroll.
  * - Reduced motion: renders as a plain static vertical rail without pinning.
  */
 export function TimelineScene({ children }: { children: ReactNode }) {
@@ -24,10 +63,35 @@ export function TimelineScene({ children }: { children: ReactNode }) {
         const root = scope.current;
         const viewport = root?.querySelector<HTMLElement>("[data-timeline-viewport]");
         const track = root?.querySelector<HTMLElement>("[data-timeline-track]");
+        const beam = root?.querySelector<HTMLElement>("[data-timeline-spine-fill]") ?? null;
+        const ticks = root?.querySelector<HTMLElement>("[data-timeline-spine-ticks]") ?? null;
+        const nodes = track ? [...track.querySelectorAll<HTMLElement>('[data-timeline-node="desktop"]')] : [];
         if (!root || !viewport || !track) return;
 
-        // The scene drives horizontal travel, so suppress the native scrollbar.
+        // Measure exact center-to-center span between the first and last desktop spine nodes.
+        // Using getBoundingClientRect() difference cancels out horizontal GSAP translation.
+        const layoutDesktopSpine = () => {
+          if (nodes.length < 2) return;
+          const trackRect = track.getBoundingClientRect();
+          const firstRect = nodes[0]!.getBoundingClientRect();
+          const lastRect = nodes[nodes.length - 1]!.getBoundingClientRect();
+          const left = firstRect.left - trackRect.left + firstRect.width / 2;
+          const width = lastRect.left + lastRect.width / 2 - (firstRect.left + firstRect.width / 2);
+          track.style.setProperty("--spine-left", `${left}px`);
+          track.style.setProperty("--spine-width", `${Math.max(0, width)}px`);
+        };
+
         gsap.set(viewport, { overflowX: "hidden" });
+        layoutDesktopSpine();
+        syncRailProgress(0, { beam, ticks, nodes });
+
+        ScrollTrigger.addEventListener("refreshInit", layoutDesktopSpine);
+        const ro = new ResizeObserver(() => {
+          layoutDesktopSpine();
+          ScrollTrigger.refresh();
+        });
+        ro.observe(viewport);
+
         const distance = () => Math.max(0, track.scrollWidth - viewport.clientWidth);
 
         const tween = gsap.to(track, {
@@ -41,14 +105,19 @@ export function TimelineScene({ children }: { children: ReactNode }) {
             scrub: 0.6,
             anticipatePin: 1,
             invalidateOnRefresh: true,
-            onUpdate: (self) => gsap.set("[data-timeline-progress]", { scaleX: self.progress }),
+            onUpdate: (self) => syncRailProgress(self.progress, { beam, ticks, nodes }),
           },
         });
 
         return () => {
+          ro.disconnect();
+          ScrollTrigger.removeEventListener("refreshInit", layoutDesktopSpine);
           tween.scrollTrigger?.kill();
           gsap.set(viewport, { clearProps: "overflowX" });
           gsap.set(track, { clearProps: "x" });
+          track.style.removeProperty("--spine-left");
+          track.style.removeProperty("--spine-width");
+          clearRailProgress({ beam, ticks, nodes });
         };
       });
 
@@ -56,7 +125,10 @@ export function TimelineScene({ children }: { children: ReactNode }) {
         const root = scope.current;
         const viewport = root?.querySelector<HTMLElement>("[data-timeline-viewport]");
         const track = root?.querySelector<HTMLElement>("[data-timeline-track]");
+        const beam = root?.querySelector<HTMLElement>("[data-diag-rail-fill]") ?? null;
+        const ticks = root?.querySelector<HTMLElement>("[data-diag-rail-ticks]") ?? null;
         const items = track ? [...track.querySelectorAll<HTMLElement>("[data-timeline-item]")] : [];
+        const nodes = track ? [...track.querySelectorAll<HTMLElement>('[data-timeline-node="mobile"]')] : [];
         if (!root || !viewport || !track || items.length === 0) return;
 
         let step = 240;
@@ -79,6 +151,7 @@ export function TimelineScene({ children }: { children: ReactNode }) {
         };
 
         layoutDiagonal();
+        syncRailProgress(0, { beam, ticks, nodes });
         ScrollTrigger.addEventListener("refreshInit", layoutDiagonal);
 
         const ro = new ResizeObserver(() => {
@@ -102,7 +175,7 @@ export function TimelineScene({ children }: { children: ReactNode }) {
             scrub: 0.55,
             anticipatePin: 1,
             invalidateOnRefresh: true,
-            onUpdate: (self) => gsap.set("[data-timeline-progress]", { scaleX: self.progress }),
+            onUpdate: (self) => syncRailProgress(self.progress, { beam, ticks, nodes }),
           },
         });
 
@@ -115,6 +188,7 @@ export function TimelineScene({ children }: { children: ReactNode }) {
           track.style.removeProperty("--diag-ox");
           track.style.removeProperty("--diag-oy");
           track.style.removeProperty("--diag-step");
+          clearRailProgress({ beam, ticks, nodes });
         };
       });
 
