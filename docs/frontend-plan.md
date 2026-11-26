@@ -154,17 +154,17 @@ A single marquee band between the callout and About: "Sense · Connect · Act ·
 - **Each card:** who can enter, team size (1–5), and the institution rule. "All members from the same school", "same university", or "mix school and university students".
 - **Phone:** the three cards stacked, each with its own short reveal.
 
-### 5.7 How to take part: "signal path"
+### 5.7 How to take part: 6-step staircase ascent
 
-- **The steps:** a real sequence, so numbered:
+- **The steps:** six sequential stages in ascending order (`src/content/steps.ts`):
   1. Register your team
   2. Submit your proposal
   3. Get shortlisted
-  4. Build and submit your prototype
-  5. Pitch at the finale
-- **The animation:** a circuit trace runs through the five steps, and a bright aqua pulse travels along it as you scroll, lighting each step's node as it arrives.
-- **Download:** the proposal template sits beside step 2.
-- **Phone:** the trace runs vertically down the left edge.
+  4. Build your prototype
+  5. Compete in the semi-finals
+  6. Pitch at the finale
+- **The scene (`StaircaseScene`):** Pinned `100svh` diagonal upward-right camera climb over a generated dark-aurora architectural staircase backdrop (`how-staircase.webp`), with SVG stair risers, Double-Bezel tread cards (`01`–`06`), illuminated nosing edges, an active climbing pulse, a `01 / 06` progress bar, and a `Skip steps` link.
+- **Reduced motion:** Collapses into a plain vertical stack of the 6 Double-Bezel step cards with no pin.
 
 ### 5.8 Timeline: alternating chronology spine
 

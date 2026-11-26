@@ -1,15 +1,21 @@
-import { proposalTemplateUrl, type Deadlines } from "@/content/deadlines";
+import { deadlines, type Deadlines } from "@/content/deadlines";
 
-// "How to take part": the five stages of the competition, in order.
+// "How to take part": the six stages of the competition, in ascending order.
+
+export type StepDate =
+  | { key: keyof Deadlines; label: string }
+  | { at: string; label: string };
 
 export type Step = {
   title: string;
   body: string;
   /** The date shown on the step, and how it is introduced ("Closes", "Due" ...) */
-  date: { key: keyof Deadlines; label: string };
-  /** Optional link under the step */
-  link?: { label: string; href: string; download?: boolean };
+  date: StepDate;
 };
+
+export function resolveStepDate(date: StepDate): string {
+  return "key" in date ? deadlines[date.key] : date.at;
+}
 
 export const steps: Step[] = [
   {
@@ -21,7 +27,6 @@ export const steps: Step[] = [
     title: "Submit your proposal",
     body: "Describe the problem and your IoT solution in the proposal template, then upload it as a PDF from the team portal.",
     date: { key: "proposalDue", label: "Due" },
-    link: { label: "Proposal template", href: proposalTemplateUrl, download: true },
   },
   {
     title: "Get shortlisted",
@@ -32,6 +37,12 @@ export const steps: Step[] = [
     title: "Build your prototype",
     body: "Build it, record a demo video and submit the YouTube link from the team portal, with workshops and mentors along the way.",
     date: { key: "prototypeDue", label: "Due" },
+  },
+  {
+    title: "Compete in the semi-finals",
+    body: "Shortlisted teams demonstrate their working prototypes to the semi-final judging panel for a place in the finale.",
+    // TODO(2027): sample semi-finals date until the 2027 schedule is confirmed.
+    date: { at: "2027-06-25T09:00:00+05:30", label: "On" },
   },
   {
     title: "Pitch at the finale",

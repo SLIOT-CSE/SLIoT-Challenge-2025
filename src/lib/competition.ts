@@ -94,7 +94,8 @@ export function relativeDays(days: number): string {
 
 const dayMonth = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", timeZone: TIME_ZONE });
 const time = new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: TIME_ZONE });
-const parts = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: TIME_ZONE });
+const partsShort = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: TIME_ZONE });
+const partsLong = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", timeZone: TIME_ZONE });
 
 /** "30 July" */
 export function formatDayMonth(at: string): string {
@@ -106,9 +107,10 @@ export function formatTime(at: string): string {
   return time.format(new Date(at));
 }
 
-/** { day: "30", month: "Jul" } for the large date display */
-export function dateParts(at: string): { day: string; month: string } {
-  const p = parts.formatToParts(new Date(at));
+/** { day: "30", month: "Jul" } (or "July" when `monthStyle = "long"`) for the large date display */
+export function dateParts(at: string, monthStyle: "short" | "long" = "short"): { day: string; month: string } {
+  const formatter = monthStyle === "long" ? partsLong : partsShort;
+  const p = formatter.formatToParts(new Date(at));
   return {
     day: p.find((x) => x.type === "day")?.value ?? "",
     month: p.find((x) => x.type === "month")?.value ?? "",

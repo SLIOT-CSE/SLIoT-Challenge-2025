@@ -11,5 +11,7 @@ export const footerFigure = img("sliot-figure.webp");
 export const prizesBackdrop = img("prizes-arena.webp");
 // Dark architectural light-corridor backdrop for the Timeline section
 export const timelineBackdrop = img("timeline-corridor.webp");
+// Dark architectural aurora staircase backdrop for "How to take part"
+export const howStaircaseBackdrop = img("how-staircase.webp");
 // Hero portal ring: the neon arcane tech circle (square and centred, so it spins without wobbling)
 export const portalRing = img("arcane-circle.webp");

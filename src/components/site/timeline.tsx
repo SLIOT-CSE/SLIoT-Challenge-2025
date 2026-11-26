@@ -10,11 +10,11 @@ import { cn } from "@/lib/utils";
 type Status = "past" | "next" | "future";
 
 /**
- * The road to the finale (Option 3: Alternating Chronology Spine).
- * - Desktop full-motion (`scene:`): 100svh pinned sideways scroll with Double-Bezel milestone cards
- *   alternating above and below a scroll-colorized central spine over the corridor backdrop.
- * - Mobile / tablet full-motion (`diag:`): 100svh pinned camera gliding 1:1 along a 45° SE track whose
- *   diagonal line stays hidden initially and draws itself with scroll.
+ * The road to the finale (Option 3: Alternating Chronology + Curved Box-to-Box Arrows).
+ * - Tablet & Desktop full-motion (`scene:`, >= 768px): 100svh pinned sideways scroll with
+ *   alternating Double-Bezel milestone cards linked by self-drawing curved SVG arrows.
+ * - Mobile full-motion (`diag:`, < 768px): 100svh pinned 45° SE diagonal flow with
+ *   self-drawing curved arrows arcing from box to box across the open corridor.
  * - Reduced motion: clean static left-rail vertical stack of the same cards.
  */
 export function Timeline({ now }: { now: Date }) {
@@ -63,7 +63,7 @@ export function Timeline({ now }: { now: Date }) {
           </a>
         </div>
 
-        {/* Diagonal 45° SE track on mobile/tablet (`diag:`), horizontal alternating spine on desktop (`scene:`), plain stack when reduced-motion */}
+        {/* Diagonal 45° SE track on mobile (`diag:`), horizontal alternating on tablet/desktop (`scene:`), plain stack when reduced-motion */}
         <div
           data-timeline-viewport
           className="mt-10 pb-20 md:pb-24 diag:relative diag:mt-2 diag:min-h-0 diag:flex-1 diag:overflow-hidden diag:pb-0 scene:mt-[clamp(0.5rem,1.6svh,1.5rem)] scene:overflow-x-auto scene:pb-0"
@@ -72,48 +72,51 @@ export function Timeline({ now }: { now: Date }) {
             data-timeline-track
             className="relative mx-auto flex max-w-3xl flex-col px-4 sm:px-8 diag:mx-0 diag:block diag:h-full diag:w-full diag:max-w-none diag:px-0 scene:mx-0 scene:w-max scene:max-w-none scene:flex-row scene:items-stretch scene:px-[max(2rem,calc((100vw-80rem)/2+2rem))]"
           >
-            {/* Desktop scroll-colorized middle spine + progressive tick sweep (`scene:`) */}
-            <li aria-hidden="true" className="pointer-events-none hidden list-none scene:block">
-              <span
-                data-timeline-spine-fill
-                style={{ left: "var(--spine-left, 0px)", width: "var(--spine-width, 0px)" }}
-                className="pointer-events-none absolute top-1/2 z-[5] h-[2px] -translate-y-1/2 origin-left scale-x-0 bg-gradient-to-r from-mint via-aqua to-aqua shadow-[0_0_12px_rgb(133_255_240/0.65)]"
-              />
-              <span
-                data-timeline-spine-ticks
-                style={{
-                  left: "var(--spine-left, 0px)",
-                  width: "var(--spine-width, 0px)",
-                  clipPath: "inset(0 100% 0 0)",
-                }}
-                className="pointer-events-none absolute top-1/2 z-[5] h-2.5 -translate-y-1/2 text-aqua/90 [background-image:repeating-linear-gradient(to_right,currentColor_0_1px,transparent_1px_10px)]"
-              />
-            </li>
-
-            {/* Mobile/tablet self-drawing 45° SE diagonal rail + progressive tick sweep (`diag:`) */}
-            <li
-              aria-hidden="true"
-              style={{
-                left: "calc(var(--diag-ox, 32px) - 8px)",
-                top: "calc(var(--diag-oy, 20px) - 13px)",
-                width: "calc(var(--diag-step, 240px) * 11.3137)",
-              }}
-              className="pointer-events-none absolute z-0 hidden h-2.5 list-none origin-[0%_50%] rotate-45 diag:block"
-            >
-              <span
-                data-diag-rail-fill
-                className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2 origin-left scale-x-0 bg-gradient-to-r from-mint via-aqua to-aqua shadow-[0_0_12px_rgb(133_255_240/0.65)]"
-              />
-              <span
-                data-diag-rail-ticks
-                style={{ clipPath: "inset(0 100% 0 0)" }}
-                className="absolute inset-0 text-aqua/90 [background-image:repeating-linear-gradient(to_right,currentColor_0_1px,transparent_1px_10px)]"
-              />
+            {/* Dynamic curved SVG box-to-box arrows rendered inside the scrolling track (`diag:` & `scene:`) */}
+            <li aria-hidden="true" className="pointer-events-none hidden list-none diag:block scene:block">
+              <svg
+                data-timeline-arrows
+                width="1"
+                height="1"
+                className="pointer-events-none absolute left-0 top-0 z-10 overflow-visible"
+              >
+                {timeline.slice(0, -1).map((event, i) => (
+                  <g key={event.title} data-arrow-seg={i}>
+                    <path
+                      data-arrow-base
+                      fill="none"
+                      stroke="rgb(58 143 151 / 0.28)"
+                      strokeWidth="1.5"
+                      strokeDasharray="3 5"
+                      className="hidden scene:block"
+                    />
+                    <path
+                      data-arrow-draw=""
+                      data-arrow-fill
+                      fill="none"
+                      stroke="#85fff0"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      className="drop-shadow-[0_0_8px_rgb(133_255_240/0.6)]"
+                    />
+                    <path
+                      data-arrow-head
+                      d="M -8 -4.5 L 1 0 L -8 4.5"
+                      fill="none"
+                      stroke="#85fff0"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="opacity-0 drop-shadow-[0_0_8px_rgb(133_255_240/0.8)]"
+                    />
+                  </g>
+                ))}
+              </svg>
             </li>
 
             {timeline.map((event, i) => {
               const s = status(i);
-              const { day, month } = dateParts(event.at);
+              const { day, month } = dateParts(event.at, "long");
               const isLast = i === timeline.length - 1;
               const isTopLane = i % 2 === 0;
               const stepNum = String(i + 1).padStart(2, "0");
@@ -125,8 +128,8 @@ export function Timeline({ now }: { now: Date }) {
                   style={{ "--i": i } as CSSProperties}
                   className={cn(
                     "relative pb-6 pl-11 last:pb-0 sm:pl-12",
-                    "diag:absolute diag:left-[calc(var(--diag-ox,32px)+var(--i)*var(--diag-step,240px))] diag:top-[calc(var(--diag-oy,20px)+var(--i)*var(--diag-step,240px))] diag:w-[var(--diag-card-w,17rem)] diag:p-0",
-                    "scene:grid scene:w-[22.5rem] scene:shrink-0 scene:grid-rows-[1fr_clamp(1.5rem,3.4svh,2.25rem)_1fr] scene:pb-0 scene:pl-0 xl:scene:w-[24.5rem]",
+                    "diag:absolute diag:left-[calc(var(--diag-ox,24px)+var(--i)*var(--diag-step,224px))] diag:top-[calc(var(--diag-oy,16px)+var(--i)*var(--diag-step,224px))] diag:w-[var(--diag-card-w,17rem)] diag:p-0",
+                    "scene:grid scene:w-[21rem] scene:shrink-0 scene:grid-rows-[1fr_clamp(2rem,5svh,3.25rem)_1fr] scene:pb-0 scene:pl-0 lg:scene:w-[24.5rem] xl:scene:w-[27rem]",
                   )}
                 >
                   {/* Reduced-motion mobile vertical rail */}
@@ -154,96 +157,38 @@ export function Timeline({ now }: { now: Date }) {
                     {s === "next" && <span className="size-2 rounded-full bg-aqua" />}
                   </span>
 
-                  {/* Mobile / tablet 45° corner node (`diag:`) — ignites as the drawn rail reaches it */}
-                  <span
-                    aria-hidden="true"
-                    data-timeline-node="mobile"
-                    data-reached={i === 0 ? "true" : "false"}
-                    className="group pointer-events-none absolute -left-5 -top-5 z-20 hidden size-6 place-items-center rounded-full border-2 border-ocean bg-abyss text-ocean transition-[border-color,box-shadow,color] duration-200 data-[reached=true]:border-aqua data-[reached=true]:text-aqua data-[reached=true]:shadow-signal diag:grid"
-                  >
-                    {s === "past" ? (
-                      <Check className="size-3" strokeWidth={3} />
-                    ) : (
-                      <span className="size-2 scale-75 rounded-full bg-ocean opacity-60 transition-[transform,background-color,opacity] duration-200 group-data-[reached=true]:scale-100 group-data-[reached=true]:bg-aqua group-data-[reached=true]:opacity-100" />
-                    )}
-                  </span>
-
-                  {/* Desktop Row 1 (top lane: odd milestones 01, 03, 05, 07, 09) */}
+                  {/* Tablet / Desktop Row 1 (top lane: odd milestones 01, 03, 05, 07, 09) */}
                   <div className="hidden scene:flex scene:flex-col scene:justify-end scene:pr-4 xl:scene:pr-5">
                     {isTopLane && (
-                      <>
-                        <MilestoneCard
-                          event={event}
-                          day={day}
-                          month={month}
-                          stepNum={stepNum}
-                          total={timeline.length}
-                          status={s}
-                        />
-                        <div className="flex justify-center">
-                          <span
-                            aria-hidden="true"
-                            className={cn(
-                              "h-[clamp(0.5rem,1.4svh,1rem)] w-px",
-                              s === "past" ? "bg-mint/70" : s === "next" ? "bg-aqua" : "bg-ocean",
-                            )}
-                          />
-                        </div>
-                      </>
+                      <MilestoneCard
+                        event={event}
+                        day={day}
+                        month={month}
+                        stepNum={stepNum}
+                        total={timeline.length}
+                        status={s}
+                      />
                     )}
                   </div>
 
-                  {/* Desktop Row 2 (unreached base spine + crosshair node that lights up with scroll) */}
-                  <div aria-hidden="true" className="relative hidden items-center justify-center scene:flex">
-                    <span className="absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 text-edge opacity-35 [background-image:repeating-linear-gradient(to_right,currentColor_0_1px,transparent_1px_10px)]" />
-                    <span
-                      className={cn(
-                        "absolute top-1/2 h-px -translate-y-1/2 bg-ocean/80",
-                        i === 0 ? "left-1/2 right-0" : isLast ? "left-0 right-1/2" : "inset-x-0",
-                      )}
-                    />
-                    <span
-                      data-timeline-node="desktop"
-                      data-reached={i === 0 ? "true" : "false"}
-                      className={cn(
-                        "group relative z-10 grid place-items-center rounded-full border-2 border-ocean bg-abyss text-ocean transition-[border-color,box-shadow,color] duration-200 data-[reached=true]:border-aqua data-[reached=true]:text-aqua data-[reached=true]:shadow-signal",
-                        s === "next" ? "size-8" : "size-7",
-                      )}
-                    >
-                      {s === "past" ? (
-                        <Check className="size-3.5" strokeWidth={3} />
-                      ) : (
-                        <span className="size-2.5 scale-75 rounded-full bg-ocean opacity-50 transition-[transform,background-color,opacity] duration-200 group-data-[reached=true]:scale-100 group-data-[reached=true]:bg-aqua group-data-[reached=true]:opacity-100" />
-                      )}
-                    </span>
-                  </div>
+                  {/* Tablet / Desktop Row 2 (open central channel for curved box-to-box arrows) */}
+                  <div aria-hidden="true" className="hidden scene:block" />
 
-                  {/* Desktop Row 3 (bottom lane: even milestones 02, 04, 06, 08) */}
+                  {/* Tablet / Desktop Row 3 (bottom lane: even milestones 02, 04, 06, 08) */}
                   <div className="hidden scene:flex scene:flex-col scene:justify-start scene:pr-4 xl:scene:pr-5">
                     {!isTopLane && (
-                      <>
-                        <div className="flex justify-center">
-                          <span
-                            aria-hidden="true"
-                            className={cn(
-                              "h-[clamp(0.5rem,1.4svh,1rem)] w-px",
-                              s === "past" ? "bg-mint/70" : s === "next" ? "bg-aqua" : "bg-ocean",
-                            )}
-                          />
-                        </div>
-                        <MilestoneCard
-                          event={event}
-                          day={day}
-                          month={month}
-                          stepNum={stepNum}
-                          total={timeline.length}
-                          status={s}
-                        />
-                      </>
+                      <MilestoneCard
+                        event={event}
+                        day={day}
+                        month={month}
+                        stepNum={stepNum}
+                        total={timeline.length}
+                        status={s}
+                      />
                     )}
                   </div>
 
-                  {/* Mobile / tablet card (for both 45° `diag:` and reduced-motion stack) */}
+                  {/* Mobile card (for both 45° `diag:` and reduced-motion stack) */}
                   <div className="relative z-10 scene:hidden">
                     <MilestoneCard
                       event={event}
@@ -260,7 +205,7 @@ export function Timeline({ now }: { now: Date }) {
           </ol>
         </div>
 
-        {/* Scroll progress through the track (both desktop `scene:` and mobile 45° `diag:`) */}
+        {/* Scroll progress through the track (both tablet/desktop `scene:` and mobile 45° `diag:`) */}
         <div
           aria-hidden="true"
           className="mx-auto mt-3 hidden w-full max-w-7xl px-4 sm:px-8 diag:mt-2 diag:block scene:mt-[clamp(0.5rem,1.6svh,1.25rem)] scene:block"
@@ -294,8 +239,9 @@ function MilestoneCard({
 
   return (
     <article
+      data-timeline-card
       className={cn(
-        "rounded-2xl p-1.5 transition-[box-shadow,border-color] duration-300 scene:p-[clamp(0.25rem,0.45svh,0.375rem)]",
+        "rounded-2xl p-1.5 transition-[box-shadow,border-color] duration-300 scene:p-[clamp(0.3rem,0.5svh,0.425rem)]",
         isNext
           ? "bg-mint/14 ring-1 ring-aqua/65 shadow-[0_0_28px_-8px_rgb(133_255_240/0.35)]"
           : isPast
@@ -305,7 +251,7 @@ function MilestoneCard({
     >
       <div
         className={cn(
-          "relative flex flex-col gap-1.5 overflow-hidden rounded-[calc(1rem-0.375rem)] p-4 shadow-[inset_0_1px_0_rgb(221_247_239/0.12)] sm:p-5 diag:gap-1 diag:p-3.5 scene:gap-[clamp(0.1875rem,0.5svh,0.375rem)] scene:p-[clamp(0.65rem,1.4svh,1.15rem)]",
+          "relative flex flex-col gap-1.5 overflow-hidden rounded-[calc(1rem-0.375rem)] p-4 shadow-[inset_0_1px_0_rgb(221_247_239/0.12)] sm:p-5 diag:gap-1 diag:p-3.5 scene:gap-[clamp(0.25rem,0.6svh,0.45rem)] scene:p-[clamp(0.85rem,1.9svh,1.4rem)]",
           isNext ? "bg-gradient-to-b from-deep/90 via-night/95 to-abyss/95" : "bg-gradient-to-b from-night/92 to-abyss/95",
         )}
       >
@@ -313,7 +259,7 @@ function MilestoneCard({
         <span
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute right-3.5 top-2 select-none font-display text-[3.5rem] leading-none tabular-nums diag:text-[2.75rem] scene:text-[clamp(2.25rem,4.5svh,3.25rem)]",
+            "pointer-events-none absolute right-3.5 top-2 select-none font-display text-[3.5rem] leading-none tabular-nums diag:text-[2.75rem] scene:text-[clamp(2.5rem,5.2svh,3.75rem)]",
             isNext ? "text-aqua/18" : "text-foam/[0.08]",
           )}
         >
@@ -328,10 +274,10 @@ function MilestoneCard({
         </p>
 
         <p className="flex items-baseline gap-2 pr-12 font-display leading-[0.88]">
-          <time dateTime={event.at} className="flex items-baseline gap-2">
+          <time dateTime={event.at} className="flex flex-wrap items-baseline gap-x-2">
             <span
               className={cn(
-                "text-[clamp(2.5rem,4.4vw,3.5rem)] diag:text-[2.25rem] scene:text-[clamp(1.75rem,3.6svh,2.75rem)]",
+                "text-[clamp(2.5rem,4.4vw,3.5rem)] diag:text-[2.25rem] scene:text-[clamp(2rem,4.4svh,3.25rem)]",
                 isPast ? "text-haze" : isNext ? "text-aqua" : "text-foam",
               )}
             >
@@ -339,7 +285,7 @@ function MilestoneCard({
             </span>
             <span
               className={cn(
-                "text-[clamp(1.25rem,2.1vw,1.75rem)] diag:text-[1.2rem] scene:text-[clamp(1rem,2svh,1.45rem)]",
+                "text-[clamp(1.25rem,2.1vw,1.75rem)] diag:text-[1.15rem] scene:text-[clamp(1.05rem,2.2svh,1.55rem)]",
                 isPast ? "text-haze" : "text-mint",
               )}
             >
@@ -348,10 +294,10 @@ function MilestoneCard({
           </time>
         </p>
 
-        <h3 className="text-body-lg font-semibold leading-snug text-foam diag:text-body scene:text-[clamp(0.95rem,1.9svh,1.125rem)]">
+        <h3 className="text-body-lg font-semibold leading-snug text-foam diag:text-body scene:text-[clamp(1rem,2.1svh,1.225rem)]">
           {event.title}
         </h3>
-        <p className="max-w-[36ch] text-pretty text-small text-haze diag:text-[0.8125rem] diag:leading-snug scene:text-[clamp(0.75rem,1.5svh,0.875rem)] scene:leading-[1.45]">
+        <p className="max-w-[38ch] text-pretty text-small text-haze diag:text-[0.8125rem] diag:leading-snug scene:text-[clamp(0.8125rem,1.65svh,0.9375rem)] scene:leading-[1.5]">
           {event.body}
         </p>
       </div>
