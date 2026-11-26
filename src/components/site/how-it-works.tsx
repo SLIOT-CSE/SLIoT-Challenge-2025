@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { CSSProperties } from "react";
 import { ArrowDown } from "lucide-react";
 import { howStaircaseBackdrop } from "@/assets";
+import type { Deadlines } from "@/content/deadlines";
 import { resolveStepDate, steps, type Step } from "@/content/steps";
 import { formatDayMonth } from "@/lib/competition";
 import { StaircaseScene } from "@/components/site/staircase-scene";
@@ -13,7 +14,7 @@ import { cn } from "@/lib/utils";
  *   of the stairs up-right to Step 06 at the summit, with each stair tread lighting up as you reach it.
  * - Reduced motion: clean static vertical staircase stack with full readability.
  */
-export function HowItWorks() {
+export function HowItWorks({ deadlines }: { deadlines: Deadlines }) {
   return (
     <section id="how-it-works" aria-labelledby="how-title" className="relative overflow-x-clip">
       <StaircaseScene>
@@ -121,7 +122,7 @@ export function HowItWorks() {
 
             {steps.map((step, i) => {
               const stepNum = String(i + 1).padStart(2, "0");
-              const dateIso = resolveStepDate(step.date);
+              const dateIso = resolveStepDate(step.date, deadlines);
               const dateText = formatDayMonth(dateIso);
 
               return (

@@ -2,7 +2,8 @@ import Image from "next/image";
 import type { CSSProperties } from "react";
 import { ArrowDown, Check } from "lucide-react";
 import { timelineBackdrop } from "@/assets";
-import { timeline, type TimelineEvent } from "@/content/timeline";
+import type { Deadlines } from "@/content/deadlines";
+import { timelineFor, type TimelineEvent } from "@/content/timeline";
 import { dateParts } from "@/lib/competition";
 import { TimelineScene } from "@/components/site/timeline-scene";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,8 @@ type Status = "past" | "next" | "future";
  *   self-drawing curved arrows arcing from box to box across the open corridor.
  * - Reduced motion: clean static left-rail vertical stack of the same cards.
  */
-export function Timeline({ now }: { now: Date }) {
+export function Timeline({ now, deadlines }: { now: Date; deadlines: Deadlines }) {
+  const timeline = timelineFor(deadlines);
   const nextIndex = timeline.findIndex((e) => Date.parse(e.at) >= now.getTime());
   const status = (i: number): Status => (nextIndex === -1 || i < nextIndex ? "past" : i === nextIndex ? "next" : "future");
 

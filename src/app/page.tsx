@@ -1,7 +1,6 @@
 import { SiteNav } from "@/components/site/site-nav";
 import { Hero } from "@/components/site/hero";
 import { LiveCallout } from "@/components/site/live-callout";
-import { KineticBand } from "@/components/site/kinetic-band";
 import { About } from "@/components/site/about";
 import { Categories } from "@/components/site/categories";
 import { HowItWorks } from "@/components/site/how-it-works";
@@ -12,14 +11,13 @@ import { Sponsors } from "@/components/site/sponsors";
 import { Faq } from "@/components/site/faq";
 import { Contact } from "@/components/site/contact";
 import { SiteFooter } from "@/components/site/site-footer";
-import { deadlines } from "@/content/deadlines";
 import { showsTeamLogin, stageAt } from "@/lib/competition";
+import { publicDeadlines } from "@/server/public-deadlines";
 
-// The stage, the navigation buttons and "days to go" are worked out on the server. Regenerating the
-// page every hour keeps them current without making every request dynamic.
-export const revalidate = 3600;
-
-export default function HomePage() {
+// The stage, the navigation buttons and every date are worked out on the server for each visit,
+// so a deadline saved in /admin/settings shows here at once.
+export default async function HomePage() {
+  const deadlines = await publicDeadlines();
   const now = new Date();
   const stage = stageAt(now, deadlines);
 
@@ -34,16 +32,15 @@ export default function HomePage() {
       <SiteNav showTeamLogin={showsTeamLogin(stage)} />
       <main id="main" tabIndex={-1} className="outline-hidden">
         <Hero />
-        <LiveCallout stage={stage} now={now} />
-        <KineticBand />
+        <LiveCallout stage={stage} now={now} deadlines={deadlines} />
         <About />
         <Categories />
-        <HowItWorks />
-        <Timeline now={now} />
+        <HowItWorks deadlines={deadlines} />
+        <Timeline now={now} deadlines={deadlines} />
         <Prizes />
         <Memories />
         <Sponsors />
-        <Faq />
+        <Faq deadlines={deadlines} />
         <Contact />
       </main>
       <SiteFooter />

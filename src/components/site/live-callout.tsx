@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { LiveDot } from "@/components/site/live-dot";
 import { RegistrationCountdown } from "@/components/site/registration-countdown";
 import { SocialIcon } from "@/components/site/social-icon";
-import { deadlines, proposalTemplateUrl, type Deadlines } from "@/content/deadlines";
+import { proposalTemplateUrl, type Deadlines } from "@/content/deadlines";
 import { routes } from "@/content/navigation";
 import { whatsappChannel } from "@/content/socials";
 import {
@@ -86,7 +86,7 @@ const ICONS: Record<NonNullable<Action["icon"]>, ReactNode> = {
  * The live round panel under the hero. It changes with the competition stage, so a
  * visitor always sees the one thing to do now and the date it has to happen by.
  */
-export function LiveCallout({ stage, now }: { stage: Stage; now: Date }) {
+export function LiveCallout({ stage, now, deadlines }: { stage: Stage; now: Date; deadlines: Deadlines }) {
   if (countsDownToRegistrationClose(stage)) {
     return (
       <RegistrationCountdown

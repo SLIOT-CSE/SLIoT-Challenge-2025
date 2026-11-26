@@ -43,8 +43,8 @@ export function SiteNav({ showTeamLogin }: { showTeamLogin: boolean }) {
         transition={reduceMotion ? { duration: 0 } : { duration: 0.45, ease: EASE_OUT_EXPO }}
         className="pointer-events-auto flex w-full max-w-7xl items-center justify-between gap-3 rounded-full bg-night/70 p-1.5 pl-4 shadow-lift ring-1 ring-foam/10 backdrop-blur-xl sm:pl-5"
       >
-        <a href="#top" className="flex shrink-0 items-center rounded-full py-1" aria-label="SLIoT Challenge, back to top">
-          <img src={logo} alt="" width={1518} height={813} className="h-7 w-auto sm:h-8" />
+        <a href="#top" className="flex shrink-0 items-center rounded-full py-1 lg:py-0.5" aria-label="SLIoT Challenge, back to top">
+          <img src={logo} alt="" width={1518} height={813} className="h-7 w-auto sm:h-8 lg:h-10" />
         </a>
 
         <ul className="hidden items-center gap-0.5 xl:flex">

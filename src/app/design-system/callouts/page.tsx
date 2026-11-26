@@ -33,7 +33,7 @@ export default function CalloutStatesPage() {
               <span className="font-semibold text-foam">{stage}</span>
               {actual !== stage && <span className="text-danger">sample date is in {actual}</span>}
             </div>
-            <LiveCallout stage={stage} now={now} />
+            <LiveCallout stage={stage} now={now} deadlines={deadlines} />
           </div>
         );
       })}

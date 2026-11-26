@@ -1,4 +1,4 @@
-import { deadlines, type Deadlines } from "@/content/deadlines";
+import type { Deadlines } from "@/content/deadlines";
 
 // "How to take part": the six stages of the competition, in ascending order.
 
@@ -13,7 +13,7 @@ export type Step = {
   date: StepDate;
 };
 
-export function resolveStepDate(date: StepDate): string {
+export function resolveStepDate(date: StepDate, deadlines: Deadlines): string {
   return "key" in date ? deadlines[date.key] : date.at;
 }
 

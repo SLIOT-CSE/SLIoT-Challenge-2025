@@ -130,9 +130,9 @@ A wide band right under the hero. **It changes with the competition's state**, r
 
 Until registration closes there is **no panel**: the countdown sits straight on the page over a soft aurora bloom. A heading and one **Register** button, then days, hours, minutes and seconds in very large Bebas (sensor-node colons, digits roll as they change, the seconds glow aqua as the live part), then a signal trace from the opening date to the closing date, lit up to now. Reduced motion swaps the digits without rolling; screen readers get the dates, not the ticking digits. From the proposal round on it is a panel with the date large in Bebas and a days-left counter. A small pulsing aqua dot marks "live".
 
-### 5.4 Kinetic band
+### 5.4 Kinetic band (removed)
 
-A single marquee band between the callout and About: "Sense · Connect · Act · Build" in huge outlined Bebas. Its speed and direction react to scroll velocity. It is the only marquee on the page, and it stops under reduced motion.
+Removed on 2026-11-26: `LiveCallout` now flows directly into `About`.
 
 ### 5.5 About: "the connected island", from MoraXtreme
 

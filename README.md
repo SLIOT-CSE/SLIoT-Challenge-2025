@@ -85,7 +85,7 @@ Every push to `main` deploys to sliot.cse.mrt.ac.lk. The rebuild happens on the 
 | Edition name, site title, description, hero copy, kinetic band words | `src/content/site.ts` |
 | Navigation sections | `src/content/navigation.ts` |
 | Social channels (WhatsApp first) | `src/content/socials.ts` |
-| Key dates (live callout, navigation buttons, timeline, FAQ) and the proposal template link | `src/content/deadlines.ts` |
+| Key dates (live callout, navigation buttons, timeline, FAQ) and the proposal template link. Registration close, proposal and prototype dates saved in `/admin/settings` replace the ones here | `src/content/deadlines.ts` |
 | Timeline events (sessions, workshops) | `src/content/timeline.ts` |
 | About beats | `src/content/about.ts` |
 | Categories and team rules | `src/content/categories.ts`, `src/lib/team-rules.ts` |

@@ -90,7 +90,7 @@ export function SiteFooter() {
       {/* The edition, kept huge as the page's last word */}
       <p
         aria-hidden="true"
-        className="pointer-events-none relative z-10 mx-auto -mb-[0.22em] grid max-w-7xl select-none px-4 text-center font-display text-[clamp(5rem,22vw,20rem)] leading-none sm:px-8 lg:-mt-6"
+        className="pointer-events-none relative z-10 mx-auto -mb-[0.22em] grid max-w-7xl select-none whitespace-nowrap px-4 text-center font-display text-[clamp(3.75rem,16vw,15.5rem)] leading-none sm:px-8 lg:-mt-6"
       >
         {/* Three copies stacked in one cell: dots, the light crossing them, then the outline.
             The dots thin out towards the bottom, where the word runs off the page */}

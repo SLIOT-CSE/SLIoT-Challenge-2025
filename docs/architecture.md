@@ -35,7 +35,7 @@ In scroll order. The header links jump to each section (`/#about`, `/#faq` ...),
 | About | What SLIoT is, who runs it, the three-year story | Requested |
 | Categories | School, University, Open: who can enter each | Proposed |
 | How to take part | Register → proposal → shortlist → prototype → finals, with the proposal template download | Proposed |
-| Timeline | Key dates. Registration, proposal and prototype dates are read from the admin settings, so the page and the deadline locks never disagree | Requested |
+| Timeline | Key dates. Registration, proposal and prototype dates are read from the admin settings on each visit (as are the callout, How to take part and the FAQ), so the page and the deadline locks never disagree | Requested |
 | Prizes | Prize pool per category | Proposed (component exists) |
 | Sponsors | Organizers, sponsors and partners with logos | Requested |
 | Memories | Photo/video gallery of past editions, plus past winners | Requested |
