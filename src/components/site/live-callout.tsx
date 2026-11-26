@@ -62,7 +62,7 @@ export function calloutContent(stage: LaterStage, d: Deadlines): CalloutContent 
         status: "Finalists announced",
         date: d.finale,
         headline: `Grand finale on ${formatDayMonth(d.finale)}`,
-        body: "The finalists pitch their prototypes to the judges at the University of Moratuwa.",
+        body: "Grand finalists present their prototypes to the judges on 27 March and pitch at Shark Tank on 28 March at the University of Moratuwa.",
         actions: [whatsapp],
       };
     case "over":

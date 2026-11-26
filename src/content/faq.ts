@@ -10,7 +10,7 @@ export type Faq = { q: string; a: string; link?: { label: string; href: string }
 export const faqs: Faq[] = [
   {
     q: "Who can take part?",
-    a: "School students aged 18 or older, undergraduates at any Sri Lankan university, and mixed teams of both. Pick the School, University or Open category to match your team.",
+    a: "School students, undergraduates at any Sri Lankan university, and mixed teams of both. Pick the School, University or Open category to match your team.",
   },
   {
     q: "How many members can a team have?",

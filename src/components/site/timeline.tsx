@@ -51,7 +51,7 @@ export function Timeline({ now }: { now: Date }) {
               The road to the finale
             </h2>
             <p className="max-w-[56ch] text-pretty text-body-lg text-haze diag:text-[clamp(0.8125rem,1.8svh,1rem)] diag:leading-snug scene:text-[clamp(0.875rem,1.8svh,1.0625rem)] scene:leading-snug">
-              {timeline.length} dates from registration to the grand finale. All times are Sri Lanka time.
+              {timeline.length} dates from registration to Shark Tank. All times are Sri Lanka time.
             </p>
           </div>
           <a
@@ -129,7 +129,7 @@ export function Timeline({ now }: { now: Date }) {
                   className={cn(
                     "relative pb-6 pl-11 last:pb-0 sm:pl-12",
                     "diag:absolute diag:left-[calc(var(--diag-ox,24px)+var(--i)*var(--diag-step,224px))] diag:top-[calc(var(--diag-oy,16px)+var(--i)*var(--diag-step,224px))] diag:w-[var(--diag-card-w,17rem)] diag:p-0",
-                    "scene:grid scene:w-[21rem] scene:shrink-0 scene:grid-rows-[1fr_clamp(2rem,5svh,3.25rem)_1fr] scene:pb-0 scene:pl-0 lg:scene:w-[24.5rem] xl:scene:w-[27rem]",
+                    "scene:grid scene:w-[19.5rem] scene:shrink-0 scene:grid-rows-[1fr_clamp(2rem,5svh,3.25rem)_1fr] scene:pb-0 scene:pl-0 lg:scene:w-[22rem] xl:scene:w-[24rem]",
                   )}
                 >
                   {/* Reduced-motion mobile vertical rail */}

@@ -10,15 +10,19 @@ import {
 
 describe("stageAt", () => {
   it("is before-registration before the opening time", () => {
-    expect(stageAt(new Date("2027-01-01T00:00:00+05:30"), deadlines)).toBe("before-registration");
+    expect(stageAt(new Date("2026-11-26T00:00:00+05:30"), deadlines)).toBe("before-registration");
   });
 
   it("is registration while registration is open", () => {
-    expect(stageAt(new Date("2027-02-01T12:00:00+05:30"), deadlines)).toBe("registration");
+    expect(stageAt(new Date("2026-12-15T12:00:00+05:30"), deadlines)).toBe("registration");
   });
 
-  it("is over after the finale day", () => {
-    expect(stageAt(new Date("2027-08-01T00:00:00+05:30"), deadlines)).toBe("over");
+  it("stays in finale across both Grand Finale and Shark Tank days", () => {
+    expect(stageAt(new Date("2027-03-28T15:00:00+05:30"), deadlines)).toBe("finale");
+  });
+
+  it("is over after the finale weekend", () => {
+    expect(stageAt(new Date("2027-03-29T10:00:00+05:30"), deadlines)).toBe("over");
   });
 });
 

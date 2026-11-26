@@ -292,7 +292,9 @@ export function buildSeedData(): SeedData {
 
     if (plan.stage === "prototype_submitted") {
       const videoId = VIDEO_IDS[i % VIDEO_IDS.length];
-      const at = finalisedAt + (5 + i) * DAY;
+      const windowStart = finalisedAt + DAY;
+      const windowEnd = Math.max(windowStart, devNow - HOUR);
+      const at = Math.round(windowStart + ((i + 1) / (PLANS.length + 1)) * (windowEnd - windowStart));
       data.submissions.push({
         teamId,
         kind: "prototype",

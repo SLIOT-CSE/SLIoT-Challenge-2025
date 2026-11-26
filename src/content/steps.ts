@@ -35,18 +35,17 @@ export const steps: Step[] = [
   },
   {
     title: "Build your prototype",
-    body: "Build it, record a demo video and submit the YouTube link from the team portal, with workshops and mentors along the way.",
+    body: "Build it, record a demo video and submit the YouTube link from the team portal, with technical sessions along the way.",
     date: { key: "prototypeDue", label: "Due" },
   },
   {
     title: "Compete in the semi-finals",
-    body: "Shortlisted teams demonstrate their working prototypes to the semi-final judging panel for a place in the finale.",
-    // TODO(2027): sample semi-finals date until the 2027 schedule is confirmed.
-    date: { at: "2027-06-25T09:00:00+05:30", label: "On" },
+    body: "Selected semi-finalists demonstrate their working prototypes live for a same-day spot in the Grand Finale.",
+    date: { at: "2027-02-27T09:00:00+05:30", label: "On" },
   },
   {
     title: "Pitch at the finale",
-    body: "Finalists present their working prototypes to the judges at the University of Moratuwa.",
+    body: "Grand Finalists present to the judging panel on 27 March and pitch to investors at Shark Tank on 28 March.",
     date: { key: "finale", label: "On" },
   },
 ];
