@@ -7,5 +7,7 @@ export const figure = img("sliot-figure.webp");
 // Centered footer robot figure; temporarily points to sliot-figure.webp until a dedicated
 // centered standing figure is generated at public/images/sliot-footer-figure.webp.
 export const footerFigure = img("sliot-figure.webp");
+// Dark aurora IoT showcase arena backdrop for the Prizes podium
+export const prizesBackdrop = img("prizes-arena.webp");
 // Hero portal ring: the neon arcane tech circle (square and centred, so it spins without wobbling)
 export const portalRing = img("arcane-circle.webp");

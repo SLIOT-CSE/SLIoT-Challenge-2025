@@ -175,12 +175,12 @@ A single marquee band between the callout and About: "Sense · Connect · Act ·
 - **Phone and reduced motion:** a vertical list with a rail on the left, the same "you are here" marker, no pin.
 - **Data:** the registration, proposal and prototype dates come from settings, so the timeline and the deadline locks never disagree.
 
-### 5.9 Prizes: podium, from hackX
+### 5.9 Prizes: stage-lit podium
 
-- **Layout:** three columns, with 2nd on the left, 1st raised in the centre, and 3rd on the right. The prize graphics we already have sit on top.
-- **Motion:** the LKR amounts count up when the podium enters the view, and the podium rises from the baseline in order 3rd → 2nd → 1st.
-- **Other awards:** listed in a quiet row below (category awards, best school team, and so on, to be supplied).
-- **Phone:** 1st first, then 2nd and 3rd side by side.
+- **Layout:** Three Double-Bezel podium columns over a generated dark-aurora IoT showcase arena backdrop (`prizes-arena.webp`), with 2nd on the left, 1st raised in the centre under the arena spotlight, and 3rd on the right, each topped by a machined SVG rank medallion (`01`–`03`).
+- **Motion:** The LKR amounts count up when the podium enters view, the podium rises from the stage baseline in order 3rd → 2nd → 1st, and category tabs (`School`, `University`, `Open`) smoothly transition the amounts.
+- **Other awards:** Listed in a quiet Double-Bezel row below (hidden while empty).
+- **Phone:** 1st spans full width on top, then 2nd and 3rd side by side.
 
 ### 5.10 Memories: asymmetric bento highlights
 
