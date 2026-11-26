@@ -2,24 +2,23 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ArrowUpRight, Images } from "lucide-react";
-import { albumBackdropSrc, highlights, photoAlt, type Photo } from "@/content/memories";
-import { socials } from "@/content/socials";
+import { Images } from "lucide-react";
+import { highlights, photoAlt, type Photo } from "@/content/memories";
+import { AuroraSignalBackdrop } from "@/components/site/aurora-signal-backdrop";
 import { PhotoViewer } from "@/components/site/photo-viewer";
-import { SocialIcon } from "@/components/site/social-icon";
 import { cn } from "@/lib/utils";
 
-const facebookUrl = socials.find((s) => s.id === "facebook")?.url ?? socials[0].url;
-
 /**
- * Memories: curated seven-shot asymmetric bento grid across past editions,
- * paired with a "View all moments" lightbox trigger and a Facebook album tile.
+ * Memories: curated eight-shot asymmetric bento grid across past editions
+ * over the aurora and glowing sensor-node backdrop, paired with a lightbox viewer.
  */
 export function Memories() {
   const [viewer, setViewer] = useState<number | null>(null);
 
   return (
-    <section id="memories" aria-labelledby="memories-title" className="relative overflow-x-clip py-20 md:py-28">
+    <section id="memories" aria-labelledby="memories-title" className="relative isolate overflow-x-clip py-20 md:py-28">
+      <AuroraSignalBackdrop />
+
       <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-8 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[minmax(0,21rem)_minmax(0,1fr)]">
         {/* Left editorial column */}
         <header className="flex flex-col items-start gap-5 lg:sticky lg:top-28 lg:self-start">
@@ -43,17 +42,20 @@ export function Memories() {
           </button>
         </header>
 
-        {/* Right 8-tile asymmetric bento: 7 highlights + Facebook full-album tile */}
+        {/* Right 8-photo asymmetric bento */}
         <ul className="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4" aria-label="Highlight photos">
           {highlights.map((photo, i) => {
             const isHero = i === 0;
+            const isClosing = i === highlights.length - 1;
             return (
               <li
                 key={photo.src}
                 className={cn(
                   isHero
                     ? "col-span-2 aspect-[16/10] lg:col-span-1 lg:row-span-2 lg:aspect-auto lg:h-full"
-                    : "aspect-[4/3]",
+                    : isClosing
+                      ? "col-span-2 aspect-[16/9] sm:aspect-[16/8] lg:col-span-1 lg:aspect-[4/3]"
+                      : "aspect-[4/3]",
                 )}
               >
                 <HighlightTile
@@ -63,16 +65,14 @@ export function Memories() {
                   sizes={
                     isHero
                       ? "(min-width: 1024px) 28vw, 100vw"
-                      : "(min-width: 1024px) 24vw, 50vw"
+                      : isClosing
+                        ? "(min-width: 1024px) 24vw, 100vw"
+                        : "(min-width: 1024px) 24vw, 50vw"
                   }
                 />
               </li>
             );
           })}
-
-          <li className="col-span-2 aspect-[16/7] sm:aspect-[16/6] lg:col-span-1 lg:aspect-[4/3]">
-            <AlbumTile />
-          </li>
         </ul>
       </div>
 
@@ -116,39 +116,5 @@ function HighlightTile({
         <span className="truncate font-semibold uppercase tracking-[0.06em] text-foam">{photo.event}</span>
       </span>
     </button>
-  );
-}
-
-function AlbumTile() {
-  return (
-    <a
-      href={facebookUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group relative flex size-full flex-col items-center justify-center gap-2.5 overflow-hidden rounded-photo bg-night p-4 text-center ring-1 ring-foam/12 transition-[ring-color] duration-300 hover:ring-mint/45"
-    >
-      <Image
-        src={albumBackdropSrc}
-        alt=""
-        fill
-        sizes="(min-width: 1024px) 24vw, 100vw"
-        quality={40}
-        className="scale-105 object-cover opacity-25 blur-[2px] transition-transform duration-500 ease-out-quart group-hover:scale-110 motion-reduce:transition-none motion-reduce:group-hover:scale-105"
-      />
-      <div aria-hidden="true" className="absolute inset-0 bg-abyss/60" />
-
-      <span className="relative grid size-11 place-items-center rounded-full bg-mint text-abyss ring-1 ring-mint transition-transform duration-300 ease-out-quart group-hover:scale-105 motion-reduce:transition-none">
-        <SocialIcon id="facebook" className="size-5" />
-      </span>
-
-      <div className="relative flex flex-col items-center gap-0.5">
-        <span className="inline-flex items-center gap-1 text-small font-semibold uppercase tracking-[0.06em] text-foam">
-          View full album
-          <ArrowUpRight className="size-4 text-mint transition-transform duration-300 ease-out-quart group-hover:-translate-y-px group-hover:translate-x-0.5 motion-reduce:transition-none" strokeWidth={1.75} aria-hidden="true" />
-        </span>
-        <span className="text-caption uppercase tracking-[0.12em] text-mint">On Facebook</span>
-      </div>
-      <span className="sr-only">(opens in a new tab)</span>
-    </a>
   );
 }

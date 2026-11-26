@@ -184,9 +184,9 @@ A single marquee band between the callout and About: "Sense · Connect · Act ·
 
 ### 5.10 Memories: asymmetric bento highlights
 
-- **Desktop:** Left sticky editorial header with a `"View all moments"` lightbox trigger beside an 8-tile asymmetric bento grid (`01` tall spanning two rows, `02`–`07` paired across the grid with persistent numbered labels, plus an 8th `"View full album on Facebook"` tile).
-- **Phone:** Full-width `01` lead tile above a 2-column grid for `02`–`07` and a full-width Facebook album tile at the bottom.
-- **Photo viewer:** Clicking any tile or `"View all moments"` opens the full-screen dialog scoped to those 7 curated highlight shots (arrows, swipe, Esc to close, event and year captions).
+- **Desktop:** Left sticky editorial header with a `"View all moments"` lightbox trigger beside an 8-photo asymmetric bento grid (`01` tall spanning two rows, `02`–`08` paired across the grid with persistent numbered labels), over the shared aurora and drifting glowing sensor-node backdrop.
+- **Phone:** Full-width `01` lead tile above a 2-column grid for `02`–`07` and a full-width closing tile `08` at the bottom.
+- **Photo viewer:** Clicking any tile or `"View all moments"` opens the full-screen dialog scoped to those 8 curated highlight shots (arrows, swipe, Esc to close, event and year captions).
 
 ### 5.11 Sponsors (calm)
 
