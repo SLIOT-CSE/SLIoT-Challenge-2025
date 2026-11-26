@@ -149,9 +149,10 @@ A single marquee band between the callout and About: "Sense · Connect · Act ·
 
 ### 5.6 Categories, from SpiritX's sticky list + card stack
 
-- **Desktop:** the three categories (School / University / Open) as a sticky list on the left. On the right, a stack of three cards that swaps as you scroll; the active name brightens to mint.
-- **Each card:** who can enter, team size (1–5), and the institution rule. "All members from the same school", "same university", or "mix school and university students".
-- **Phone:** the three cards stacked, each with its own short reveal.
+- **Concept:** each category is a gateway, in the same architectural language as the Prizes arena, timeline corridor and staircase. Backdrop: a three-gateway hall (`categories/categories-backdrop.webp`), masked into abyss at top and bottom. Cards: School is a simple square-framed corridor, University a hexagonal ribbed tunnel, Open a square and a hexagonal door meeting at a glowing floor ring (`categories/category-{school,university,open}.webp`, gateway on the right, the left side dark for text).
+- **Desktop:** the three categories (School / University / Open) as a sticky list on the left, with a progress rail that fills to the active category and a small thumbnail of each gateway (lit when active, from `lg`). On the right, a stack of three cards (one rounded shell each, the gateway image running right to the border) that stick under the nav; the previous card sinks back and darkens as the next arrives, and is hidden once the next card covers it. Every card (the last included) keeps the same bottom margin, so the second card stays stuck until the last one fully covers it, then the stack scrolls away together.
+- **Each card:** a `Category 0N / 03` chip, an outlined `0N` index (as on the step cards), who can enter, the three rules, the register button and the five-seat team strip (seat one marked as the leader, `1–5 members` plus the institution rule). The gateway image fills the card behind a fade that is solid under the text, and drifts slowly with the scroll under full motion.
+- **Phone:** the three cards stacked, each with its gateway as a 16:9 banner on top. The register button label wraps at 320 px.
 
 ### 5.7 How to take part: 6-step staircase ascent
 

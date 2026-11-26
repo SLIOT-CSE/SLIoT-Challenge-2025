@@ -114,8 +114,8 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 ## J. Sections 2: about map, categories, how to take part
 
 - [x] J1. SVG outline of Sri Lanka (Natural Earth 1:10m, generated into `island-map/geometry.ts`) with 25 district nodes and signal lines to the University of Moratuwa
-- [x] J2. About: pinned three-beat story on desktop; coastline draws, nodes light up, editions count up; phone version plays once
-- [x] J3. Categories: sticky list + swapping card stack (School / University / Open with team rules)
+- [x] J2. About: pinned three-beat story on desktop; the island and its 25 district nodes are shown from the start, and when the map comes into view the signal lines draw out from Moratuwa (nearest first) while the count runs to 25; same on phones
+- [x] J3. Categories: sticky list with progress rail + Double-Bezel card stack (School / University / Open with team rules), each card with its own gateway image over a three-gateway hall backdrop (redesign waiting for review)
 - [x] J4. How to take part: five numbered steps on a circuit trace with a travelling pulse; proposal template download
 - [x] J5. Remove the three.js globe and its packages (`three`, `@react-three/fiber`, `drei`, `three-globe`)
 - [x] J6. Phone layouts, reduced-motion versions, screenshots for review

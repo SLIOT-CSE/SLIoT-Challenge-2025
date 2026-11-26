@@ -15,3 +15,11 @@ export const timelineBackdrop = img("timeline-corridor.webp");
 export const howStaircaseBackdrop = img("how-staircase.webp");
 // Hero portal ring: the neon arcane tech circle (square and centred, so it spins without wobbling)
 export const portalRing = img("arcane-circle.webp");
+// "Pick your category": the three-gateway hall behind the section, and one gateway per category
+// (subject on the right, the left side dark so card text sits on it)
+export const categoriesBackdrop = img("categories/categories-backdrop.webp");
+export const categoryArt = {
+  school: img("categories/category-school.webp"),
+  university: img("categories/category-university.webp"),
+  open: img("categories/category-open.webp"),
+} as const;
