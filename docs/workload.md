@@ -1,6 +1,6 @@
 # SLIoT Challenge 2027: Workload
 
-Every step of the project from A to Z, split into substeps. Last updated 2026-11-25.
+Every step of the project from A to Z, split into substeps. Last updated 2026-11-26.
 
 - `[x]` done · `[ ]` to do · **(now)** in progress
 - Details live in [architecture.md](architecture.md) (backend, security, backups) and [frontend-plan.md](frontend-plan.md) (design, sections, screens).
@@ -12,7 +12,7 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 |---|---|-------------------------------|
 | A | Planning and architecture | Done                          |
 | B | Vite → Next.js migration | Done                          |
-| C | Production deployment | Done (two server checks open) |
+| C | Production deployment | Done                          |
 | D | Coming-soon page | Done (removed in H)           |
 | E | TypeScript migration | Done                          |
 | F | Tailwind CSS 4 upgrade | Done                          |
@@ -32,9 +32,9 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 | T | Email system | **Done, waiting for review** (T4: Gmail passed; Outlook and phone to do) |
 | U | Registration and team portal backend | **Done, waiting for review** (Drive and Turnstile need their keys) |
 | V | Admin and shortlisting backend | **Done, waiting for review** (V6 open) |
-| W | Security hardening | **Code done**; nginx and server steps at deploy |
-| X | Backups and operations | **Code done, waiting for review** (R2 rehearsal passed; X3 in Cloudflare, server setup at launch) |
-| Y | Testing, content and launch | To do                         |
+| W | Security hardening | **Code done**; nginx applied (`/register` at the merge); W5 copies and alerts open |
+| X | Backups and operations | **Code done, waiting for review** (R2 rehearsal passed; X3 done; server set up 2026-11-26; timer and Litestream start after the first deploy) |
+| Y | Testing, content and launch | In progress (dates applied, server prepared; content and launch checks open) |
 | Z | After launch | To do                         |
 
 ---
@@ -60,8 +60,8 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 - [x] C2. nginx example config (`deploy/nginx.conf.example`)
 - [x] C3. GitHub Actions deploy on push to `main` (self-hosted runner, health check)
 - [x] C4. Fix the post-deploy 502 (`RUNNER_TRACKING_ID=""` before the PM2 restart; PM2 as a systemd service)
-- [ ] C5. Confirm on the server: `systemctl is-enabled pm2-hpc-16; systemctl is-active pm2-hpc-16`
-- [ ] C6. Confirm the latest deploy's "Complete job" log no longer lists "Terminate orphan process"
+- [x] C5. Confirm on the server: `systemctl is-enabled pm2-hpc-16; systemctl is-active pm2-hpc-16` (enabled and active, 2026-11-26)
+- [x] C6. Confirm the latest deploy's "Complete job" log no longer lists "Terminate orphan process" (checked 2026-11-26)
 
 ## D. Coming-soon page
 
@@ -114,16 +114,16 @@ Every step of the project from A to Z, split into substeps. Last updated 2026-11
 ## J. Sections 2: about map, categories, how to take part
 
 - [x] J1. SVG outline of Sri Lanka (Natural Earth 1:10m, generated into `island-map/geometry.ts`) with 25 district nodes and signal lines to the University of Moratuwa
-- [x] J2. About: pinned three-beat story on desktop; the island and its 25 district nodes are shown from the start, and when the map comes into view the signal lines draw out from Moratuwa (nearest first) while the count runs to 25; same on phones
-- [x] J3. Categories: sticky list with progress rail + Double-Bezel card stack (School / University / Open with team rules), each card with its own gateway image over a three-gateway hall backdrop (redesign waiting for review)
-- [x] J4. How to take part: five numbered steps on a circuit trace with a travelling pulse; proposal template download
+- [x] J2. About: pinned three-beat story on desktop; coastline draws, nodes light up, editions count up; phone version plays once
+- [x] J3. Categories: sticky list + swapping card stack (School / University / Open; updated 2026-11-26: removed age/NIC text, updated left summaries, unified 3rd bullet)
+- [x] J4. How to take part: redesigned 2026-11-26 as a 6-step pinned staircase climb (`StaircaseScene` + `how-staircase.webp`) with Step 5 for Semi-finals and actual Master Calendar dates (proposal template button removed)
 - [x] J5. Remove the three.js globe and its packages (`three`, `@react-three/fiber`, `drei`, `three-globe`)
 - [x] J6. Phone layouts, reduced-motion versions, screenshots for review
 
 ## K. Sections 3: timeline, prizes
 
-- [x] K1. Timeline: pinned sideways scroll on desktop with huge dates, rail, scroll progress bar and "You are here"; vertical on phones and with reduced motion; skip link
-- [x] K2. Timeline key dates read from `src/content/deadlines.ts` (sessions and workshops are sample dates, `TODO(2027)`)
+- [x] K1. Timeline: redesigned as alternating Double-Bezel cards over `timeline-corridor.webp` with curved SVG arrows (`100svh` horizontal pinned scroll from `>= 48rem`, `45°` SE diagonal pinned scroll on `< 48rem`, plain vertical stack for reduced motion), bottom scrub bar and skip link
+- [x] K2. Timeline populated with all 17 official milestones from `SLIOT_27_Master_Program_Calendar-v5.xlsx` (`27 Nov 2026` – `28 Mar 2027`); core deadlines read from `src/content/deadlines.ts`
 - [x] K3. Prizes: category tabs, podium (2nd, 1st raised, 3rd) rising in, counting-up amounts ("TBA" until set; preview with sample figures at `/design-system/prizes`), special awards row (hidden while empty)
 - [x] K4. Phone layouts, reduced-motion versions, screenshots for review
 
@@ -261,7 +261,7 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 ## T. Email system
 
 - [x] T1. Outbox and background worker started from `src/instrumentation.ts` (`src/server/email/worker.ts`): one email every 2 s; retries at 1 min, 5 min, 30 min, 2 h, 12 h, then `failed`. Schedules by real time (new emails are due at once). Also deletes expired sessions daily
-- [x] T2. React Email templates in `src/emails/` (react-email 6; inline styles from the aurora palette rather than its Tailwind wrapper, for client support): registration confirmed, code reminder, proposal received, shortlisted, prototype received, finalist. The header uses `/icon.png`, since Gmail doesn't show SVG. TODO(2027): a PNG wordmark
+- [x] T2. React Email templates in `src/emails/` (react-email 6; inline styles from the aurora palette rather than its Tailwind wrapper, for client support): registration confirmed, code reminder, proposal received, shortlisted, prototype received, finalist. The header uses `/icon.png`, since Gmail doesn't show SVG. Editorial review document exported to `docs/SLIoT-2027-Email-Templates-Review.docx` (2026-11-26). TODO(2027): a PNG wordmark and applying final panel-approved email copy
 - [x] T3. nodemailer over Workspace SMTP (`src/server/email/transport.ts`); `pnpm email:dev` preview on port 3200. **Changed:** no console transport. Decided 2026-11-24: until the SMTP variables are set, emails wait in the outbox as `pending` with `last_error` "SMTP not configured"; production refuses to start without them
 - [ ] T4. Test sends to real Gmail and Outlook inboxes on phone and desktop. Gmail desktop passed 2026-11-25 (inbox; SPF and DKIM pass, DMARC fails because the domain has no record, see R7; logo broken only with a localhost SITE_URL). Outlook skipped for now by the user; Outlook and phone checks still to do
 
@@ -286,31 +286,32 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 ## W. Security hardening
 
 - [x] W1. Security headers and Content-Security-Policy (`src/server/security-headers.ts`, applied in `next.config.ts`): own origin plus Turnstile and YouTube thumbnails; HSTS in production
-- [x] W2. Rate limits in the app (audit-log based, per IP); nginx `limit_req` on POSTs to `/team`, `/admin/login`, `/register` and the upload route in `deploy/nginx.conf.example`. **To apply on the server**
+- [x] W2. Rate limits in the app (audit-log based, per IP); nginx `limit_req` on POSTs to `/team`, `/admin/login`, `/register` and the upload route in `deploy/nginx.conf.example`. **To apply on the server**. Applied on the server 2026-11-26 as `/etc/nginx/conf.d/sliot-limits.conf` and `/etc/nginx/snippets/sliot-locations.conf` (tested: 429 after 6 quick POSTs); the `/register` limit goes in at the merge, with the redirect removal
 - [x] W3. `Origin` checks on route handlers (`src/server/origin.ts`); server actions are checked by Next
-- [x] W4. nginx `client_max_body_size 12m` on the upload route, 1m elsewhere (example file). **To apply on the server**
-- [ ] W5. Secrets in `/etc/sliot/sliot.env` (mode 600, linked as `.env.production.local`), copies in the password manager (**server task**). Dependabot config added (`.github/dependabot.yml`, targets `full-site`); turn on alerts in the repo settings
+- [x] W4. nginx `client_max_body_size 12m` on the upload route, 1m elsewhere (example file). **To apply on the server**. Applied on the server 2026-11-26 (tested: 2 MB passes on the upload route, 413 elsewhere)
+- [ ] W5. Secrets in `/etc/sliot/sliot.env` (mode 600, linked as `.env.production.local`), copies in the password manager (**server task**). Dependabot config added (`.github/dependabot.yml`, targets `full-site`); turn on alerts in the repo settings. Server file, key file and link set up 2026-11-26 (all 15 variables set)
 
 ## X. Backups and operations
 
-- [ ] X1. Litestream service streaming to R2 (10-second interval, 7 days of history). Config written (`deploy/backup/litestream.yml.example`); **installed on the server at launch**
-- [ ] X2. Nightly snapshot timer: sqlite3 backup → integrity check → gzip → age encrypt → rclone to R2. Written (`sliot-snapshot.sh`, service and timer, 02:30); local tests and the R2 rehearsal pass; timer enabled at launch
-- [ ] X3. R2 lifecycle (90 days) and bucket lock on `snapshots/` if available (**Cloudflare dashboard**)
+- [ ] X1. Litestream service streaming to R2 (10-second interval, 7 days of history). Config written (`deploy/backup/litestream.yml.example`); **installed on the server 2026-11-26, started after the first deploy (Y8)**
+- [ ] X2. Nightly snapshot timer: sqlite3 backup → integrity check → gzip → age encrypt → rclone to R2. Written (`sliot-snapshot.sh`, service and timer, 02:30); local tests and the R2 rehearsal pass; timer installed on the server 2026-11-26, enabled after the first deploy (Y8)
+- [x] X3. R2 lifecycle (90 days) and 30-day bucket lock on `snapshots/` (**Cloudflare dashboard**; the lock is required since 2026-11-26, see architecture D6). Both rules set and the token confirmed Object Read & Write, 2026-11-26
 - [x] X4. healthchecks ping (in the snapshot script); `/api/health` with database and outbox checks
-- [x] X5. Deploy step: pre-migration snapshot first, then `pnpm db:migrate`; the deploy's final check calls `/api/health`. First real run at launch
+- [x] X5. Deploy step: pre-migration snapshot first, then `pnpm db:migrate`; the deploy's final check calls `/api/health`. Sudo rule tested on the server 2026-11-26. First real run at launch
 - [ ] X6. First restore drill from R2 to a laptop. `sliot-restore.sh` and `rehearse.sh` written; Rehearsal with test data passed 2026-11-25; the real drill is at launch (Y8)
-- [x] X7. Laptop tests in WSL, 2026-11-25. `test-local.sh` (folder as storage): 51 checks as root, 46 as a normal user. `rehearse.sh` against the real bucket under `rehearsal/`: both backups restored 20 of 20 seeded teams, integrity ok. Local rehearsal files deleted; the R2 `rehearsal/` folder still to delete (dashboard)
+- [x] X7. Laptop tests in WSL, 2026-11-25. `test-local.sh` (folder as storage): 51 checks as root, 46 as a normal user. `rehearse.sh` against the real bucket under `rehearsal/`: both backups restored 20 of 20 seeded teams, integrity ok. Local rehearsal files deleted; the R2 `rehearsal/` folder deleted 2026-11-26. `test-local.sh` also passed on the production server (Ubuntu 22.04), 2026-11-26: 46 as the app user, 51 as root
 
 ## Y. Testing, content and launch
 
 - [ ] Y1. Playwright end to end: register → login → upload → shortlist → finalise → prototype
-- [ ] Y2. Real 2027 content: dates, prize amounts, FAQs, partner tiers, contact people, university list, proposal template (replace every `TODO(2027)`)
+- [ ] Y2. Real 2027 content: official dates done (`SLIOT_27_Master_Program_Calendar-v5.xlsx` applied 2026-11-26); still pending: prize amounts, FAQs review, partner tiers, contact people, university list confirmation, proposal template (`TODO(2027)`), and final email copy from editorial panel (`docs/SLIoT-2027-Email-Templates-Review.docx`)
 - [ ] Y3. Metadata and share image for the full site (Open Graph 1200×630), favicon check
 - [ ] Y4. Privacy notice page/text
 - [ ] Y5. Final check on staging data: full run-through on phone and desktop
-- [ ] Y6. Before merging: set up the backups on the server (`deploy/backup/README.md`, steps 1–6; confirm Ubuntu/systemd, the app and runner user, and that it has no password-free sudo). The deploy stops if a database exists without them
-- [ ] Y7. Merge `full-site` into `main`; watch the deploy and health check
-- [ ] Y8. After the first deploy: start Litestream, run a snapshot, check file ownership and healthchecks, then pass a restore drill **before registration opens** (X1, X2, X6)
+- [x] Y6. Before merging: set up the backups on the server (`deploy/backup/README.md`, steps 1–6; confirm Ubuntu/systemd, the app and runner user, and that it has no password-free sudo). The deploy stops if a database exists without them. Done 2026-11-26: tools installed, scripts and settings in place, R2 write/read/delete verified, timer installed but not enabled (Y8), sudo rule tested
+- [ ] Y6a. Before merging: lint, typecheck, tests and build on the combined `full-site`; commit and push; trial build of `full-site` on the server in a temporary folder
+- [ ] Y7. On the server, replace the nginx `/register` redirect with its rate-limited block (`deploy/nginx.conf.example`), then merge `full-site` into `main`; watch the deploy and health check
+- [ ] Y8. After the first deploy: enable the snapshot timer, start Litestream, run a snapshot, check file ownership and healthchecks, then pass a restore drill **before registration opens** (X1, X2, X6)
 - [ ] Y9. Create the first super admin on the server; set the deadlines
 
 ## Z. After launch
@@ -320,4 +321,4 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - [ ] Z3. Decide data retention: delete personal data and proposals after the edition (open question)
 - [ ] Z4. Clean up: remove the `vite-baseline` launch entry and the `../sliot-vite-baseline` worktree
 - [ ] Z5. Upgrade to TypeScript 7 once `typescript-eslint` supports it
-- [ ] Z6. Update the Impeccable skill (v3.8.0 installed, newer available) when convenient
+- [x] Z6. Update the Impeccable skill (now at v4.11.0)

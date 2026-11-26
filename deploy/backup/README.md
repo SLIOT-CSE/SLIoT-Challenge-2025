@@ -58,11 +58,13 @@ bash deploy/backup/rehearse.sh run data/rehearsal.db
 
 `setup` prints the age public key; the same pair is used on the server. Save `~/sliot-rehearsal/age-key.txt` in the password manager. After a pass, delete the `rehearsal/` folder in the R2 dashboard, delete `~/sliot-rehearsal` and `data/rehearsal.db`.
 
-## Server setup (at launch, before merging into `main`)
+## Server setup (before merging into `main`)
+
+**Status:** steps 1–6 were done on the production server (Ubuntu 22.04, Node 22) on 2026-11-26, and step 9 in Cloudflare. Steps 7 and 8 follow the first deploy.
 
 The deploy stops if there is a database but no backup tool, so do this first.
 
-**1. Check the assumptions.** Ubuntu or Debian with systemd; the app and the GitHub runner run as the same user (`hpc-16` below), and that user can't run any command through sudo without a password:
+**1. Check the assumptions.** Ubuntu or Debian with systemd; the app and the GitHub runner run as the same user (`hpc-16` below), and that user can't run any command through sudo without a password. On the production server `hpc-16` is in the `docker` group (other projects there need it), which is root-equivalent; this is accepted because of the bucket lock in step 9, which is therefore required (decided 2026-11-26):
 
 ```bash
 cat /etc/os-release
@@ -70,14 +72,32 @@ ps -o user= -C Runner.Listener
 sudo -k; sudo -n true    # as the app user: "a password is required" is the good answer
 ```
 
-**2. Install the tools** as above (`sqlite3 age rclone curl` and Litestream). Ubuntu older than 24.04 has an old rclone; check `rclone version` is 1.60 or later.
+**2. Install the tools** (`sqlite3 age rclone curl python3` and Litestream, as above). `rclone version` must be 1.60 or later. Ubuntu 22.04's package is older, so install the others with apt and rclone from rclone.org. The server is shared: `NEEDRESTART_MODE=l` stops apt restarting other services.
+
+```bash
+sudo apt-get update
+sudo env NEEDRESTART_MODE=l apt-get install sqlite3 age curl python3
+mkdir -p ~/sliot-downloads && cd ~/sliot-downloads
+V=$(curl -fsS https://downloads.rclone.org/version.txt | awk '{print $2}')
+curl -fLO "https://downloads.rclone.org/$V/rclone-$V-linux-amd64.deb"
+curl -fsS "https://downloads.rclone.org/$V/SHA256SUMS" | grep " rclone-$V-linux-amd64.deb\$" | sha256sum -c
+# download and check the Litestream package as above, then:
+sudo dpkg -i rclone-*.deb litestream-0.5.18-linux-x86_64.deb
+```
+
+Leave the `litestream` service disabled until step 7.
 
 **3. Get these files** from a temporary clone of `full-site`; the live deploy folder stays untouched:
 
 ```bash
 git clone --depth 1 --branch full-site <repository URL> /tmp/sliot-setup
-cd /tmp/sliot-setup/deploy/backup
+cd /tmp/sliot-setup
+bash deploy/backup/test-local.sh        # 46 passed on the server
+sudo bash deploy/backup/test-local.sh   # 51 passed on the server
+cd deploy/backup
 ```
+
+The remaining commands run from this `deploy/backup` folder.
 
 **4. Folders and scripts:**
 
@@ -99,24 +119,33 @@ sudoedit /etc/sliot-backup/rclone.conf
 sudoedit /etc/litestream.yml
 ```
 
-`DATABASE_PATH` here, the `path` in `litestream.yml` and `DATABASE_PATH` in `/etc/sliot/sliot.env` must be the same. `REMOTE` is `r2:sliot-backups` and the Litestream `path` is `litestream` (no `rehearsal`).
+`DATABASE_PATH` here, the `path` in `litestream.yml` and `DATABASE_PATH` in `/etc/sliot/sliot.env` must be the same. `REMOTE` is `r2:sliot-backups` and the Litestream `path` is `litestream` (no `rehearsal`). The server gets only the `age` public key.
+
+Check that nothing is left empty (three file names with nothing under them, then `1`), and that the server can write to, read from and delete in the bucket:
+
+```bash
+for f in /etc/sliot-backup/backup.env /etc/sliot-backup/rclone.conf /etc/litestream.yml; do echo "== $f"; sudo grep -vE '^\s*#' $f | grep -E 'ACCOUNT_ID|= *$|""'; done
+sudo grep -c '^AGE_RECIPIENT=age1' /etc/sliot-backup/backup.env
+R="sudo rclone --config /etc/sliot-backup/rclone.conf"
+echo ok | $R rcat r2:sliot-backups/setup-test.txt && $R cat r2:sliot-backups/setup-test.txt && $R deletefile r2:sliot-backups/setup-test.txt && echo "R2 works"
+```
 
 **6. Timer and sudo rule:**
 
 ```bash
 sudo install -m 644 sliot-snapshot.service sliot-snapshot.timer /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable --now sliot-snapshot.timer
-systemctl list-timers sliot-snapshot.timer          # next run at 02:30 Sri Lanka time
 sudo visudo -cf sliot-deploy.sudoers                # after checking the user name in it
 sudo install -m 440 sliot-deploy.sudoers /etc/sudoers.d/sliot-deploy
 ```
 
-As the app user, `sudo -n /usr/local/sbin/sliot-snapshot pre-migrate` should now answer "no database ... yet" without asking for a password.
+As the app user, run `sudo -k` and then `sudo -n /usr/local/sbin/sliot-snapshot pre-migrate`: it should answer "no database ... yet" without asking for a password.
 
-**7. After the first deploy** has created the database:
+**7. After the first deploy** has created the database (the timer waits until now, since a nightly run without a database fails and alerts the organizers):
 
 ```bash
+sudo systemctl enable --now sliot-snapshot.timer
+systemctl list-timers sliot-snapshot.timer          # next run at 02:30 Sri Lanka time
 sudo systemctl enable --now litestream
 systemctl cat litestream | grep -i '^User' || echo "runs as root"
 sudo journalctl -u litestream -n 30
@@ -129,7 +158,7 @@ Then check that healthchecks.io shows the check as up, that the admin login on t
 
 **8. Restore drill before registration opens** (below). Compare the counts with the admin dashboard.
 
-**9. In Cloudflare R2** (can be done at any time): on `sliot-backups`, a lifecycle rule that deletes objects under `snapshots/` after 90 days, and, if the account offers bucket locks, a 30-day lock on `snapshots/`. No lock on `litestream/`: Litestream removes its own old files.
+**9. In Cloudflare R2** (can be done at any time): on `sliot-backups`, a lifecycle rule that deletes objects under `snapshots/` after 90 days, and a 30-day bucket lock on `snapshots/` (required). No lock on `litestream/`: Litestream removes its own old files.
 
 ## Restore drill (monthly during the competition)
 

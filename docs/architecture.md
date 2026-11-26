@@ -534,7 +534,7 @@ Both run as root (decided 2026-11-25). Scripts, configs and the server setup gui
    - runs `PRAGMA integrity_check` on the copy and checks the teams table is there
    - compresses it, then encrypts it with `age` using a public key (the private key is kept offline in the password manager, never on the server)
    - uploads it with rclone to `r2:sliot-backups/snapshots/nightly/<date and time>.db.gz.age`
-3. **Retention:** an R2 lifecycle rule deletes snapshots after 90 days. If R2 bucket locks are available on the account, a 30-day lock on `snapshots/` stops even a compromised server from deleting recent snapshots. File names carry the time, so a rerun never overwrites a locked file.
+3. **Retention:** an R2 lifecycle rule deletes snapshots after 90 days. A 30-day bucket lock on `snapshots/` (required, see D6) stops even a compromised server from deleting recent snapshots; the continuous Litestream copy is not protected this way. File names carry the time, so a rerun never overwrites a locked file.
 4. **Monitoring:** after each successful nightly snapshot the script pings a free dead-man's-switch check (healthchecks.io, cron `30 2 * * *` Asia/Colombo with 2 hours' grace), and reports a failed run at once. Organizers get an email on a failure or a missing ping. Deploys never ping it.
 5. **Before every deploy** the first workflow step runs `sliot-snapshot pre-migrate` (allowed by a one-line sudo rule), so a bad schema change can be undone. If the copy can't be made or fails its check, the deploy stops with the running site untouched. The last 10 copies stay in `/var/backups/sliot` (root only); if only the upload to `snapshots/pre-migrate/` fails, the deploy continues with a warning. With no database yet, the step is skipped.
 
@@ -551,7 +551,7 @@ Free on R2's free tier: 10 GB storage, 1 million writes and 10 million reads a m
 
 Commands for every kind of restore are in `deploy/backup/README.md`.
 
-1. Get a server with Node 24, pnpm, PM2, nginx, Litestream, sqlite3, age and rclone.
+1. Get a server with Node 22 or later, pnpm, PM2, nginx, Litestream, sqlite3, age and rclone.
 2. Clone the repository to `/var/www/sliot/SLIoT-Challenge-2025`, `pnpm install`, `pnpm build`.
 3. Restore secrets to `/etc/sliot/` from the password manager.
 4. Set up the backup tools (`deploy/backup/README.md`), then `sliot-restore litestream <file>` (or, if that fails, `sliot-restore snapshot latest <file>` with the age private key). Both check the file's integrity.
@@ -561,7 +561,7 @@ Commands for every kind of restore are in `deploy/backup/README.md`.
 
 **Restore drill:** before registration opens, then once a month during the competition, restore both backups to a laptop with a read-only R2 token, compare team counts with the live dashboard, and delete the restored files.
 
-**Testing before launch:** the server is set up at launch. Until then, `deploy/backup/test-local.sh` tests the scripts with a folder standing in for R2, and `deploy/backup/rehearse.sh` runs both backups and restores against the real bucket under `rehearsal/`, from a laptop with seeded data.
+**Testing before launch:** the production server's backup tools, settings and sudo rule were set up on 2026-11-26, and the timer and Litestream start after the first deploy. Besides the server, `deploy/backup/test-local.sh` tests the scripts with a folder standing in for R2, and `deploy/backup/rehearse.sh` runs both backups and restores against the real bucket under `rehearsal/`, from a laptop with seeded data.
 
 ## 10. Deployment changes
 
@@ -574,7 +574,7 @@ The existing pipeline (push to `main` → self-hosted runner → install → bui
   - `limit_req` zones for the team and admin login endpoints (POSTs only) and registration
   - security headers are sent by Next.js itself (`next.config.ts`), so nginx doesn't add them
   - the old `/register` redirect must be removed at launch, since `/register` is now the app's page
-  - all of it is in `deploy/nginx.conf.example`
+  - all of it is in `deploy/nginx.conf.example`. The limits and the upload size were applied on the shared production server on 2026-11-26 as separate files included from its existing site config; `/register` follows at launch
 - **One-time server setup** (`deploy/backup/README.md`): the `/var/lib/sliot`, `/etc/sliot` and `/etc/sliot-backup` folders, the Litestream service, the snapshot timer, the sudo rule and the rclone config.
 
 ## 11. Accounts and access needed before the build
@@ -583,7 +583,7 @@ The existing pipeline (push to `main` → self-hosted runner → install → bui
 |---|---|---|
 | `sliot@cse.mrt.ac.lk` mailbox with 2-Step Verification and an app password | Dept Workspace admin | Sending email |
 | Google Cloud project (under a department account) with Drive API and Sheets API enabled, plus a service account with a JSON key | Organizers | Drive uploads, Sheets export |
-| Shared Drive "SLIoT 2027", with the service account added as Content manager and judges as viewers | Dept Workspace admin / organizers | Proposal storage |
+| Folder "SLIoT 2027 Proposals" in the `sliot@` My Drive, an OAuth client and refresh token, judges as viewers (D4) | Organizers | Proposal storage |
 | Master Google Sheet shared with the service account as editor | Organizers | Sheets export |
 | Cloudflare account: R2 bucket `sliot-backups`, an API token limited to that bucket, a Turnstile widget for `sliot.cse.mrt.ac.lk` | Organizers | Backups, bot check |
 | healthchecks.io check (free) | Organizers | Backup monitoring |
@@ -623,7 +623,7 @@ The existing pipeline (push to `main` → self-hosted runner → install → bui
 | D3 | Admin login | Username + argon2 password, no authenticator app; roles super admin and admin |
 | D4 | Proposal storage | **Changed 2026-11-24:** no permission to create a Shared Drive, so proposals go to the folder "SLIoT 2027 Proposals" in the `sliot@cse.mrt.ac.lk` My Drive, uploaded as that account through OAuth (stored refresh token; Internal consent screen, so it doesn't expire). A service account can't be used for this: it has no storage of its own. The service account remains for the Sheets export. File ID and link stored in the database |
 | D5 | Database | SQLite with better-sqlite3 + Drizzle ORM |
-| D6 | Backups | Litestream to R2 + nightly encrypted snapshot to R2 (free tier). **Added 2026-11-25:** both run as root; a deploy stops if its snapshot can't be made or checked, and only warns if the upload fails; the server is set up at launch, after a laptop rehearsal against the real bucket |
+| D6 | Backups | Litestream to R2 + nightly encrypted snapshot to R2 (free tier). **Added 2026-11-25:** both run as root; a deploy stops if its snapshot can't be made or checked, and only warns if the upload fails; the server is set up at launch, after a laptop rehearsal against the real bucket. **Added 2026-11-26:** the server is shared and the app user `hpc-16` is in the `docker` group (needed by other projects), which gives root without a password. Accepted; the 30-day bucket lock on `snapshots/` is therefore **required** |
 | D7 | Sheets export | One master sheet, one-way refresh on button press; CSV download too |
 | D8 | Bot protection | Cloudflare Turnstile + honeypot + rate limit |
 | D9 | Language | TypeScript (strict) for the whole project, version 6.0.x until lint tooling supports 7; migration is the first build step |
