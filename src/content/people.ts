@@ -1,5 +1,4 @@
 // Organizers to contact, partners, and the department address.
-// TODO(2027): the people below organized the previous edition; replace with the 2027 team.
 
 export type Person = {
   name: string;
@@ -8,14 +7,14 @@ export type Person = {
   /** e.g. "+94 77 123 4567". The card's WhatsApp icon opens a chat with it */
   whatsapp?: string;
   photo?: string;
-  /** Zooms into a photo where the person is small. `origin` is the point that stays put */
-  framing?: { zoom: number; origin: string };
+  /** Zooms or shifts a portrait where the subject sits low or off-center (`position` overrides object-top) */
+  framing?: { zoom: number; origin: string; position?: string };
 };
 
 export const contacts: Person[] = [
-  { name: "Buwaneka Halpage", role: "Event chair", email: "buwanekah.23@cse.mrt.ac.lk", whatsapp: "+94 74 022 4877", photo: "/images/people/buwaneka.avif" },
-  { name: "Yasiru Bandara", role: "Event vice chair", email: "yasirub.23@cse.mrt.ac.lk", whatsapp: "+94 76 015 9557", photo: "/images/people/yasiru.avif" },
-  { name: "Gishan Bandara", role: "Event vice chair", email: "gishanb.23@cse.mrt.ac.lk", whatsapp: "+94 70 335 2954", photo: "/images/people/gishan.avif", framing: { zoom: 1.45, origin: "9% 84%" } },
+  { name: "Pranav", role: "Event co-chair", email: "pranav.24@cse.mrt.ac.lk", whatsapp: "+94 75 811 3308", photo: "/images/people/Pranav.jpeg", framing: { zoom: 1.38, origin: "51% 28%", position: "50% 28%" } },
+  { name: "Imain", role: "Event co-chair", email: "imain.24@cse.mrt.ac.lk", whatsapp: "+94 77 571 0090", photo: "/images/people/Imain.jpeg", framing: { zoom: 1.36, origin: "34% 30%", position: "50% 40%" } },
+  { name: "Thisandi", role: "Delegate lead", email: "thisandi.24@cse.mrt.ac.lk", whatsapp: "+94 70 350 4806", photo: "/images/people/Thisandi.jpeg" },
 ];
 
 export const address = {

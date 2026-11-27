@@ -122,6 +122,7 @@ function PersonCard({ person: p }: { person: Person }) {
                   fill
                   // A zoomed photo needs a larger source to stay sharp
                   sizes={`(min-width: 1024px) ${Math.ceil(19 * zoom)}rem, ${Math.ceil(6 * zoom)}rem`}
+                  style={p.framing?.position ? { objectPosition: p.framing.position } : undefined}
                   className="object-cover object-top saturate-[0.82] transition-[scale,filter] duration-700 ease-out-quart group-hover:scale-[1.04] group-hover:saturate-100 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 />
               </div>
