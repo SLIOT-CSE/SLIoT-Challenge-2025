@@ -11,7 +11,8 @@ export const bebasNeue = Bebas_Neue({
 
 export const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  // The variable font: asking for separate weights broke the Turbopack build on the server
+  weight: "variable",
   display: "swap",
   variable: "--nf-montserrat",
 });
