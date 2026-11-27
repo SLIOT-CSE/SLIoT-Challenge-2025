@@ -12,10 +12,8 @@ type Status = "past" | "next" | "future";
 
 /**
  * The road to the finale (Option 3: Alternating Chronology + Curved Box-to-Box Arrows).
- * - Tablet & Desktop full-motion (`scene:`, >= 768px): 100svh pinned sideways scroll with
+ * - Full-motion (`motion-safe:`, all viewports): 100svh pinned sideways scroll with
  *   alternating Double-Bezel milestone cards linked by self-drawing curved SVG arrows.
- * - Mobile full-motion (`diag:`, < 768px): 100svh pinned 45° SE diagonal flow with
- *   self-drawing curved arrows arcing from box to box across the open corridor.
  * - Reduced motion: clean static left-rail vertical stack of the same cards.
  */
 export function Timeline({ now, deadlines }: { now: Date; deadlines: Deadlines }) {
@@ -44,35 +42,35 @@ export function Timeline({ now, deadlines }: { now: Date; deadlines: Deadlines }
           <div className="grain absolute inset-0" />
         </div>
 
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-end justify-between gap-3 px-4 pt-20 sm:gap-5 sm:px-8 md:pt-24 diag:pt-0 scene:pt-0">
-          <div className="flex max-w-3xl flex-col gap-2.5 diag:gap-1 scene:gap-1">
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-end justify-between gap-3 px-4 pt-20 sm:gap-5 sm:px-8 md:pt-24 motion-safe:pt-0">
+          <div className="flex max-w-3xl flex-col gap-2.5 motion-safe:gap-1">
             <h2
               id="timeline-title"
-              className="font-display text-display-lg text-foam diag:text-[clamp(2rem,5.4svh,3rem)] diag:leading-[0.9] scene:text-[clamp(2.125rem,5.4svh,4.25rem)] scene:leading-[0.9]"
+              className="font-display text-display-lg text-foam motion-safe:text-[clamp(1.85rem,4.6svh,3rem)] motion-safe:leading-[0.9] md:motion-safe:text-[clamp(2.125rem,5.4svh,4.25rem)]"
             >
               The road to the finale
             </h2>
           </div>
           <a
             href="#prizes"
-            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-night/75 px-4 py-2 text-small font-semibold text-haze ring-1 ring-edge/40 transition-colors duration-200 hover:text-foam hover:ring-mint/50 diag:min-h-9 diag:px-3.5 diag:py-1.5 diag:text-caption"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-night/75 px-4 py-2 text-small font-semibold text-haze ring-1 ring-edge/40 transition-colors duration-200 hover:text-foam hover:ring-mint/50 motion-safe:min-h-9 motion-safe:px-3.5 motion-safe:py-1.5 motion-safe:text-caption md:motion-safe:min-h-11 md:motion-safe:px-4 md:motion-safe:py-2 md:motion-safe:text-small"
           >
             Skip timeline
             <ArrowDown className="size-4" strokeWidth={1.75} aria-hidden="true" />
           </a>
         </div>
 
-        {/* Diagonal 45° SE track on mobile (`diag:`), horizontal alternating on tablet/desktop (`scene:`), plain stack when reduced-motion */}
+        {/* Horizontal alternating track across all full-motion viewports (`motion-safe:`), plain stack when reduced-motion */}
         <div
           data-timeline-viewport
-          className="mt-10 pb-20 md:pb-24 diag:relative diag:mt-2 diag:min-h-0 diag:flex-1 diag:overflow-hidden diag:pb-0 scene:mt-[clamp(0.5rem,1.6svh,1.5rem)] scene:overflow-x-auto scene:pb-0"
+          className="mt-10 pb-20 md:pb-24 motion-safe:mt-[clamp(0.4rem,1.2svh,1.5rem)] motion-safe:min-h-0 motion-safe:flex-1 motion-safe:overflow-x-auto motion-safe:pb-0"
         >
           <ol
             data-timeline-track
-            className="relative mx-auto flex max-w-3xl flex-col px-4 sm:px-8 diag:mx-0 diag:block diag:h-full diag:w-full diag:max-w-none diag:px-0 scene:mx-0 scene:w-max scene:max-w-none scene:flex-row scene:items-stretch scene:px-[max(2rem,calc((100vw-80rem)/2+2rem))]"
+            className="relative mx-auto flex max-w-3xl flex-col px-4 sm:px-8 motion-safe:mx-0 motion-safe:h-full motion-safe:w-max motion-safe:max-w-none motion-safe:flex-row motion-safe:items-stretch md:motion-safe:px-[max(2rem,calc((100vw-80rem)/2+2rem))]"
           >
-            {/* Dynamic curved SVG box-to-box arrows rendered inside the scrolling track (`diag:` & `scene:`) */}
-            <li aria-hidden="true" className="pointer-events-none hidden list-none diag:block scene:block">
+            {/* Dynamic curved SVG box-to-box arrows rendered inside the horizontal track */}
+            <li aria-hidden="true" className="pointer-events-none hidden list-none motion-safe:block">
               <svg
                 data-timeline-arrows
                 width="1"
@@ -87,7 +85,6 @@ export function Timeline({ now, deadlines }: { now: Date; deadlines: Deadlines }
                       stroke="rgb(58 143 151 / 0.28)"
                       strokeWidth="1.5"
                       strokeDasharray="3 5"
-                      className="hidden scene:block"
                     />
                     <path
                       data-arrow-draw=""
@@ -127,26 +124,25 @@ export function Timeline({ now, deadlines }: { now: Date; deadlines: Deadlines }
                   style={{ "--i": i } as CSSProperties}
                   className={cn(
                     "relative pb-6 pl-11 last:pb-0 sm:pl-12",
-                    "diag:absolute diag:left-[calc(var(--diag-ox,24px)+var(--i)*var(--diag-step,224px))] diag:top-[calc(var(--diag-oy,16px)+var(--i)*var(--diag-step,224px))] diag:w-[var(--diag-card-w,17rem)] diag:p-0",
-                    "scene:grid scene:w-[19.5rem] scene:shrink-0 scene:grid-rows-[1fr_clamp(2rem,5svh,3.25rem)_1fr] scene:pb-0 scene:pl-0 lg:scene:w-[22rem] xl:scene:w-[24rem]",
+                    "motion-safe:grid motion-safe:w-[16.75rem] motion-safe:shrink-0 motion-safe:grid-rows-[1fr_clamp(1.5rem,3.5svh,3.25rem)_1fr] motion-safe:pb-0 motion-safe:pl-0 sm:motion-safe:w-[18.25rem] md:motion-safe:w-[19.5rem] md:motion-safe:grid-rows-[1fr_clamp(2rem,5svh,3.25rem)_1fr] lg:motion-safe:w-[22rem] xl:motion-safe:w-[24rem]",
                   )}
                 >
-                  {/* Reduced-motion mobile vertical rail */}
+                  {/* Reduced-motion vertical rail */}
                   {!isLast && (
                     <span
                       aria-hidden="true"
                       className={cn(
-                        "absolute bottom-0 left-[13px] top-6 w-px diag:hidden scene:hidden",
+                        "absolute bottom-0 left-[13px] top-6 w-px motion-safe:hidden",
                         s === "past" ? "bg-mint" : "bg-ocean",
                       )}
                     />
                   )}
 
-                  {/* Reduced-motion mobile left node */}
+                  {/* Reduced-motion left node */}
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "absolute left-0 top-1 grid size-[27px] place-items-center rounded-full border-2 bg-abyss diag:hidden scene:hidden",
+                      "absolute left-0 top-1 grid size-[27px] place-items-center rounded-full border-2 bg-abyss motion-safe:hidden",
                       s === "past" && "border-mint text-mint",
                       s === "next" && "border-aqua shadow-signal",
                       s === "future" && "border-ocean",
@@ -156,8 +152,8 @@ export function Timeline({ now, deadlines }: { now: Date; deadlines: Deadlines }
                     {s === "next" && <span className="size-2 rounded-full bg-aqua" />}
                   </span>
 
-                  {/* Tablet / Desktop Row 1 (top lane: odd milestones 01, 03, 05, 07, 09) */}
-                  <div className="hidden scene:flex scene:flex-col scene:justify-end scene:pr-4 xl:scene:pr-5">
+                  {/* Row 1 (top lane: odd milestones 01, 03, 05, ...) */}
+                  <div className="hidden motion-safe:flex motion-safe:flex-col motion-safe:justify-end motion-safe:pr-3 md:motion-safe:pr-4 xl:motion-safe:pr-5">
                     {isTopLane && (
                       <MilestoneCard
                         event={event}
@@ -170,11 +166,11 @@ export function Timeline({ now, deadlines }: { now: Date; deadlines: Deadlines }
                     )}
                   </div>
 
-                  {/* Tablet / Desktop Row 2 (open central channel for curved box-to-box arrows) */}
-                  <div aria-hidden="true" className="hidden scene:block" />
+                  {/* Row 2 (open central channel for curved box-to-box arrows) */}
+                  <div aria-hidden="true" className="hidden motion-safe:block" />
 
-                  {/* Tablet / Desktop Row 3 (bottom lane: even milestones 02, 04, 06, 08) */}
-                  <div className="hidden scene:flex scene:flex-col scene:justify-start scene:pr-4 xl:scene:pr-5">
+                  {/* Row 3 (bottom lane: even milestones 02, 04, 06, ...) */}
+                  <div className="hidden motion-safe:flex motion-safe:flex-col motion-safe:justify-start motion-safe:pr-3 md:motion-safe:pr-4 xl:motion-safe:pr-5">
                     {!isTopLane && (
                       <MilestoneCard
                         event={event}
@@ -187,8 +183,8 @@ export function Timeline({ now, deadlines }: { now: Date; deadlines: Deadlines }
                     )}
                   </div>
 
-                  {/* Mobile card (for both 45° `diag:` and reduced-motion stack) */}
-                  <div className="relative z-10 scene:hidden">
+                  {/* Reduced-motion vertical stack card */}
+                  <div className="relative z-10 motion-safe:hidden">
                     <MilestoneCard
                       event={event}
                       day={day}
@@ -204,10 +200,10 @@ export function Timeline({ now, deadlines }: { now: Date; deadlines: Deadlines }
           </ol>
         </div>
 
-        {/* Scroll progress through the track (both tablet/desktop `scene:` and mobile 45° `diag:`) */}
+        {/* Scroll progress through the horizontal track */}
         <div
           aria-hidden="true"
-          className="mx-auto mt-3 hidden w-full max-w-7xl px-4 sm:px-8 diag:mt-2 diag:block scene:mt-[clamp(0.5rem,1.6svh,1.25rem)] scene:block"
+          className="mx-auto mt-3 hidden w-full max-w-7xl px-4 sm:px-8 motion-safe:mt-[clamp(0.35rem,1.2svh,1.25rem)] motion-safe:block"
         >
           <div className="h-px w-full bg-ocean/80">
             <div data-timeline-progress className="h-px w-full origin-left scale-x-0 bg-aqua shadow-[0_0_8px_rgb(133_255_240/0.8)]" />
@@ -240,7 +236,7 @@ function MilestoneCard({
     <article
       data-timeline-card
       className={cn(
-        "rounded-2xl p-1.5 transition-[box-shadow,border-color] duration-300 scene:p-[clamp(0.3rem,0.5svh,0.425rem)]",
+        "rounded-2xl p-1.5 transition-[box-shadow,border-color] duration-300 motion-safe:p-1 md:motion-safe:p-[clamp(0.3rem,0.5svh,0.425rem)]",
         isNext
           ? "bg-mint/14 ring-1 ring-aqua/65 shadow-[0_0_28px_-8px_rgb(133_255_240/0.35)]"
           : isPast
@@ -250,7 +246,7 @@ function MilestoneCard({
     >
       <div
         className={cn(
-          "relative flex flex-col gap-1.5 overflow-hidden rounded-[calc(1rem-0.375rem)] p-4 shadow-[inset_0_1px_0_rgb(221_247_239/0.12)] sm:p-5 diag:gap-1 diag:p-3.5 scene:gap-[clamp(0.25rem,0.6svh,0.45rem)] scene:p-[clamp(0.85rem,1.9svh,1.4rem)]",
+          "relative flex flex-col gap-1.5 overflow-hidden rounded-[calc(1rem-0.375rem)] p-4 shadow-[inset_0_1px_0_rgb(221_247_239/0.12)] sm:p-5 motion-safe:gap-1 motion-safe:p-3 md:motion-safe:gap-[clamp(0.25rem,0.6svh,0.45rem)] md:motion-safe:p-[clamp(0.85rem,1.9svh,1.4rem)]",
           isNext ? "bg-gradient-to-b from-deep/90 via-night/95 to-abyss/95" : "bg-gradient-to-b from-night/92 to-abyss/95",
         )}
       >
@@ -258,7 +254,7 @@ function MilestoneCard({
         <span
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute right-3.5 top-2 select-none font-display text-[3.5rem] leading-none tabular-nums diag:text-[2.75rem] scene:text-[clamp(2.5rem,5.2svh,3.75rem)]",
+            "pointer-events-none absolute right-3.5 top-2 select-none font-display text-[3.5rem] leading-none tabular-nums motion-safe:text-[2.25rem] md:motion-safe:text-[clamp(2.5rem,5.2svh,3.75rem)]",
             isNext ? "text-aqua/18" : "text-foam/[0.08]",
           )}
         >
@@ -276,7 +272,7 @@ function MilestoneCard({
           {event.dateTba ? (
             <span
               className={cn(
-                "text-[clamp(2.5rem,4.4vw,3.5rem)] diag:text-[2.25rem] scene:text-[clamp(2rem,4.4svh,3.25rem)]",
+                "text-[clamp(2.5rem,4.4vw,3.5rem)] motion-safe:text-[clamp(1.65rem,3.6svh,2.25rem)] md:motion-safe:text-[clamp(2rem,4.4svh,3.25rem)]",
                 isPast ? "text-haze" : isNext ? "text-aqua" : "text-foam",
               )}
             >
@@ -286,7 +282,7 @@ function MilestoneCard({
             <time dateTime={event.at} className="flex flex-wrap items-baseline gap-x-2">
               <span
                 className={cn(
-                  "text-[clamp(2.5rem,4.4vw,3.5rem)] diag:text-[2.25rem] scene:text-[clamp(2rem,4.4svh,3.25rem)]",
+                  "text-[clamp(2.5rem,4.4vw,3.5rem)] motion-safe:text-[clamp(1.65rem,3.6svh,2.25rem)] md:motion-safe:text-[clamp(2rem,4.4svh,3.25rem)]",
                   isPast ? "text-haze" : isNext ? "text-aqua" : "text-foam",
                 )}
               >
@@ -294,7 +290,7 @@ function MilestoneCard({
               </span>
               <span
                 className={cn(
-                  "text-[clamp(1.25rem,2.1vw,1.75rem)] diag:text-[1.15rem] scene:text-[clamp(1.05rem,2.2svh,1.55rem)]",
+                  "text-[clamp(1.25rem,2.1vw,1.75rem)] motion-safe:text-[clamp(0.95rem,1.9svh,1.2rem)] md:motion-safe:text-[clamp(1.05rem,2.2svh,1.55rem)]",
                   isPast ? "text-haze" : "text-mint",
                 )}
               >
@@ -304,10 +300,10 @@ function MilestoneCard({
           )}
         </p>
 
-        <h3 className="text-body-lg font-semibold leading-snug text-foam diag:text-body scene:text-[clamp(1rem,2.1svh,1.225rem)]">
+        <h3 className="text-body-lg font-semibold leading-snug text-foam motion-safe:text-[0.9375rem] motion-safe:leading-tight md:motion-safe:text-[clamp(1rem,2.1svh,1.225rem)] md:motion-safe:leading-snug">
           {event.title}
         </h3>
-        <p className="max-w-[38ch] text-pretty text-small text-haze diag:text-[0.8125rem] diag:leading-snug scene:text-[clamp(0.8125rem,1.65svh,0.9375rem)] scene:leading-[1.5]">
+        <p className="max-w-[38ch] text-pretty text-small text-haze motion-safe:text-[0.75rem] motion-safe:leading-snug md:motion-safe:text-[clamp(0.8125rem,1.65svh,0.9375rem)] md:motion-safe:leading-[1.5]">
           {event.body}
         </p>
       </div>

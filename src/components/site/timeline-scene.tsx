@@ -3,9 +3,8 @@
 import { useRef, type ReactNode } from "react";
 import { gsap, useGSAP, ScrollTrigger } from "@/lib/motion/gsap";
 
-// Same conditions as the CSS `scene:` and `diag:` variants in globals.css
-const SCENE_QUERY = "(min-width: 48rem) and (prefers-reduced-motion: no-preference)";
-const DIAG_QUERY = "(max-width: 47.999rem) and (prefers-reduced-motion: no-preference)";
+// Horizontal pinned scroll timeline runs whenever motion is enabled; reduced motion gets a static vertical stack.
+const SCENE_QUERY = "(prefers-reduced-motion: no-preference)";
 
 type ArrowSegment = {
   base: SVGPathElement | null;
@@ -16,9 +15,9 @@ type ArrowSegment = {
 
 /**
  * Computes cubic Bezier curves from each visible milestone card box directly into the next card box.
- * Using (boxRect - trackRect) cancels any active GSAP (x, y) translation on `track`.
+ * Using (boxRect - trackRect) cancels any active GSAP translation on `track`.
  */
-function buildArrowSegments(track: HTMLElement, mode: "horizontal" | "diagonal"): ArrowSegment[] {
+function buildArrowSegments(track: HTMLElement): ArrowSegment[] {
   const trackRect = track.getBoundingClientRect();
   const cardBoxes = [...track.querySelectorAll<HTMLElement>("[data-timeline-card]")]
     .map((el) => el.getBoundingClientRect())
@@ -43,37 +42,20 @@ function buildArrowSegments(track: HTMLElement, mode: "horizontal" | "diagonal")
     const head = group.querySelector<SVGPathElement>("[data-arrow-head]");
     if (!a || !b || !fill || !head) return;
 
-    let d: string;
-
-    if (mode === "horizontal") {
-      // Odd index cards sit above and curve down-right into the next lower card's left edge;
-      // even index cards sit below and curve up-right into the next upper card's left edge.
-      const fromTop = i % 2 === 0;
-      const x1 = a.left + a.width * 0.52;
-      const y1 = fromTop ? a.bottom + 4 : a.top - 4;
-      const x2 = b.left - 8;
-      const y2 = fromTop ? b.top + b.height * 0.44 : b.top + b.height * 0.56;
-      const dx = Math.max(40, x2 - x1);
-      const dy = y2 - y1;
-      const c1x = x1;
-      const c1y = y1 + dy * 0.68;
-      const c2x = x2 - dx * 0.52;
-      const c2y = y2;
-      d = `M ${x1.toFixed(1)} ${y1.toFixed(1)} C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${x2.toFixed(1)} ${y2.toFixed(1)}`;
-    } else {
-      // Mobile 45° SE track: curve cleanly through the open gap from Card i bottom edge into Card i+1 left edge.
-      const x2 = b.left - 8;
-      const x1 = Math.min(a.left + a.width * 0.48, x2 - 44);
-      const y1 = a.bottom + 4;
-      const y2 = b.top + b.height * 0.48;
-      const dx = Math.max(44, x2 - x1);
-      const dy = Math.max(40, y2 - y1);
-      const c1x = x1;
-      const c1y = y1 + dy * 0.66;
-      const c2x = x2 - dx * 0.52;
-      const c2y = y2;
-      d = `M ${x1.toFixed(1)} ${y1.toFixed(1)} C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${x2.toFixed(1)} ${y2.toFixed(1)}`;
-    }
+    // Odd index cards sit above and curve down-right into the next lower card's left edge;
+    // even index cards sit below and curve up-right into the next upper card's left edge.
+    const fromTop = i % 2 === 0;
+    const x1 = a.left + a.width * 0.52;
+    const y1 = fromTop ? a.bottom + 4 : a.top - 4;
+    const x2 = b.left - 8;
+    const y2 = fromTop ? b.top + b.height * 0.44 : b.top + b.height * 0.56;
+    const dx = Math.max(40, x2 - x1);
+    const dy = y2 - y1;
+    const c1x = x1;
+    const c1y = y1 + dy * 0.68;
+    const c2x = x2 - dx * 0.52;
+    const c2y = y2;
+    const d = `M ${x1.toFixed(1)} ${y1.toFixed(1)} C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${x2.toFixed(1)} ${y2.toFixed(1)}`;
 
     if (base) base.setAttribute("d", d);
     fill.setAttribute("d", d);
@@ -130,10 +112,8 @@ function clearArrows(segments: ArrowSegment[]) {
 
 /**
  * Responsive timeline scene:
- * - Tablet & Desktop (`scene:`, >= 768px): pins at 100svh, slides the alternating cards horizontally,
+ * - Full motion (all viewports): pins at 100svh, slides the alternating cards horizontally,
  *   and draws curved box-to-box arrows progressively between adjacent cards.
- * - Mobile (`diag:`, < 768px): pins at 100svh, glides 1:1 at 45° SE, and draws curved box-to-box
- *   arrows between cards immediately as scroll begins (`scrub: true`).
  * - Reduced motion: renders as a plain static vertical rail without pinning.
  */
 export function TimelineScene({ children }: { children: ReactNode }) {
@@ -153,7 +133,7 @@ export function TimelineScene({ children }: { children: ReactNode }) {
         let lastProgress = 0;
 
         const rebuild = () => {
-          segments = buildArrowSegments(track, "horizontal");
+          segments = buildArrowSegments(track);
           syncArrowProgress(lastProgress, segments);
         };
 
@@ -197,82 +177,6 @@ export function TimelineScene({ children }: { children: ReactNode }) {
         };
       });
 
-      mm.add(DIAG_QUERY, () => {
-        const root = scope.current;
-        const viewport = root?.querySelector<HTMLElement>("[data-timeline-viewport]");
-        const track = root?.querySelector<HTMLElement>("[data-timeline-track]");
-        const items = track ? [...track.querySelectorAll<HTMLElement>("[data-timeline-item]")] : [];
-        if (!root || !viewport || !track || items.length === 0) return;
-
-        let step = 224;
-        let segments: ArrowSegment[] = [];
-        let lastProgress = 0;
-
-        const layoutDiagonal = () => {
-          const vpW = viewport.clientWidth;
-          const vpH = viewport.clientHeight;
-          const cardW = Math.min(308, Math.max(232, Math.round(vpW - 56)));
-
-          track.style.setProperty("--diag-card-w", `${cardW}px`);
-          const maxCardH = items.reduce((max, item) => Math.max(max, item.offsetHeight), 156);
-
-          // Center Card 01 cleanly inside the mobile viewport so curved arrows sweep across open center space.
-          const ox = Math.max(24, Math.round((vpW - cardW) / 2));
-          const oy = Math.max(12, Math.round((vpH - maxCardH) / 2));
-          step = Math.max(maxCardH + 46, Math.round(cardW * 0.74));
-
-          track.style.setProperty("--diag-ox", `${ox}px`);
-          track.style.setProperty("--diag-oy", `${oy}px`);
-          track.style.setProperty("--diag-step", `${step}px`);
-
-          segments = buildArrowSegments(track, "diagonal");
-          syncArrowProgress(lastProgress, segments);
-        };
-
-        layoutDiagonal();
-        ScrollTrigger.addEventListener("refreshInit", layoutDiagonal);
-
-        const ro = new ResizeObserver(() => {
-          layoutDiagonal();
-          ScrollTrigger.refresh();
-        });
-        ro.observe(viewport);
-
-        const totalTravel = () => step * Math.max(0, items.length - 1);
-
-        // `scrub: true` gives immediate 1:1 tracking with Lenis so curved arrows draw with zero delay.
-        const tween = gsap.to(track, {
-          x: () => -totalTravel(),
-          y: () => -totalTravel(),
-          ease: "none",
-          scrollTrigger: {
-            trigger: root,
-            start: "top top",
-            end: () => `+=${totalTravel()}`,
-            pin: true,
-            scrub: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            onUpdate: (self) => {
-              lastProgress = self.progress;
-              syncArrowProgress(self.progress, segments);
-            },
-          },
-        });
-
-        return () => {
-          ro.disconnect();
-          ScrollTrigger.removeEventListener("refreshInit", layoutDiagonal);
-          tween.scrollTrigger?.kill();
-          gsap.set(track, { clearProps: "x,y" });
-          track.style.removeProperty("--diag-card-w");
-          track.style.removeProperty("--diag-ox");
-          track.style.removeProperty("--diag-oy");
-          track.style.removeProperty("--diag-step");
-          clearArrows(segments);
-        };
-      });
-
       ScrollTrigger.refresh();
       return () => mm.revert();
     },
@@ -282,7 +186,7 @@ export function TimelineScene({ children }: { children: ReactNode }) {
   return (
     <div
       ref={scope}
-      className="relative isolate overflow-hidden bg-abyss diag:flex diag:h-[100svh] diag:flex-col diag:justify-between diag:pt-[4.75rem] sm:diag:pt-[5.25rem] diag:pb-[clamp(0.75rem,2.5svh,1.25rem)] scene:flex scene:h-[100svh] scene:flex-col scene:justify-between scene:pt-[clamp(1.25rem,6svh,4.75rem)] scene:pb-[clamp(0.75rem,2.5svh,1.75rem)]"
+      className="relative isolate overflow-hidden bg-abyss motion-safe:flex motion-safe:h-[100svh] motion-safe:flex-col motion-safe:justify-between motion-safe:pt-[4.75rem] sm:motion-safe:pt-[5.25rem] motion-safe:pb-[clamp(0.5rem,2svh,1.25rem)] md:motion-safe:pt-[clamp(1.25rem,6svh,4.75rem)] md:motion-safe:pb-[clamp(0.75rem,2.5svh,1.75rem)]"
     >
       {children}
     </div>
