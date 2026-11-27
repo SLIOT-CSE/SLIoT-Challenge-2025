@@ -7,8 +7,42 @@
 # `location / { try_files $uri /index.html; }`). Keep your existing TLS
 # settings and every redirect location as-is. The site links to these paths,
 # which Next.js does not define, so they must stay nginx redirects:
-#   /register  /proposal-submission  /proposal-template
+#   /proposal-submission  /proposal-template
 #   /sample-proposal  /proposal-submission-guidelines
+#
+# AT LAUNCH (step Y): remove the old `/register` redirect. /register is now the
+# Next.js registration page, and the redirect would hide it.
+#
+# PRODUCTION (set up 2026-11-26). The server also serves other apps under this domain
+# (/finance/, /delegate-slots/, /slot-api/, /memorynexus, /auth/google/callback), so
+# only these pieces were added:
+#   /etc/nginx/conf.d/sliot-limits.conf         the map and limit_req_zone lines
+#   /etc/nginx/snippets/sliot-proxy.conf        proxy_pass http://127.0.0.1:3000 and headers
+#   /etc/nginx/snippets/sliot-locations.conf    /team, /admin/login, /api/team/proposal
+# The last is included from /etc/nginx/sites-enabled/sliot, which is a regular file, not
+# a link: edit that one. AT LAUNCH, delete the `/register` redirect there and add the
+# `location = /register` block below to sliot-locations.conf, then `sudo nginx -t` and
+# reload. nginx's default body limit (1 MB) covers every other location.
+#
+# The limit_req_zone and map lines below belong in the http {} block
+# (for example /etc/nginx/conf.d/sliot-limits.conf), not inside server {}.
+
+# ---- http {} level ----
+
+# Count only POSTs (logins, registration, uploads); page views are never limited.
+# An empty key is not counted.
+map $request_method $sliot_post_ip {
+    POST    $binary_remote_addr;
+    default "";
+}
+# Team code and organizer logins: 10 a minute per IP, on top of the app's own
+# 5 failed tries per 15 minutes (docs/architecture.md, 6.2 and section 8).
+limit_req_zone $sliot_post_ip zone=sliot_login:10m rate=10r/m;
+# Registrations and uploads: 30 a minute per IP (a school lab shares one address).
+limit_req_zone $sliot_post_ip zone=sliot_forms:10m rate=30r/m;
+limit_req_status 429;
+
+# ---- server {} ----
 
 upstream sliot_next {
     server 127.0.0.1:3000;   # must match PORT in ecosystem.config.cjs
@@ -23,6 +57,29 @@ server {
 
     # ... existing redirect locations stay here ...
 
+    # Server actions post to the page's own URL, so the login pages are limited here
+    location = /team {
+        limit_req zone=sliot_login burst=5 nodelay;
+        include /etc/nginx/snippets/sliot-proxy.conf;
+    }
+    location = /admin/login {
+        limit_req zone=sliot_login burst=5 nodelay;
+        include /etc/nginx/snippets/sliot-proxy.conf;
+    }
+    location = /register {
+        limit_req zone=sliot_forms burst=10 nodelay;
+        include /etc/nginx/snippets/sliot-proxy.conf;
+    }
+
+    # Proposal PDFs: up to 10 MB, plus multipart overhead (workload W4)
+    location = /api/team/proposal {
+        client_max_body_size 12m;
+        limit_req zone=sliot_forms burst=5 nodelay;
+        proxy_request_buffering on;
+        proxy_read_timeout 120s;
+        include /etc/nginx/snippets/sliot-proxy.conf;
+    }
+
     # Build assets have content hashes in their names: cache them for a year
     location /_next/static/ {
         proxy_pass http://sliot_next;
@@ -31,14 +88,22 @@ server {
         add_header Cache-Control "public, max-age=31536000, immutable";
     }
 
+    # Everything else: small bodies only (forms and server actions)
     location / {
-        proxy_pass http://sliot_next;
-        proxy_http_version 1.1;
-        proxy_set_header Connection "";
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_read_timeout 60s;
+        client_max_body_size 1m;
+        include /etc/nginx/snippets/sliot-proxy.conf;
     }
 }
+
+# ---- /etc/nginx/snippets/sliot-proxy.conf ----
+# The app reads the visitor's address from X-Real-IP (rate limits, audit log), so it
+# must be set here; the Node server listens only on 127.0.0.1, so it can't be forged.
+#
+#   proxy_pass http://sliot_next;
+#   proxy_http_version 1.1;
+#   proxy_set_header Connection "";
+#   proxy_set_header Host $host;
+#   proxy_set_header X-Real-IP $remote_addr;
+#   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#   proxy_set_header X-Forwarded-Proto $scheme;
+#   proxy_read_timeout 60s;

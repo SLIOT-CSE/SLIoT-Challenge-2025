@@ -1,0 +1,5 @@
+# /etc/sudoers.d/sliot-deploy: owner root, mode 440. Check it first:
+#   sudo visudo -cf sliot-deploy.sudoers
+# Lets the user that runs the deploy take a pre-migration snapshot, and nothing else.
+# Replace hpc-16 if the self-hosted runner runs as another user.
+hpc-16 ALL=(root) NOPASSWD: /usr/local/sbin/sliot-snapshot pre-migrate

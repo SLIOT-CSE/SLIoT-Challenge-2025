@@ -1,421 +1,187 @@
-/* Fonts are loaded with next/font (src/app/fonts.js) */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind CSS 4. The theme lives here (CSS-first); there is no tailwind.config.js.
+   Fonts are loaded with next/font (src/app/fonts.ts), which sets the --nf-* variables
+   on <html>; the --font-* theme tokens below point at them. */
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Tablet + Desktop scroll scenes (from md/768px, full motion): layouts that only make sense while a scene
+   drives them, e.g. the sideways timeline. Everyone else gets the plain or mobile layout. */
+@custom-variant scene (@media (min-width: 48rem) and (prefers-reduced-motion: no-preference));
+/* Mobile scroll scene (below md/768px, full motion): 45-degree South-East pinned diagonal timeline. */
+@custom-variant diag (@media (max-width: 47.999rem) and (prefers-reduced-motion: no-preference));
+
+@theme {
+  /* Extra small breakpoints below sm (640px) */
+  --breakpoint-xxs: 25rem;
+  --breakpoint-xs: 31.25rem;
+
+  /* transition-* utilities without an explicit duration or easing */
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* ---------------------------------------------------------------------------
+   2027 design system (docs/frontend-plan.md, section 3). Aurora palette sampled
+   from the 2027 aurora reference image. "static" keeps every variable on :root,
+   so the tokens page and inline styles can read them even when no class uses them.
+   teal and mist are Tailwind default scales, so those two roles are reef and haze.
+   --------------------------------------------------------------------------- */
+@theme static {
+  /* Surfaces, darkest first */
+  --color-abyss: #010610; /* page background */
+  --color-night: #011225; /* raised surfaces, app background */
+  --color-deep: #023649; /* panels, inputs, table header */
+  --color-ocean: #0b5a6d; /* decorative borders and dividers, hover surfaces */
+  --color-reef: #14676f; /* secondary fills */
+  /* Edges people must see (input and control borders): at least 3:1 on every surface */
+  --color-edge: #3a8f97;
+  /* Accents */
+  --color-lagoon: #52baa5; /* inactive nodes, secondary accents */
+  --color-mint: #73dabe; /* primary accent: CTAs, active states, links */
+  --color-aqua: #85fff0; /* live signal: countdown, glowing nodes, focus ring */
+  /* Text */
+  --color-foam: #ddf7ef; /* primary text */
+  --color-haze: #a9c7cc; /* secondary text */
+  /* Feedback (app screens) */
+  --color-success: #73dabe;
+  --color-warning: #f2c46d;
+  --color-danger: #ff9b9b;
+
+  /* Type scale: ratio about 1.333, fluid display sizes (Bebas Neue is condensed,
+     so 7.5rem reads like a 6rem grotesk) */
+  --text-display-xl: clamp(3.5rem, 10vw, 7.5rem);
+  --text-display-xl--line-height: 0.9;
+  --text-display-lg: clamp(2.75rem, 7vw, 5rem);
+  --text-display-lg--line-height: 0.92;
+  --text-display-md: clamp(2.125rem, 4.6vw, 3.5rem);
+  --text-display-md--line-height: 0.95;
+  --text-title: 1.375rem;
+  --text-title--line-height: 1.3;
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.7;
+  --text-body: 1rem;
+  --text-body--line-height: 1.65;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.55;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.45;
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); /* entrances */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1); /* UI feedback */
+
+  /* Shape and depth: panels 12-16px, photos 8-12px; a border or a small shadow, never both */
+  --radius-panel: 0.875rem;
+  --radius-photo: 0.625rem;
+  --radius-control: 0.625rem; /* inputs, selects */
+  --shadow-lift: 0 6px 8px -2px rgb(1 6 16 / 0.6);
+  /* Glow reserved for live things (countdown, "you are here", active step) */
+  --shadow-signal: 0 0 0 1px rgb(133 255 240 / 0.35), 0 0 22px rgb(133 255 240 / 0.28);
+}
+
+/* Font tokens point at the next/font variables, so they are inlined into the utilities */
+@theme inline {
+  /* Bebas Neue display, Montserrat text */
+  --font-display: var(--nf-bebas-neue), Impact, "Arial Narrow", sans-serif;
+  --font-body: var(--nf-montserrat), system-ui, sans-serif;
+}
+
+/* Layer order for the 2027 site (no arbitrary z-index values) */
+@utility z-nav {
+  z-index: 40;
+}
+@utility z-dropdown {
+  z-index: 50;
+}
+@utility z-overlay {
+  z-index: 60;
+}
+@utility z-dialog {
+  z-index: 70;
+}
+@utility z-toast {
+  z-index: 80;
+}
+@utility z-tooltip {
+  z-index: 90;
+}
 
 :root {
   color-scheme: dark;
 }
 
-* {
-  scroll-behavior: true;
-}
-
 @layer base {
+  /* A Tailwind 3 default that Tailwind 4 dropped: buttons show a pointer */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* Visible keyboard focus everywhere: a 2px aqua ring */
+  :focus-visible {
+    outline: 2px solid var(--color-aqua);
+    outline-offset: 2px;
+  }
+
+  /* 2027 site: abyss background, Montserrat, foam text */
+  html {
+    background: var(--color-abyss);
+  }
+
+  /* clip (not hidden) so sticky elements keep working; stops sub-pixel sideways scroll on phones */
   body {
-
-    @apply font-alexandria text-base text-n-8;
-    background: linear-gradient(
-      90deg,
-      rgba(8, 15, 35, 1) 0%,
-      rgba(12, 18, 52, 1) 15%,
-      rgba(10, 12, 40, 1) 30%,
-      rgba(6, 10, 30, 1) 45%,
-      rgba(4, 8, 28, 1) 60%,
-      rgba(5, 12, 25, 1) 75%,
-      rgba(10, 50, 30, 1) 100%
-    );
-    background-attachment: fixed;
+    @apply bg-abyss font-body text-body text-foam antialiased;
+    overflow-x: clip;
   }
 
-  :root {
-    /* --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%; */
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+  /* Anchored sections clear the floating nav */
+  section[id] {
+    scroll-margin-top: 6rem;
   }
 
-  .dark {
-    /* --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%; */
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+  ::selection {
+    background: rgb(133 255 240 / 0.3);
+    color: var(--color-foam);
   }
-}
 
-.rotate-45 {
-  @apply rotate-[45deg];
-}
-
-.rotate-90 {
-  @apply rotate-[90deg];
-}
-
-.rotate-135 {
-  @apply rotate-[135deg];
-}
-
-.rotate-180 {
-  @apply rotate-[180deg];
-}
-
-.rotate-225 {
-  @apply rotate-[225deg];
-}
-
-.rotate-270 {
-  @apply rotate-[270deg];
-}
-
-.rotate-315 {
-  @apply rotate-[315deg];
-}
-
-.rotate-360 {
-  @apply rotate-[360deg];
-}
-
-.-rotate-45 {
-  @apply rotate-[-45deg];
-}
-
-.-rotate-90 {
-  @apply rotate-[-90deg];
-}
-
-.-rotate-135 {
-  @apply rotate-[-135deg];
-}
-
-.-rotate-180 {
-  @apply rotate-[-180deg];
-}
-
-.-rotate-225 {
-  @apply rotate-[-225deg];
-}
-
-.-rotate-270 {
-  @apply rotate-[-270deg];
-}
-
-.-rotate-315 {
-  @apply rotate-[-315deg];
-}
-
-.-rotate-360 {
-  @apply rotate-[-360deg];
-}
-
-@layer base {
+  /* Default border colour: decorative ocean (controls use the stronger edge token) */
   * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
+    border-color: var(--color-ocean);
   }
 }
 
-@layer components {
-  /* SHADCN COMPONENTS */
-  /* Form */
-  .shad-form_label {
-    @apply text-n-4 !important;
-  }
-
-  .shad-form_message {
-    @apply text-red !important;
-  }
-
-  .shad-input {
-    @apply h-12 bg-n-1 border border-n-2 placeholder:text-n-4 focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-n-3 !important;
-  }
-
-  .shad-textarea {
-    @apply h-36 bg-n-1 border border-n-2 rounded-xl focus-visible:ring-1 focus-visible:ring-n-1 ring-offset-n-3 !important;
-  }
-
-  /* Button */
-  .shad-button_primary {
-    @apply bg-n-20 hover:bg-n-14 text-n-1 flex gap-2 !important;
-  }
-
-  .shad-button_dark_4 {
-    @apply h-12 bg-dark-4 px-5 text-light-1 flex gap-2 !important;
-  }
-
-  .shad-button_ghost {
-    @apply flex gap-4 items-center justify-start hover:bg-transparent hover:text-white !important;
-  }
-}
-/* WebKit Browsers (Chrome, Edge, Safari) */
+/* Scrollbars in the aurora palette (WebKit/Blink) */
 ::-webkit-scrollbar {
-  width: 12px; /* Width of the scrollbar */
+  width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent; /* Fully transparent track */
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.5); /* Semi-transparent thumb */
-  border: 2px solid #1a1a2e; /* Your website's background color */
-  border-radius: 10px; /* Rounded thumb */
+  background: var(--color-reef);
+  border: 3px solid var(--color-abyss);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.8); /* Brighter thumb on hover */
+  background: var(--color-lagoon);
 }
 
-/* For Firefox */
+/* Firefox */
 * {
-  scrollbar-width: thin; /* Thin scrollbar */
-  scrollbar-color: rgba(255, 255, 255, 0.5) rgba(10, 15, 30, 1); /* Thumb visible, track transparent */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-reef) var(--color-abyss);
 }
 
 
-.alexandria{
-  font-family: var(--font-alexandria);
-}
 
-.audiowide{
-  font-family: var(--font-audiowide);
-}
 /* ---------------------------------------------------------------------------
-   Coming-soon page (src/views/ComingSoon.jsx)
-   Motion is CSS-only so the page renders without waiting for JavaScript.
-   Colours are the cs-* tokens in tailwind.config.js (aurora reference image).
+   Hero figure helpers (components/HeroFigure.tsx; the image is cut off on its
+   right and bottom edges, so those edges must sit on a screen edge or fade out)
    --------------------------------------------------------------------------- */
-:root {
-  --cs-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* The coming-soon page is exactly one screen: no page scroll, no pull-to-refresh bounce.
-   Scoped with :has() so the full site scrolls normally when the flag is off. */
-html:has(.cs-page),
-html:has(.cs-page) body {
-  overflow: hidden;
-  overscroll-behavior: none;
-}
-
-/* Aurora, laid out like the reference image: a mint glow on the left edge, a teal
-   band sweeping across the top, an ocean-blue band running down to the bottom
-   right, with deep navy left between them. The bands cross behind the card so its
-   glass shows separate colours, not one flat tint. */
-.cs-aurora {
-  position: absolute;
-  border-radius: 9999px;
-  will-change: transform;
-}
-
-.cs-aurora-a {
-  left: -24vmax;
-  top: 6%;
-  width: 62vmax;
-  height: 62vmax;
-  background: radial-gradient(closest-side, rgb(115 218 190 / 0.6), rgb(82 186 165 / 0.3) 42%, transparent);
-  animation: cs-drift-a 26s ease-in-out infinite alternate;
-}
-
-.cs-aurora-b {
-  left: 8vw;
-  top: -6vh;
-  width: 110vw;
-  height: 34vh;
-  background: radial-gradient(closest-side, rgb(31 150 150 / 0.75), rgb(11 90 109 / 0.45) 55%, transparent);
-  transform: rotate(-12deg);
-  animation: cs-drift-b 32s ease-in-out infinite alternate;
-}
-
-.cs-aurora-c {
-  left: 18vw;
-  top: 48vh;
-  width: 105vw;
-  height: 40vh;
-  background: radial-gradient(closest-side, rgb(16 82 140 / 0.8), rgb(2 54 96 / 0.45) 55%, transparent);
-  transform: rotate(16deg);
-  animation: cs-drift-c 38s ease-in-out infinite alternate;
-}
-
-.cs-aurora-d {
-  left: -10vw;
-  bottom: -22vh;
-  width: 60vw;
-  height: 48vh;
-  background: radial-gradient(closest-side, rgb(20 103 111 / 0.6), transparent);
-  animation: cs-drift-a 30s ease-in-out infinite alternate-reverse;
-}
-
-@keyframes cs-drift-a {
-  to { transform: translate3d(6vw, -5vh, 0) scale(1.12); }
-}
-
-@keyframes cs-drift-b {
-  from { transform: rotate(-12deg); }
-  to   { transform: translate3d(-8vw, 6vh, 0) rotate(-5deg) scale(1.08); }
-}
-
-@keyframes cs-drift-c {
-  from { transform: rotate(16deg); }
-  to   { transform: translate3d(-10vw, -5vh, 0) rotate(9deg) scale(1.1); }
-}
-
-/* The mock site behind the card: recognisable as a site, unreadable as text.
-   Scaled up slightly so the blur's soft edge falls outside the screen. */
-.cs-mock {
-  filter: blur(8px) saturate(1.15);
-  opacity: 0.5;
-  transform: scale(1.03);
-}
-
-/* Darkens the screen edges, and the centre a little, so text on the clear glass
-   stays readable over whatever the aurora and the mock put behind it */
-.cs-vignette {
-  background:
-    radial-gradient(ellipse 80% 75% at 50% 50%, transparent 40%, rgb(1 6 16 / 0.6) 100%),
-    linear-gradient(rgb(1 6 16 / 0.2), rgb(1 6 16 / 0.2));
-}
-
-/* Film grain like the reference; sits under the card, so the glass blurs it away */
-.cs-grain {
-  pointer-events: none;
-  background-image: url("/images/noise.png");
-  background-size: 128px;
-  opacity: 0.055;
-}
-
-/* Glass, as in the Bento card design: a fully transparent panel that only blurs what
-   is behind it (backdrop-blur-xl, no tint), a 1px white/10 border plus a white/10
-   ring, and a soft inner glow rising from the bottom edge (aqua here, not lavender,
-   to stay in the palette). */
-.cs-glass {
-  overflow: hidden;
-  background: transparent;
-  border: 1px solid rgb(255 255 255 / 0.1);
-  -webkit-backdrop-filter: blur(24px);
-  backdrop-filter: blur(24px);
-  box-shadow:
-    inset 0 -20px 80px -20px rgb(133 255 240 / 0.12),
-    0 0 0 1px rgb(255 255 255 / 0.1),
-    0 1px 2px 0 rgb(0 0 0 / 0.05);
-  transform: translateZ(0);
-}
-
-/* No backdrop blur (old browsers): a solid plate keeps the text readable */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .cs-glass {
-    background: rgb(2 18 37 / 0.94);
-  }
-}
-
-/* Entrances. The card wrapper only moves (transform); the glass fades itself, because
-   opacity or filter on an ancestor would switch off its backdrop blur. */
-.cs-card {
-  animation: cs-card-in 1.3s var(--cs-ease-out) 0.05s both;
-}
-
-.cs-fade-in {
-  animation: cs-fade 1s var(--cs-ease-out) 0.05s both;
-}
-
-/* Staggered entrance; each element sets its own --cs-delay */
-.cs-rise {
-  animation: cs-rise 0.9s var(--cs-ease-out) var(--cs-delay, 0s) both;
-}
-
-/* Title lines slide up out of their own mask */
-.cs-line {
-  animation: cs-line 1.2s var(--cs-ease-out) var(--cs-delay, 0s) both;
-}
-
-/* Mock-site blocks rise into place one after another */
-.cs-mock-in {
-  animation: cs-mock-in 1.6s var(--cs-ease-out) var(--cs-delay, 0s) both;
-}
-
-/* The figure fades in from a blur. No movement: moving it would pull its cut edges
-   away from the card / screen edges they are lined up with. */
-.cs-figure-in {
-  animation: cs-figure-in 1.4s var(--cs-ease-out) 0.45s both;
-}
-
-.cs-ping {
-  animation: cs-ping 2s var(--cs-ease-out) infinite;
-}
-
-/* Hero figure placement (components/HeroFigure.jsx; the image is cut off on its right
-   and bottom edges). Side by side: in the card's bottom-right corner, cut edges flush
-   with the card's edges and clipped to its rounded corner; the open top and left may
-   overflow, so the helmet rises above the card. As tall as the screen allows, but
-   never wider than the room beside the text (--cs-text-w). Its open left edge fades
-   out, and so does its top-right corner: above the card the cut right edge has no
-   card edge to sit on, and inside it the corner meets the card's rounded corner. */
-.cs-figure-side {
-  --fig-h: min(84dvh, 50rem);
-  width: min(calc(var(--fig-h) * 957 / 932), calc(100% - var(--cs-text-w, 33rem)));
-  clip-path: inset(-100vh 0 0 -100vw round 0 0 calc(2rem - 1px) 0);
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 14%), linear-gradient(225deg, transparent 5%, #000 20%);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, transparent, #000 14%), linear-gradient(225deg, transparent 5%, #000 20%);
-  mask-composite: intersect;
-}
-
-/* Narrow landscape phones: too little room beside the text for the figure */
-@media (orientation: landscape) and (max-height: 500px) and (max-width: 739px) {
-  .cs-page .cs-figure-side {
-    display: none;
-  }
-}
-
-/* Stacked: the cut bottom edge fades into the card below it */
-.cs-figure-top {
-  -webkit-mask-image: linear-gradient(to bottom, #000 64%, transparent 97%);
-  mask-image: linear-gradient(to bottom, #000 64%, transparent 97%);
-}
-
-/* Full site hero: nothing to line the cut edges up with, so both fade out */
+/* Both cut edges fade out (when nothing lines up with them) */
 .fig-fade-edges {
   -webkit-mask-image: linear-gradient(to left, transparent, #000 22%), linear-gradient(to top, transparent, #000 22%);
   -webkit-mask-composite: source-in;
@@ -423,7 +189,7 @@ html:has(.cs-page) body {
   mask-composite: intersect;
 }
 
-/* Mint glow behind the figure's helmet, breathing slowly (used on both pages) */
+/* Mint glow behind the figure's helmet, breathing slowly */
 .fig-glow {
   animation: fig-glow 6s ease-in-out infinite alternate;
 }
@@ -433,53 +199,346 @@ html:has(.cs-page) body {
   to   { opacity: 1; transform: scale(1.06); }
 }
 
-@keyframes cs-card-in {
-  from { transform: translateY(32px) scale(0.97); }
-  to   { transform: none; }
-}
-
-@keyframes cs-fade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes cs-rise {
-  from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
-  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
-}
-
-@keyframes cs-line {
-  from { transform: translateY(108%); }
-  to   { transform: none; }
-}
-
-@keyframes cs-mock-in {
-  from { opacity: 0; transform: translateY(40px); }
-  to   { opacity: 1; transform: none; }
-}
-
-@keyframes cs-figure-in {
-  from { opacity: 0; filter: blur(12px); }
-  to   { opacity: 1; filter: blur(0); }
-}
-
-@keyframes cs-ping {
-  0%        { transform: scale(1); opacity: 0.7; }
-  75%, 100% { transform: scale(2.4); opacity: 0; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .cs-rise,
-  .cs-line,
-  .cs-mock-in,
-  .cs-figure-in,
-  .cs-fade-in {
-    animation: cs-fade 0.4s ease-out both;
-  }
-  .cs-card,
-  .cs-aurora,
-  .cs-ping,
   .fig-glow {
     animation: none;
   }
+}
+
+/* ---------------------------------------------------------------------------
+   2027 site motion that runs before JavaScript (CSS only)
+   Every element reads correctly without these; reduced motion gets a short fade.
+   --------------------------------------------------------------------------- */
+
+/* First-visit Hero preloader curtain and intro pause sync */
+.hero-preloader {
+  display: none;
+}
+
+html[data-hero-loading="true"] .hero-preloader,
+.hero-preloader[data-exiting="true"] {
+  display: flex;
+}
+
+html[data-hero-loading="true"] body {
+  overflow: hidden;
+}
+
+html[data-hero-loading="true"] .intro-line,
+html[data-hero-loading="true"] .intro-rise,
+html[data-hero-loading="true"] .intro-figure,
+html[data-hero-loading="true"] .intro-fade {
+  animation-play-state: paused;
+}
+
+.hero-loader-orbit {
+  animation: portal-spin 22s linear infinite;
+}
+
+/* Hero title lines rise out of their own mask, one after another (each sets --delay) */
+.intro-line {
+  animation: intro-line 1.15s var(--ease-out-expo) var(--delay, 0s) both;
+}
+
+/* Hero copy and buttons rise in after the title */
+.intro-rise {
+  animation: intro-rise 0.9s var(--ease-out-expo) var(--delay, 0s) both;
+}
+
+/* The figure resolves from a blur; it never moves, so its cut edges stay put */
+.intro-figure {
+  animation: intro-figure 1.4s var(--ease-out-expo) 0.35s both;
+}
+
+.intro-fade {
+  animation: intro-fade 1.2s var(--ease-out-expo) var(--delay, 0s) both;
+}
+
+@keyframes intro-line {
+  from { transform: translateY(105%); }
+  to { transform: none; }
+}
+
+@keyframes intro-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes intro-figure {
+  from { opacity: 0; filter: blur(14px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+@keyframes intro-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Aurora behind the hero: three slow bands (mint, teal, ocean) */
+.aurora-band {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+}
+
+.aurora-a {
+  left: -22vmax;
+  top: 4%;
+  width: 60vmax;
+  height: 60vmax;
+  background: radial-gradient(closest-side, rgb(115 218 190 / 0.42), rgb(82 186 165 / 0.18) 45%, transparent);
+  animation: aurora-a 26s ease-in-out infinite alternate;
+}
+
+.aurora-b {
+  left: 12vw;
+  top: -10vh;
+  width: 105vw;
+  height: 36vh;
+  background: radial-gradient(closest-side, rgb(31 150 150 / 0.55), rgb(11 90 109 / 0.3) 55%, transparent);
+  transform: rotate(-12deg);
+  animation: aurora-b 32s ease-in-out infinite alternate;
+}
+
+.aurora-c {
+  left: 30vw;
+  top: 46%;
+  width: 90vw;
+  height: 44vh;
+  background: radial-gradient(closest-side, rgb(16 82 140 / 0.55), rgb(2 54 96 / 0.3) 55%, transparent);
+  transform: rotate(16deg);
+  animation: aurora-c 38s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-a {
+  to { transform: translate3d(6vw, -5vh, 0) scale(1.12); }
+}
+
+@keyframes aurora-b {
+  from { transform: rotate(-12deg); }
+  to { transform: translate3d(-8vw, 6vh, 0) rotate(-5deg) scale(1.08); }
+}
+
+@keyframes aurora-c {
+  from { transform: rotate(16deg); }
+  to { transform: translate3d(-10vw, -5vh, 0) rotate(9deg) scale(1.1); }
+}
+
+/* Film grain over the aurora */
+.grain {
+  pointer-events: none;
+  background-image: url("/images/noise.png");
+  background-size: 128px;
+  opacity: 0.05;
+}
+
+/* Hero particle nebula: dim, and fading out towards the bottom so the hero hands over cleanly */
+.nebula-mask {
+  opacity: 0.75;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 55%, transparent 92%);
+  mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 55%, transparent 92%);
+}
+
+/* Hero portal rings: centred on the left and right edges so half of each shows, turning
+   slowly in opposite directions. Dim, behind the content. */
+.portal-ring {
+  position: absolute;
+  top: 50%;
+  width: min(80svh, 46rem);
+  aspect-ratio: 1;
+  opacity: 0.5;
+}
+.portal-ring--left {
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+.portal-ring--right {
+  right: 0;
+  transform: translate(50%, -50%);
+}
+.portal-spin {
+  animation: portal-spin 90s linear infinite;
+}
+.portal-ring--right .portal-spin {
+  animation-direction: reverse;
+}
+@keyframes portal-spin {
+  to { transform: rotate(360deg); }
+}
+/* The portal inside each ring: a deep cyan well with a soft light breathing at the centre. Sized to the ring's
+   opening (~51% of the ring box) and tucked just under its inner edge. */
+.portal-core {
+  position: absolute;
+  inset: 24%;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: radial-gradient(
+    circle,
+    rgb(133 255 240 / 0.3) 0%,
+    rgb(40 150 220 / 0.22) 28%,
+    rgb(4 40 80 / 0.5) 58%,
+    rgb(1 10 24 / 0.7) 72%
+  );
+}
+.portal-eye {
+  position: absolute;
+  inset: 34%;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgb(221 247 239 / 0.55), rgb(133 255 240 / 0.25) 40%, transparent 70%);
+  filter: blur(6px);
+  animation: portal-breathe 7s ease-in-out infinite alternate;
+}
+@keyframes portal-breathe {
+  from { transform: scale(0.85); opacity: 0.7; }
+  to { transform: scale(1.15); opacity: 1; }
+}
+
+/* Phones: smaller and fainter, as the rings sit behind the text there */
+@media (max-width: 39.99rem) {
+  .portal-ring {
+    width: 72vw;
+    opacity: 0.3;
+  }
+}
+
+/* Sensor nodes blinking in sequence (each sets --delay) */
+.signal-node {
+  animation: signal-node 4.8s ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes signal-node {
+  0%, 70%, 100% { opacity: 0.25; }
+  78% { opacity: 1; }
+}
+
+/* Live indicator: a ring expanding from a dot */
+.live-ping {
+  animation: live-ping 2s var(--ease-out-expo) infinite;
+}
+
+@keyframes live-ping {
+  0% { transform: scale(1); opacity: 0.75; }
+  75%, 100% { transform: scale(2.6); opacity: 0; }
+}
+
+/* Figure: bottom cut edge fades into the next section (right edge sits on the screen edge) */
+.fig-fade-bottom {
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 96%);
+  mask-image: linear-gradient(to bottom, #000 62%, transparent 96%);
+}
+
+/* Footer figure: fades smoothly downward into the footer horizon and softens the right edge */
+.fig-fade-footer {
+  -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 98%), linear-gradient(to left, transparent, #000 16%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to bottom, #000 58%, transparent 98%), linear-gradient(to left, transparent, #000 16%);
+  mask-composite: intersect;
+}
+
+/* FAQ answers open and close smoothly where the browser supports animating details */
+.faq-item {
+  interpolate-size: allow-keywords;
+}
+
+.faq-item::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition: block-size 0.35s var(--ease-out-quart), content-visibility 0.35s allow-discrete;
+}
+
+.faq-item[open]::details-content {
+  block-size: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-item::details-content {
+    transition: none;
+  }
+}
+
+/* Outlined display text (kinetic band) */
+@utility text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgb(221 247 239 / 0.4);
+}
+
+/* The footer wordmark's dot fill: an array of sensor nodes inside the letters. Both layers
+   share one grid, which scales with the type but never gets finer than 6px */
+.dot-fill,
+.dot-signal {
+  --pitch: max(6px, 0.034em);
+  color: transparent;
+  background-image: radial-gradient(circle closest-side, var(--dot) 52%, transparent 66%);
+  background-size: var(--pitch) var(--pitch);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.dot-fill {
+  --dot: color-mix(in srgb, var(--color-lagoon) 42%, transparent);
+}
+
+/* The same nodes lit aqua, waiting at the leading edge and sweeping right as the footer enters view */
+.dot-signal {
+  --dot: var(--color-aqua);
+  -webkit-mask: linear-gradient(100deg, transparent 41%, #000 50%, transparent 59%) 83% 0 / 300% 100% no-repeat;
+  mask: linear-gradient(100deg, transparent 41%, #000 50%, transparent 59%) 83% 0 / 300% 100% no-repeat;
+}
+
+[data-active="true"] .dot-signal {
+  animation: dot-sweep 5.5s linear infinite;
+}
+
+@keyframes dot-sweep {
+  from {
+    -webkit-mask-position: 83% 0;
+    mask-position: 83% 0;
+  }
+  to {
+    -webkit-mask-position: 17% 0;
+    mask-position: 17% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-line,
+  .intro-rise,
+  .intro-figure,
+  .intro-fade {
+    animation: intro-fade 0.3s ease-out both;
+  }
+  .aurora-band,
+  .portal-spin,
+  .portal-eye,
+  .hero-loader-orbit,
+  .signal-node,
+  .live-ping {
+    animation: none;
+  }
+  /* The light rests over the year instead of crossing */
+  [data-active="true"] .dot-signal,
+  .dot-signal {
+    animation: none;
+    -webkit-mask-position: 38% 0;
+    mask-position: 38% 0;
+  }
+}
+
+/* Slim aurora-themed scrollbar for custom dropdown lists */
+.aurora-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-edge) transparent;
+}
+.aurora-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.aurora-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.aurora-scroll::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--color-edge) 70%, transparent);
+  border-radius: 9999px;
+}
+.aurora-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-lagoon);
 }

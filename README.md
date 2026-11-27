@@ -2,7 +2,7 @@
 
 The official website of the SLIoT Challenge, the annual IoT competition organized by the Department of Computer Science & Engineering, University of Moratuwa, with SLT-MOBITEL and IESL.
 
-Built with Next.js (App Router), React 19, Tailwind CSS 3 and Framer Motion. JavaScript only.
+Built with Next.js (App Router), React 19, Tailwind CSS 4 and Framer Motion, written in TypeScript (strict).
 
 ## Requirements
 
@@ -24,89 +24,99 @@ Other scripts:
 |---|---|
 | `pnpm build` | Production build into `.next/` |
 | `pnpm start` | Serve the production build (port 3000, or `PORT`) |
-| `pnpm lint` | ESLint (Next.js rules) |
+| `pnpm lint` | ESLint (Next.js + TypeScript rules) |
+| `pnpm typecheck` | TypeScript check without building (`tsc --noEmit`) |
+| `pnpm test` | Unit tests (Vitest) |
+| `pnpm db:migrate` | Apply database migrations (`./data/sliot.db` in development, `DATABASE_PATH` otherwise) |
+| `pnpm db:seed` | Development only: wipe the local database and fill it with 20 test teams; prints the logins |
+| `pnpm db:generate` | Write a migration after changing `src/server/db/schema.ts` |
+| `pnpm db:studio` | Browse the database |
+| `pnpm admin:create <user> "<Name>" [super_admin\|admin]` | Create an organizer account; prints its generated password once |
+| `pnpm email:dev` | Preview the email templates (port 3200) |
+
+### Database and settings
+
+The app stores everything in one SQLite file: `./data/sliot.db` in development (created and migrated on first use), `DATABASE_PATH` in production. For test data, run `pnpm db:seed`. It writes 20 teams in the prototype round and prints the organizer logins and team codes. The app always uses the real clock, so to see another stage in development, change the deadlines in `/admin/settings`.
+
+Outside services are configured with environment variables, listed with notes in `.env.example`. Copy it to `.env.local` in development, or to `/etc/sliot/sliot.env` linked as `.env.production.local` on the server. Until a service's variables are set:
+
+- **Email (SMTP):** emails wait in the outbox as pending.
+- **Drive (OAuth):** proposal uploads are refused with a clear message.
+- **Sheets:** the export button explains, and the CSV download still works.
+- **Turnstile:** the registration form shows a placeholder (development only).
+
+Production refuses to start without email, Drive and Turnstile.
 
 ## Project layout
 
+The 2027 site is a single scrolling page (see `docs/workload.md` for progress). Registration, the team portal and the admin dashboard come next.
+
 ```
 src/
-  app/              Routes (App Router). Each page.jsx renders a view.
-    layout.jsx      Root layout: fonts, metadata, smooth scroll, footer
-    fonts.js        next/font setup (Alexandria, Audiowide, Poppins, Roboto Mono, NicoMoji)
-    icon.png        Favicon
-  views/            Full-page views used by routes (Home, InnovationTour, ...)
-  components/       Page sections and UI components
-    ui/             Reusable UI pieces (BentoGrid, MovingBorders, Globe, ...)
-  config/site.mjs   Coming-soon switch, edition name/year, teaser copy and social links
-  constants/        Site content: navigation, socials, about, gallery, spotlight videos, partners
-  assets/index.js   Image paths (files live in public/images)
-  lib/utils.js      cn() class-name helper
-public/
-  images/           All site images, served as-is
-  *.pdf, *.docx     Downloadable documents
-deploy/             Server configuration examples
+  app/                Routes (App Router)
+    layout.tsx        Root layout: fonts, metadata, smooth scroll
+    page.tsx          The one-page site (new 2027 sections)
+    globals.css       Tailwind 4 theme (2027 tokens in @theme) and site-wide CSS
+    fonts.ts          next/font setup (Bebas Neue + Montserrat)
+    design-system/    Dev-only reference pages (tokens, contrast, callout states, prizes preview); 404 in production
+  components/
+    site/             The page's sections (nav, hero, callout, about, categories, timeline, prizes, memories, partners, FAQ, contact, footer)
+    ui/               Primitives (button, field, input)
+    HeroFigure.tsx    The SLIoT figure (cut edges must sit on an edge or fade out)
+  content/            All copy and data for the page (see the table below)
+  lib/
+    competition.ts    Competition stage and countdowns from the key dates
+    motion/           GSAP + ScrollTrigger, Lenis provider, reduced-motion hook, eases
+    utils.ts          cn() class-name helper (knows the custom token names)
+public/images/        All site images, served as-is
+docs/                 architecture.md, frontend-plan.md, workload.md
+deploy/               Server configuration examples; backup/ holds the backup scripts and setup guide
 ecosystem.config.cjs  PM2 process definition
 ```
 
-Routes: `/`, `/guidelines`, `/faqs`, `/finalists`, `/innovation-tour`, `/session_1`, and a 404 page.
+## Branches and deploys
 
-## Coming-soon mode
-
-Between editions the site can show a single teaser page instead of the full site.
-
-It is controlled by `COMING_SOON` in `src/config/site.mjs`:
-
-- `true`: `/` shows the coming-soon page (`src/views/ComingSoon.jsx`, always exactly one screen tall with no scrolling: the robot scales to the space left, and very short screens drop the copyright line and the first sentence), every other page redirects to `/` with a temporary (307) redirect, unknown URLs show the teaser with a 404 status, and the full site's header and footer are hidden.
-- `false`: the full site is back exactly as before.
-
-Change the flag, commit and push; the deploy picks it up. The same file holds the edition name and year, the status text, the tagline and the social links shown on the teaser (Instagram and TikTok are placeholders marked `TODO`).
-
-The link-preview image for WhatsApp/Facebook is `public/images/og-coming-soon.jpg` (1200x630). Replace it when the edition or artwork changes.
+Every push to `main` deploys to sliot.cse.mrt.ac.lk. The rebuild happens on the `full-site` branch, which must not be merged into `main` until launch (step Y in `docs/workload.md`).
 
 ## Updating content
 
-Most yearly updates are data edits; no component changes are needed.
-
 | What | Where |
 |---|---|
-| Navigation items | `navigation` in `src/constants/index.js` |
-| Social links (footer) | `socials` in `src/constants/index.js` |
-| About text | `aboutGridItems` in `src/constants/index.js` |
-| Proposal guideline cards | `guidelines` in `src/constants/index.js` |
-| Spotlight videos | `spotlight` in `src/constants/index.js` (YouTube embed links) |
-| Partner logos | `organizers` in `src/constants/index.js` + `src/assets/index.js` |
-| Timeline | `events` in `src/components/design/TimeLine.jsx` |
-| Prizes | `prizes` in `src/components/section/Prizes.jsx` |
-| FAQs | `faqData` in `src/components/Rules.jsx` |
-| Contact people | `src/components/ContactUs.jsx`, photos in `public/images/people` |
-| Finalists | `teams` in `src/views/SelectedTeams.jsx` |
-| Registration / proposal links | `src/components/JoinNow.jsx`, `src/components/SubmissionGuidelines.jsx` |
-| Page title | `metadata` in `src/app/layout.jsx` (coming-soon title and share tags in `src/app/page.jsx`) |
-| Coming-soon page text and social links | `src/config/site.mjs` |
+| Edition name, site title, description, hero copy, kinetic band words | `src/content/site.ts` |
+| Navigation sections | `src/content/navigation.ts` |
+| Social channels (WhatsApp first) | `src/content/socials.ts` |
+| Key dates (live callout, navigation buttons, timeline, FAQ) and the proposal template link. Registration close, proposal and prototype dates saved in `/admin/settings` replace the ones here | `src/content/deadlines.ts` |
+| Timeline events (sessions, workshops) | `src/content/timeline.ts` |
+| About beats | `src/content/about.ts` |
+| Categories and team rules | `src/content/categories.ts`, `src/lib/team-rules.ts` |
+| "How to take part" steps | `src/content/steps.ts` |
+| Prize amounts (null shows "TBA") and special awards | `src/content/prizes.ts` |
+| Photo albums for Memories | `src/content/memories.ts` (files in `public/images/gallery/<folder>/`, numbered 1..n) |
+| FAQ | `src/content/faq.ts` |
+| Contact people, address, partners and tiers | `src/content/people.ts` |
+| Colours, type scale, motion tokens | `@theme` blocks in `src/app/globals.css` (check `/design-system` in development) |
+
+Placeholders that still need real 2027 content are marked `TODO(2027)` in the code.
 
 ### Images
 
-Put image files in `public/images/` and reference them by path (for example `/images/robot.png`), usually through an export in `src/assets/index.js`. Components use plain `<img>` tags, except the gallery.
+Put image files in `public/images/` and reference them by path, usually through an export in `src/assets/index.ts`.
 
-### Gallery
+### Memories photos
 
-Gallery photos live in `public/images/gallery/<folder>/` and are numbered `1.jpg`, `2.jpg`, ... with no gaps. To add an event:
-
-1. Copy the photos into a new folder, numbered from 1.
-2. In `src/constants/index.js`, build the list with `galleryImages("<folder>", <count>)` (pass `"jpeg"` as a third argument if the files are `.jpeg`).
-3. Add an entry to `currentSLIoTShowcases` or `previousSLIoTShowcases` with `img`, `imageArray` and a `sizes` hint matching the tile's grid span (see the existing entries).
-
-Gallery tiles and the lightbox use `next/image`, so visitors get resized AVIF/WebP versions automatically. Large originals are fine.
+Copy an event's photos into `public/images/gallery/<folder>/`, numbered `1.jpg`, `2.jpg`, ... with no gaps, then add an album (event name, folder, count, extension) to the right edition in `src/content/memories.ts`.
 
 ## Deployment
 
 Pushing to `main` deploys automatically through `.github/workflows/deploy.yml` on the self-hosted runner in `/var/www/sliot/SLIoT-Challenge-2025`:
 
-1. `git reset --hard origin/main`
-2. `pnpm install --frozen-lockfile`
-3. `pnpm build`
-4. `pm2 reload ecosystem.config.cjs`
-5. Health check on `http://127.0.0.1:3000/`
+1. Snapshot of the database (stops the deploy if it can't be made; see `deploy/backup/README.md`)
+2. `git reset --hard origin/main`
+3. `pnpm install --frozen-lockfile`
+4. `pnpm build`
+5. `pnpm db:migrate`
+6. `pm2 reload ecosystem.config.cjs`
+7. Health check on `http://127.0.0.1:3000/api/health`
 
 The Next.js server listens on `127.0.0.1:3000` and nginx proxies public traffic to it. See `deploy/nginx.conf.example`.
 
@@ -119,7 +129,11 @@ npm install -g pm2
 # In /var/www/sliot/SLIoT-Challenge-2025, after the first successful build
 pm2 start ecosystem.config.cjs
 pm2 save
-pm2 startup   # prints a command that makes PM2 start on boot
+pm2 startup   # prints a sudo command: run it so PM2 runs as a systemd service and starts on boot
 ```
 
+Start PM2 from an SSH session or systemd, never only from a workflow run. The self-hosted runner kills the processes a job started when the job ends, which takes the site down (502) right after a "successful" deploy. The workflow's restart step clears `RUNNER_TRACKING_ID` so the processes it reloads are left alone.
+
 Then update the nginx site: replace the location that served the old `dist/` folder with the proxy blocks from `deploy/nginx.conf.example`, keep the existing redirect locations, and reload nginx (`sudo nginx -t && sudo systemctl reload nginx`).
+
+The database backups have their own setup: `deploy/backup/README.md`. Do it before the first deploy that creates a database.

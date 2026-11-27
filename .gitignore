@@ -30,3 +30,17 @@ next-env.d.ts
 
 # Session memory (/remember)
 memory.md
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Local SQLite database and uploads (development)
+/data/
+
+# Environment files with real values (.env.example is committed)
+.env
+.env.*
+!.env.example
+
+SLIOT_27_Master_Program_Calendar-v5.xlsx
+docs/SLIoT-2027-Email-Templates-Review.docx

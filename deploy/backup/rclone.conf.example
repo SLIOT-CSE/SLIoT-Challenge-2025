@@ -1,0 +1,13 @@
+# /etc/sliot-backup/rclone.conf on the server: owner root, mode 600. No real values in Git.
+# The keys are the bucket-limited R2 API token ("Object Read & Write"); ACCOUNT_ID is in the
+# R2 endpoint address shown in the Cloudflare dashboard.
+
+[r2]
+type = s3
+provider = Cloudflare
+access_key_id =
+secret_access_key =
+endpoint = https://ACCOUNT_ID.r2.cloudflarestorage.com
+acl = private
+# The token is limited to one bucket and may not list or create buckets
+no_check_bucket = true

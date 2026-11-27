@@ -1,0 +1,4 @@
+# Files that run on the Linux server keep Linux line endings, even when edited on Windows:
+# a CRLF breaks shell scripts, sudo rules and systemd units
+deploy/** text eol=lf
+.github/workflows/*.yml text eol=lf
