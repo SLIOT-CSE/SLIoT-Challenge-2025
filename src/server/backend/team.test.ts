@@ -29,20 +29,12 @@ const outboxFor = (teamId: number) =>
   db.select().from(schema.emailOutbox).where(eq(schema.emailOutbox.teamId, teamId)).all();
 
 describe("competition state", () => {
-  it("is the prototype round in the seeded database, and follows the dev clock", async () => {
+  it("is the prototype round in the seeded database, and follows the clock", async () => {
     const b = browser(db, fake);
     expect((await b.getCompetitionState()).stage).toBe("prototype");
     expect((await b.getCompetitionState()).shortlistState).toBe("finalised");
     setStage(db, "registration");
     expect((await b.getCompetitionState()).stage).toBe("registration");
-  });
-
-  it("ignores the dev clock in production", async () => {
-    const b = browser(db, fake);
-    b.ctx.production = true;
-    b.ctx.clock = () => Date.UTC(2020, 0, 1);
-    expect((await b.getCompetitionState()).stage).toBe("before-registration");
-    expect((await b.getSettings()).now).toBeNull();
   });
 });
 

@@ -2,8 +2,7 @@ import Image from "next/image";
 import type { CSSProperties } from "react";
 import { ArrowDown } from "lucide-react";
 import { howStaircaseBackdrop } from "@/assets";
-import { resolveStepDate, steps, type Step } from "@/content/steps";
-import { formatDayMonth } from "@/lib/competition";
+import { steps, type Step } from "@/content/steps";
 import { StaircaseScene } from "@/components/site/staircase-scene";
 import { cn } from "@/lib/utils";
 
@@ -121,8 +120,6 @@ export function HowItWorks() {
 
             {steps.map((step, i) => {
               const stepNum = String(i + 1).padStart(2, "0");
-              const dateIso = resolveStepDate(step.date);
-              const dateText = formatDayMonth(dateIso);
 
               return (
                 <li
@@ -140,8 +137,6 @@ export function HowItWorks() {
                     stepNum={stepNum}
                     index={i}
                     total={steps.length}
-                    dateIso={dateIso}
-                    dateText={dateText}
                   />
                 </li>
               );
@@ -171,15 +166,11 @@ function StairStepCard({
   stepNum,
   index,
   total,
-  dateIso,
-  dateText,
 }: {
   step: Step;
   stepNum: string;
   index: number;
   total: number;
-  dateIso: string;
-  dateText: string;
 }) {
   return (
     <article
@@ -226,15 +217,6 @@ function StairStepCard({
         <p className="max-w-[38ch] text-pretty text-small text-haze diag:text-[0.8125rem] diag:leading-snug scene:text-[clamp(0.8125rem,1.65svh,0.9375rem)] scene:leading-[1.5]">
           {step.body}
         </p>
-
-        <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <p className="inline-flex w-fit items-center gap-2 rounded-full bg-deep/90 px-3 py-1 text-caption text-foam ring-1 ring-edge/40">
-            <span className="text-haze">{step.date.label}</span>
-            <time dateTime={dateIso} className="font-semibold text-aqua">
-              {dateText}
-            </time>
-          </p>
-        </div>
       </div>
 
       {/* Illuminated stair tread nosing strip */}

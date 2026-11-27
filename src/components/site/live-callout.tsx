@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { LiveDot } from "@/components/site/live-dot";
 import { RegistrationCountdown } from "@/components/site/registration-countdown";
 import { SocialIcon } from "@/components/site/social-icon";
-import { deadlines, proposalTemplateUrl, type Deadlines } from "@/content/deadlines";
+import { proposalTemplateUrl, type Deadlines } from "@/content/deadlines";
 import { routes } from "@/content/navigation";
 import { whatsappChannel } from "@/content/socials";
 import {
@@ -37,7 +37,7 @@ export function calloutContent(stage: LaterStage, d: Deadlines): CalloutContent 
       return {
         status: "Proposal round is live",
         date: d.proposalDue,
-        headline: `Proposals due ${formatDayMonth(d.proposalDue)}, ${formatTime(d.proposalDue)}`,
+        headline: `Proposal submissions close ${formatDayMonth(d.proposalDue)}, ${formatTime(d.proposalDue)}`,
         body: "Upload your proposal as one PDF from the team portal. You can replace it until the deadline; the latest version is the one judged.",
         actions: [{ label: "Submit proposal", href: routes.teamPortal, kind: "primary", icon: "arrow" }, template],
       };
@@ -62,7 +62,7 @@ export function calloutContent(stage: LaterStage, d: Deadlines): CalloutContent 
         status: "Finalists announced",
         date: d.finale,
         headline: `Grand finale on ${formatDayMonth(d.finale)}`,
-        body: "The finalists pitch their prototypes to the judges at the University of Moratuwa.",
+        body: "Grand finalists present their finished IoT innovations to the judges at the University of Moratuwa, followed by the awarding ceremony.",
         actions: [whatsapp],
       };
     case "over":
@@ -86,7 +86,7 @@ const ICONS: Record<NonNullable<Action["icon"]>, ReactNode> = {
  * The live round panel under the hero. It changes with the competition stage, so a
  * visitor always sees the one thing to do now and the date it has to happen by.
  */
-export function LiveCallout({ stage, now }: { stage: Stage; now: Date }) {
+export function LiveCallout({ stage, now, deadlines }: { stage: Stage; now: Date; deadlines: Deadlines }) {
   if (countsDownToRegistrationClose(stage)) {
     return (
       <RegistrationCountdown

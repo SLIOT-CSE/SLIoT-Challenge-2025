@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 
 /**
- * A clock that keeps going from `baseNow`: the server's (or the sample) time when the page
- * loaded, plus what has elapsed since. Redraws every `tickMs`. In the sample, `baseNow` is
- * the switcher's fixed time, so the countdown moves from there at the real speed.
+ * A clock that keeps going from `baseNow`: the server's time when the page loaded, plus what
+ * has elapsed since. Redraws every `tickMs`.
  */
 export function useLiveNow(baseNow: number, tickMs: number): number {
   const [run, setRun] = useState({ base: baseNow, elapsed: 0 });
@@ -16,6 +15,6 @@ export function useLiveNow(baseNow: number, tickMs: number): number {
     return () => clearInterval(timer);
   }, [baseNow, tickMs]);
 
-  // A new base (the clock was moved) starts counting again from zero
+  // A new base (the state was reloaded) starts counting again from zero
   return baseNow + (run.base === baseNow ? run.elapsed : 0);
 }

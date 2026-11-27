@@ -54,8 +54,6 @@ export interface Submission {
 export type ShortlistState = "draft" | "finalised";
 
 export interface Settings {
-  /** The dev clock (`dev_now`). null means the real clock; always null in production */
-  now: number | null;
   shortlistState: ShortlistState;
   deadlines: Deadlines;
   /** When "Export to Sheets" last ran (architecture: `last_sheet_export_at`) */

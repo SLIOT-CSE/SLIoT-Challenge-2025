@@ -1,7 +1,6 @@
 import type { CategoryId } from "@/lib/team-rules";
 
-// Prize money per category, in LKR. null shows "To be announced".
-// TODO(2027): mock placeholder amounts for preview — replace with confirmed 2027 prize figures before launch.
+// Confirmed 2027 prize money per category, in LKR. null shows "To be announced".
 
 export type Placing = "first" | "second" | "third";
 
@@ -12,9 +11,9 @@ export const placings: { id: Placing; label: string; title: string; medal: strin
 ];
 
 export const prizes: Record<CategoryId, Record<Placing, number | null>> = {
-  school: { first: 100000, second: 75000, third: 50000 },
-  university: { first: 250000, second: 150000, third: 100000 },
-  open: { first: 200000, second: 125000, third: 75000 },
+  school: { first: 120000, second: 75000, third: 50000 },
+  university: { first: 175000, second: 120000, third: 75000 },
+  open: { first: 175000, second: 120000, third: 75000 },
 };
 
 /** Extra awards shown under the podium; the row is hidden while this is empty. TODO(2027) */

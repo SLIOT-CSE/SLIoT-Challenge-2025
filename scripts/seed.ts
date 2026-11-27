@@ -5,7 +5,7 @@ import { databasePath, getEnv } from "@/server/env";
 import { TEAM_STAGE_LABELS } from "@/lib/team-rules";
 
 // `pnpm db:seed`: wipes the local development database and fills it with the fixed test data
-// (20 teams, prototype round). Development only.
+// (20 teams in prototype-round stages). Development only.
 
 const env = getEnv();
 const file = databasePath(env);
@@ -28,7 +28,8 @@ async function main() {
     `  ${data.teams.length} teams, ${data.members.length} members, ${data.submissions.length} submissions, ` +
       `${data.emailOutbox.length} emails, ${data.auditLog.length} audit entries`,
   );
-  console.log(`  Dev clock: ${colombo.format(data.devNow)} (prototype round)\n`);
+  console.log(`  The data is dated as of ${colombo.format(data.asOf)} (prototype round).`);
+  console.log("  The app uses the real clock: the stage follows the deadlines in /admin/settings.\n");
 
   console.log("Organizer logins (/admin/login):");
   console.table(SEED_ADMIN_LOGINS.map(({ username, password, role }) => ({ username, password, role })));

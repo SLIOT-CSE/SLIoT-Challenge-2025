@@ -8,13 +8,13 @@ export const metadata: Metadata = { title: "Callout states", robots: { index: fa
 
 // A moment inside each stage, so every state of the live callout can be reviewed at once
 const SAMPLE_NOW: Record<Stage, string> = {
-  "before-registration": "2026-11-23T10:00:00+05:30",
-  registration: "2027-02-16T10:00:00+05:30",
-  proposal: "2027-03-04T10:00:00+05:30",
-  shortlisting: "2027-03-25T10:00:00+05:30",
-  prototype: "2027-06-01T10:00:00+05:30",
-  finale: "2027-06-28T10:00:00+05:30",
-  over: "2027-08-01T10:00:00+05:30",
+  "before-registration": "2026-11-25T10:00:00+05:30",
+  registration: "2026-12-15T10:00:00+05:30",
+  proposal: "2027-01-09T10:00:00+05:30",
+  shortlisting: "2027-01-15T10:00:00+05:30",
+  prototype: "2027-01-28T10:00:00+05:30",
+  finale: "2027-02-20T10:00:00+05:30",
+  over: "2027-04-01T10:00:00+05:30",
 };
 
 export default function CalloutStatesPage() {
@@ -33,7 +33,7 @@ export default function CalloutStatesPage() {
               <span className="font-semibold text-foam">{stage}</span>
               {actual !== stage && <span className="text-danger">sample date is in {actual}</span>}
             </div>
-            <LiveCallout stage={stage} now={now} />
+            <LiveCallout stage={stage} now={now} deadlines={deadlines} />
           </div>
         );
       })}

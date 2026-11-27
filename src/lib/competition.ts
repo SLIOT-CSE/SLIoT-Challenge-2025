@@ -31,7 +31,8 @@ export function stageAt(now: Date, d: Deadlines): Stage {
   if (t <= Date.parse(d.proposalDue)) return "proposal";
   if (t < Date.parse(d.shortlistAnnounced)) return "shortlisting";
   if (t <= Date.parse(d.prototypeDue)) return "prototype";
-  if (t < Date.parse(d.finale) + 24 * 3600 * 1000) return "finale";
+  // Covers both Grand Finale (day 1) and Shark Tank (day 2)
+  if (t < Date.parse(d.finale) + 48 * 3600 * 1000) return "finale";
   return "over";
 }
 

@@ -23,7 +23,7 @@ describe("seed data", () => {
     expect(count("shortlisted")).toBe(6);
     expect(count("prototype_submitted")).toBe(4);
     expect(new Set(data.teams.map((t) => t.category))).toEqual(new Set(["school", "university", "open"]));
-    expect(stageAt(new Date(data.devNow), deadlines)).toBe("prototype");
+    expect(stageAt(new Date(data.asOf), deadlines)).toBe("prototype");
   });
 
   it("is the same on every run", () => {
@@ -71,7 +71,7 @@ describe("seed data", () => {
     }
     for (const s of data.submissions) {
       const due = s.kind === "proposal" ? Date.parse(deadlines.proposalDue) : Date.parse(deadlines.prototypeDue);
-      expect(s.submittedAt).toBeLessThanOrEqual(Math.min(due, data.devNow));
+      expect(s.submittedAt).toBeLessThanOrEqual(Math.min(due, data.asOf));
     }
     expect(data.shortlistFinalisations[0].teamIds).toEqual(data.teams.filter((t) => t.shortlistMark).map((t) => t.id));
   });
@@ -99,8 +99,5 @@ describe("seedDatabase", () => {
     const superAdmin = db.select().from(schema.admins).where(eq(schema.admins.username, "super")).get()!;
     expect(superAdmin.passwordHash).toMatch(/^\$argon2id\$/);
     expect(await verify(superAdmin.passwordHash, SEED_ADMIN_LOGINS[0].password)).toBe(true);
-
-    const devNow = db.select().from(schema.settings).where(eq(schema.settings.key, "dev_now")).get()!;
-    expect(JSON.parse(devNow.value)).toBe(data.devNow);
   });
 });

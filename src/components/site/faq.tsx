@@ -1,12 +1,13 @@
 import { ArrowUpRight, Plus } from "lucide-react";
-import { faqs } from "@/content/faq";
+import type { Deadlines } from "@/content/deadlines";
+import { faqsFor } from "@/content/faq";
 import HeroFigure from "@/components/HeroFigure";
 
 /**
  * FAQ: one list of questions as native <details> (searchable with Ctrl+F, works without
  * JavaScript, opening one closes the others). The figure keeps watch beside them on desktop.
  */
-export function Faq() {
+export function Faq({ deadlines }: { deadlines: Deadlines }) {
   return (
     <section id="faq" aria-labelledby="faq-title" className="relative overflow-x-clip py-20 md:py-28">
       <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:gap-20">
@@ -21,7 +22,7 @@ export function Faq() {
           </header>
 
           <div className="flex flex-col divide-y divide-ocean/70 border-y border-ocean/70">
-            {faqs.map((item) => (
+            {faqsFor(deadlines).map((item) => (
               <details key={item.q} name="faq" className="faq-item group">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-body-lg font-semibold text-foam transition-colors hover:text-mint [&::-webkit-details-marker]:hidden">
                   {item.q}

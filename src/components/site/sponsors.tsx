@@ -27,6 +27,7 @@ export function Sponsors() {
                       width={p.width}
                       height={p.height}
                       sizes="16rem"
+                      unoptimized={p.logo.endsWith(".svg")}
                       className="h-20 w-auto max-w-full object-contain [filter:drop-shadow(0_0_1px_rgb(221_247_239/0.85))_drop-shadow(0_0_10px_rgb(221_247_239/0.3))] transition-transform duration-300 ease-out-quart group-hover:-translate-y-0.5 motion-reduce:transition-none sm:h-24"
                     />
                   );

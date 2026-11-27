@@ -5,7 +5,7 @@ import { openTestDatabase, type Db } from "../db/client";
 import * as schema from "../db/schema";
 import { seedDatabase } from "../db/seed";
 import { buildSeedData, SEED_ADMIN_LOGINS } from "../db/seed-data";
-import { readDeadlines, writeDevNow } from "../settings";
+import { readDeadlines } from "../settings";
 import type { CookieJar, DriveUploader, RequestContext, Services, SheetsExporter } from "./context";
 import { createBackend } from "./index";
 
@@ -22,9 +22,23 @@ export interface FakeServices {
 export const SEED = buildSeedData();
 export const [SUPER, ADMIN1, ADMIN2] = SEED_ADMIN_LOGINS;
 
+/** Each test database's app time: where it was set, and the real time then, so it keeps running */
+const appTimes = new WeakMap<Db, { at: number; setAt: number }>();
+
+function setAppTime(db: Db, at: number): void {
+  appTimes.set(db, { at, setAt: Date.now() });
+}
+
+function appTime(db: Db, real: number): number {
+  const time = appTimes.get(db);
+  return time ? time.at + Math.max(0, real - time.setAt) : real;
+}
+
+/** A seeded database, sitting at the moment the seed data depicts (the prototype round) */
 export async function seededDb(): Promise<Db> {
   const db = openTestDatabase();
   await seedDatabase(db);
+  setAppTime(db, SEED.asOf);
   return db;
 }
 
@@ -64,13 +78,14 @@ export function browser(db: Db, fake: FakeServices, ip = "10.0.0.1") {
     youtubeVideoExists: async () => fake.videoExists,
   };
   const ctx: RequestContext = { db, production: false, ip, userAgent: "vitest", cookies, services };
+  ctx.appClock = () => appTime(db, (ctx.clock ?? Date.now)());
   const backend = createBackend(ctx, async (token) => token !== "bad-token");
   return Object.assign(backend, { jar, ctx });
 }
 
-/** Moves the dev clock into a competition stage */
+/** Moves the app clock into a competition stage */
 export function setStage(db: Db, stage: Stage): void {
-  writeDevNow(db, sampleTimeForStage(stage, readDeadlines(db)));
+  setAppTime(db, sampleTimeForStage(stage, readDeadlines(db)));
 }
 
 export function teamByName(db: Db, name: string) {

@@ -35,11 +35,7 @@ export async function seedDatabase(db: Db, data: SeedData = buildSeedData()): Pr
     tx.insert(schema.teams).values(data.teams).run();
     tx.insert(schema.members).values(data.members).run();
     tx.insert(schema.submissions).values(data.submissions).run();
-    // The dev clock runs from the moment of seeding (its updated_at is real time)
-    const seededAt = Date.now();
-    tx.insert(schema.settings)
-      .values(data.settings.map((row) => (row.key === "dev_now" ? { ...row, updatedAt: seededAt } : row)))
-      .run();
+    tx.insert(schema.settings).values(data.settings).run();
     tx.insert(schema.shortlistFinalisations).values(data.shortlistFinalisations).run();
     tx.insert(schema.emailOutbox).values(data.emailOutbox).run();
     tx.insert(schema.auditLog).values(data.auditLog).run();

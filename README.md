@@ -36,7 +36,7 @@ Other scripts:
 
 ### Database and settings
 
-The app stores everything in one SQLite file: `./data/sliot.db` in development (created and migrated on first use), `DATABASE_PATH` in production. For test data, run `pnpm db:seed`. It writes 20 teams in the prototype round and prints the organizer logins and team codes. The test-data switcher in the corner of `/register`, `/team` and `/admin` (development only) moves the competition clock, signs in as any team or organizer, and reseeds.
+The app stores everything in one SQLite file: `./data/sliot.db` in development (created and migrated on first use), `DATABASE_PATH` in production. For test data, run `pnpm db:seed`. It writes 20 teams in the prototype round and prints the organizer logins and team codes. The app always uses the real clock, so to see another stage in development, change the deadlines in `/admin/settings`.
 
 Outside services are configured with environment variables, listed with notes in `.env.example`. Copy it to `.env.local` in development, or to `/etc/sliot/sliot.env` linked as `.env.production.local` on the server. Until a service's variables are set:
 
@@ -85,7 +85,7 @@ Every push to `main` deploys to sliot.cse.mrt.ac.lk. The rebuild happens on the 
 | Edition name, site title, description, hero copy, kinetic band words | `src/content/site.ts` |
 | Navigation sections | `src/content/navigation.ts` |
 | Social channels (WhatsApp first) | `src/content/socials.ts` |
-| Key dates (live callout, navigation buttons, timeline, FAQ) and the proposal template link | `src/content/deadlines.ts` |
+| Key dates (live callout, navigation buttons, timeline, FAQ) and the proposal template link. Registration close, proposal and prototype dates saved in `/admin/settings` replace the ones here | `src/content/deadlines.ts` |
 | Timeline events (sessions, workshops) | `src/content/timeline.ts` |
 | About beats | `src/content/about.ts` |
 | Categories and team rules | `src/content/categories.ts`, `src/lib/team-rules.ts` |

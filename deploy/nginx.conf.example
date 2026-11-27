@@ -13,6 +13,17 @@
 # AT LAUNCH (step Y): remove the old `/register` redirect. /register is now the
 # Next.js registration page, and the redirect would hide it.
 #
+# PRODUCTION (set up 2026-11-26). The server also serves other apps under this domain
+# (/finance/, /delegate-slots/, /slot-api/, /memorynexus, /auth/google/callback), so
+# only these pieces were added:
+#   /etc/nginx/conf.d/sliot-limits.conf         the map and limit_req_zone lines
+#   /etc/nginx/snippets/sliot-proxy.conf        proxy_pass http://127.0.0.1:3000 and headers
+#   /etc/nginx/snippets/sliot-locations.conf    /team, /admin/login, /api/team/proposal
+# The last is included from /etc/nginx/sites-enabled/sliot, which is a regular file, not
+# a link: edit that one. AT LAUNCH, delete the `/register` redirect there and add the
+# `location = /register` block below to sliot-locations.conf, then `sudo nginx -t` and
+# reload. nginx's default body limit (1 MB) covers every other location.
+#
 # The limit_req_zone and map lines below belong in the http {} block
 # (for example /etc/nginx/conf.d/sliot-limits.conf), not inside server {}.
 

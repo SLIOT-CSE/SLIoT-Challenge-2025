@@ -112,7 +112,7 @@ The header links jump to section anchors; the URL hash updates as you scroll.
   - Buttons: **Register** and **How it works**, the same at every stage
   - No countdown line: the countdown and the next date are in the live callout below
 - **Background:** the aurora. Slow-moving gradient bands (CSS, GPU-cheap), with a sparse field of sensor dots that blink in sequence. Over the aurora, a cyan particle nebula (`src/components/ui/quantum-nebula.tsx`, three.js, loaded lazily through `src/components/site/hero-nebula.tsx`) gives cosmic depth: fine particles flow through a swirling field and gather into wisps, bright strands and a soft core that keep re-forming, spread across the whole hero. It drifts slowly and sits behind the content at 75% opacity and fades out towards the bottom. The flow is a small CPU simulation (11,000 particles on desktop, 5,000 on phones stepped every other frame, sines from a lookup table, under 1 ms a frame on a desktop); it is pre-flowed in slices before fading in, pauses off screen, and under reduced motion shows one still frame. Without WebGL it is simply absent. Two portal rings (`public/images/arcane-circle.webp`, a neon arcane tech circle with runes and four compass spikes) sit centred on the left and right edges, so half of each shows, turning slowly (90 s a turn) in opposite directions at 50% opacity, each with a portal in its opening: a deep cyan well with a breathing light at the centre (smaller and 30% on phones); they stop under reduced motion.
-- **Load sequence:** the aurora fades up. The title lines rise out of a mask, one after another. The avatar resolves from blur with its breathing glow, and its cloth starts waving. Total about 1.4s.
+- **Load sequence & first-visit preloader:** On a visitor's first load of `/` in a session (`sessionStorage` `sliot:hero-loaded`), a full-screen `#010610` (`abyss`) preloader curtain (`HeroLoader`) shows the SLIoT mark framed by an orbital telemetry ring, Bebas Neue `00%–100%` counter, and hairline aqua progress bar while `HeroAvatar` (4 WebGL layers), `QuantumNebula` (180-step warmup), and `arcane-circle.webp` finish loading (5 s safety timeout). Once ready, the curtain lifts (`--ease-out-expo`) and triggers the Hero's `1.4s` title/figure entrance (`intro-*`). Skipped on repeat in-session visits and under `prefers-reduced-motion`.
 - **On scroll:** the figure drifts up slower than the text (parallax), and the aurora darkens toward the next section. The portal rings slide out sideways (left ring off the left edge, right ring off the right), gone by the time 60% of the hero has scrolled past and back on the way up; at every width, full motion only.
 
 ### 5.3 Live round callout, from SpiritX
@@ -130,9 +130,9 @@ A wide band right under the hero. **It changes with the competition's state**, r
 
 Until registration closes there is **no panel**: the countdown sits straight on the page over a soft aurora bloom. A heading and one **Register** button, then days, hours, minutes and seconds in very large Bebas (sensor-node colons, digits roll as they change, the seconds glow aqua as the live part), then a signal trace from the opening date to the closing date, lit up to now. Reduced motion swaps the digits without rolling; screen readers get the dates, not the ticking digits. From the proposal round on it is a panel with the date large in Bebas and a days-left counter. A small pulsing aqua dot marks "live".
 
-### 5.4 Kinetic band
+### 5.4 Kinetic band (removed)
 
-A single marquee band between the callout and About: "Sense · Connect · Act · Build" in huge outlined Bebas. Its speed and direction react to scroll velocity. It is the only marquee on the page, and it stops under reduced motion.
+Removed on 2026-11-26: `LiveCallout` now flows directly into `About`.
 
 ### 5.5 About: "the connected island", from MoraXtreme
 
@@ -168,9 +168,9 @@ A single marquee band between the callout and About: "Sense · Connect · Act ·
 
 ### 5.8 Timeline: alternating chronology spine
 
-- **Desktop:** Pinned over a generated dark architectural light-corridor backdrop (`timeline-corridor.webp`). Vertical scroll moves the horizontal track sideways (`TimelineScene`), with Double-Bezel milestone cards (`01`–`09` ghosted step numerals, Bebas dates) alternating above and below a graduated central telemetry spine. The active event carries the pulsing aqua **"You are here"** marker and countdown pill, plus a bottom scrub progress bar.
+- **Phone, Tablet & Desktop:** Pinned over a generated dark architectural light-corridor backdrop (`timeline-corridor.webp`). Vertical scroll moves the horizontal track sideways (`TimelineScene`), with Double-Bezel milestone cards (`01`–`13` ghosted step numerals, Bebas dates) alternating above and below a graduated central telemetry spine, linked by curved box-to-box SVG arrows and a bottom scrub progress bar.
 - **Skip timeline:** A pill link jumps past the pinned length.
-- **Phone and reduced motion:** Collapses into a clean left-rail vertical stack of the same Double-Bezel cards with no pin.
+- **Reduced motion:** Collapses into a clean left-rail vertical stack of the same Double-Bezel cards with no pin.
 - **Data:** The registration, proposal and prototype dates come from settings, so the timeline and the deadline locks never disagree.
 
 ### 5.9 Prizes: stage-lit podium
@@ -206,7 +206,7 @@ Organizers first (CSE, University of Moratuwa), then partners by tier (SLT-MOBIT
 ### 5.14 Footer
 
 - **Desktop layout:** Three-zone monumental stage — logo and one-line description on the left, centered SLIoT robot figure framed by an SVG concentric IoT circuit ring in the middle, and organizer credit with partner logos on the right — flowing into the giant outlined `SLIoT 2027` wordmark and a bottom hairline bar (copyright and circular social icons).
-- **Wordmark:** The thin outline holds a fine grid of round dots that thins out towards the cut-off bottom. One soft aqua light crosses the dots every 9 seconds; with reduced motion it rests over the year.
+- **Wordmark:** The thin outline holds a fine grid of round dots that thins out towards the cut-off bottom. A soft aqua light sweeps across the dots in 5.5s, starting immediately on `S` when the wordmark scrolls into view; with reduced motion it rests over the year.
 - **Below 1024px:** The robot figure and circuit ring sit centered as a dimmed backdrop, with the logo, description, organizer credit, partner logos, `SLIoT 2027`, copyright/links, and social icons stacked cleanly.
 - **Back to top:** A button with scroll progress shown as a ring around it.
 
@@ -276,7 +276,7 @@ These follow the product side of the design system: same tokens and fonts, calme
 - **Data access:** `src/lib/data/` exposes typed functions (`getTeams()`, `getTeam(code)`, `uploadProposal()`, `finaliseShortlist()` ...). Today they're backed by `src/lib/mock/`; later they become server actions and route handlers with the same signatures.
 - **Sample teams:** 200 generated from curated lists of Sri Lankan names, schools and universities, with a fixed seed so screenshots are stable. They span every stage: no proposal, multiple versions, shortlisted, not shortlisted, prototype submitted.
 - **Mock behaviour:** kept in memory per browser session, so the flows can be clicked through end to end. Register → get a code → log in → upload → (admin) shortlist → finalise → submit prototype.
-- **A demo switcher** (development only) sets the competition state, to preview every callout and portal state.
+- **No demo switcher** (removed 2026-11-26): the screens show what is in the database, and the stage follows the real time and the deadlines.
 - **Coming-soon:** while `COMING_SOON` is on, `/register` and `/team` stay redirected in production. `/admin` stays reachable (architecture decision), but shows the sample-data badge until the backend lands.
 
 ## 7. Copy

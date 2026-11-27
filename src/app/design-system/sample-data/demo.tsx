@@ -27,13 +27,13 @@ export function SampleDataDemo() {
     };
   }, [version]);
 
-  if (!state || !teams) return <p className="text-haze">Loading test data…</p>;
+  if (!state || !teams) return <p className="text-haze">Loading data…</p>;
 
   return (
     <>
       <p data-testid="state" className="text-body-lg">
         Stage: <strong>{state.stage}</strong> · Shortlist: <strong>{state.shortlistState}</strong> · {teams.length} teams
-        {teams.length === 0 && " (sign in as an organizer from the switcher to see them)"}
+        {teams.length === 0 && " (sign in as an organizer at /admin/login to see them)"}
       </p>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[40rem] text-left text-small">

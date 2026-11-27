@@ -20,7 +20,7 @@ const Context = createContext<AdminSessionValue | null>(null);
 
 /**
  * Who is signed in on /admin. It reads the session on load and again whenever the sample store
- * changes (signing in or out from the dev switcher, an account being disabled), and keeps the
+ * changes (signing in or out, an account being disabled), and keeps the
  * last answer while it checks so the screen doesn't flash.
  */
 export function AdminSessionProvider({ children }: { children: ReactNode }) {

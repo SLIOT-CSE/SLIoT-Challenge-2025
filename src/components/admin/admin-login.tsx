@@ -5,15 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { logo } from "@/assets";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { NetworkError, adminLogin, getCurrentAdmin, type AdminRole } from "@/lib/data";
-import { listDevAdminLogins } from "@/server/dev-actions";
+import { NetworkError, adminLogin, getCurrentAdmin } from "@/lib/data";
 import { formatWait } from "@/components/team/portal";
 import { useSecondsLeft } from "@/components/team/use-seconds-left";
-import { ADMIN_HOME, ROLE_LABEL } from "./nav";
+import { ADMIN_HOME } from "./nav";
 
 const NETWORK_TEXT = "We couldn't reach the server. Check your connection and try again.";
 
@@ -140,14 +138,6 @@ export function AdminLogin() {
         </Button>
       </form>
 
-      <SampleLogins
-        onFill={(u, p) => {
-          setUsername(u);
-          setPassword(p);
-          setProblem(null);
-        }}
-      />
-
       <Button asChild variant="ghost" size="sm" className="w-fit">
         <Link href="/">
           <ArrowLeft aria-hidden="true" className="size-4" />
@@ -155,41 +145,6 @@ export function AdminLogin() {
         </Link>
       </Button>
     </div>
-  );
-}
-
-type DevLogin = Awaited<ReturnType<typeof listDevAdminLogins>>[number];
-
-/** Development only: the seeded organizer logins (`pnpm db:seed`), so nobody has to remember them */
-function SampleLogins({ onFill }: { onFill: (username: string, password: string) => void }) {
-  const [logins, setLogins] = useState<DevLogin[]>([]);
-  useEffect(() => {
-    if (process.env.NODE_ENV === "production") return;
-    listDevAdminLogins().then(setLogins, () => undefined);
-  }, []);
-  if (process.env.NODE_ENV === "production" || logins.length === 0) return null;
-  return (
-    <section aria-label="Sample organizer logins" className="flex flex-col gap-3 rounded-panel border border-dashed border-warning/50 p-4">
-      <div className="flex items-center gap-2">
-        <Badge tone="warning">Sample data</Badge>
-        <h2 className="text-small font-semibold text-foam">Sample organizers</h2>
-      </div>
-      <ul className="flex flex-col gap-2">
-        {logins.map((a) => (
-          <li key={a.username} className="flex items-center justify-between gap-3">
-            <span className="min-w-0 text-small">
-              <span className="block truncate font-semibold text-foam">{a.displayName}</span>
-              <span className="block text-caption text-haze">
-                {ROLE_LABEL[a.role as AdminRole]} · <code className="font-mono">{a.username}</code>
-              </span>
-            </span>
-            <Button variant="secondary" size="sm" onClick={() => onFill(a.username, a.password)}>
-              Fill in<span className="sr-only"> {a.displayName}</span>
-            </Button>
-          </li>
-        ))}
-      </ul>
-    </section>
   );
 }
 

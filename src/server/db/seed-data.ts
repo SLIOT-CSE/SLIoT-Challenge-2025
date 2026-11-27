@@ -8,7 +8,8 @@ import type * as schema from "./schema";
 // same 20 teams, codes and logins. Pure: no database access here, so it can be unit tested.
 //
 // Scenario: the prototype round. Registration and proposals are closed, the shortlist was
-// finalised, and prototypes are due in four days by the dev clock (`dev_now` setting).
+// finalised, and prototypes are due four days after `asOf`, the moment the data depicts. The app
+// itself uses the real clock.
 //
 // Every name, email, NIC and number is invented: emails end in @example.lk, NICs start with
 // 2099 (not a possible birth year), WhatsApp numbers are +94 700 xxx xxx. No seeded email is
@@ -41,8 +42,8 @@ export interface SeedData {
   shortlistFinalisations: Insert<typeof schema.shortlistFinalisations>[];
   emailOutbox: Insert<typeof schema.emailOutbox>[];
   auditLog: Insert<typeof schema.auditLog>[];
-  /** The dev clock the seed sets: four days before prototypes are due */
-  devNow: number;
+  /** The moment the data depicts: four days before prototypes are due. Not stored */
+  asOf: number;
 }
 
 /** mulberry32: a small seeded random number generator */
@@ -137,7 +138,7 @@ export function buildSeedData(): SeedData {
   const proposalDue = t(d.proposalDue);
   const prototypeDue = t(d.prototypeDue);
   const finalisedAt = t(d.shortlistAnnounced) - HOUR;
-  const devNow = prototypeDue - 4 * DAY;
+  const asOf = prototypeDue - 4 * DAY;
   const superAdmin = SEED_ADMIN_LOGINS[0];
 
   const data: SeedData = {
@@ -149,7 +150,7 @@ export function buildSeedData(): SeedData {
     shortlistFinalisations: [],
     emailOutbox: [],
     auditLog: [],
-    devNow,
+    asOf,
   };
 
   const audit = (row: Omit<Insert<typeof schema.auditLog>, "ip"> & { ip?: string | null }) =>
@@ -183,7 +184,7 @@ export function buildSeedData(): SeedData {
       password: a.password,
       disabled: false,
       createdAt: registrationOpens - (10 - i) * DAY,
-      lastLoginAt: i === 0 ? devNow - 2 * HOUR : i === 1 ? devNow - 3 * DAY : null,
+      lastLoginAt: i === 0 ? asOf - 2 * HOUR : i === 1 ? asOf - 3 * DAY : null,
     });
   });
 
@@ -292,7 +293,9 @@ export function buildSeedData(): SeedData {
 
     if (plan.stage === "prototype_submitted") {
       const videoId = VIDEO_IDS[i % VIDEO_IDS.length];
-      const at = finalisedAt + (5 + i) * DAY;
+      const windowStart = finalisedAt + DAY;
+      const windowEnd = Math.max(windowStart, asOf - HOUR);
+      const at = Math.round(windowStart + ((i + 1) / (PLANS.length + 1)) * (windowEnd - windowStart));
       data.submissions.push({
         teamId,
         kind: "prototype",
@@ -332,10 +335,10 @@ export function buildSeedData(): SeedData {
   });
 
   // A little organizer activity for the audit log
-  audit({ actorType: "admin", actorId: 2, action: "admin.login", targetType: "admin", targetId: "2", ip: SEED_IP, createdAt: devNow - 3 * DAY });
-  audit({ actorType: "admin", actorId: 2, action: "export.csv", details: { count: data.teams.length }, ip: SEED_IP, createdAt: devNow - 3 * DAY + 10 * 60 * 1000 });
-  audit({ actorType: "anonymous", actorId: null, action: "admin.login_failed", details: { username: "admin2" }, ip: SEED_IP, createdAt: devNow - DAY });
-  audit({ actorType: "admin", actorId: superAdmin.id, action: "admin.login", targetType: "admin", targetId: "1", ip: SEED_IP, createdAt: devNow - 2 * HOUR });
+  audit({ actorType: "admin", actorId: 2, action: "admin.login", targetType: "admin", targetId: "2", ip: SEED_IP, createdAt: asOf - 3 * DAY });
+  audit({ actorType: "admin", actorId: 2, action: "export.csv", details: { count: data.teams.length }, ip: SEED_IP, createdAt: asOf - 3 * DAY + 10 * 60 * 1000 });
+  audit({ actorType: "anonymous", actorId: null, action: "admin.login_failed", details: { username: "admin2" }, ip: SEED_IP, createdAt: asOf - DAY });
+  audit({ actorType: "admin", actorId: superAdmin.id, action: "admin.login", targetType: "admin", targetId: "1", ip: SEED_IP, createdAt: asOf - 2 * HOUR });
 
   // One email that gave up, so the dashboard shows a failure. Never retried (attempts at the limit)
   const reminderTeam = data.teams[3];
@@ -347,12 +350,12 @@ export function buildSeedData(): SeedData {
     props: { code: reminderTeam.code, teamName: reminderTeam.name },
     status: "failed",
     attempts: 6,
-    nextAttemptAt: devNow - DAY,
+    nextAttemptAt: asOf - DAY,
     lastError: "550 5.1.1 The email account that you tried to reach does not exist (seeded example)",
-    createdAt: devNow - 2 * DAY,
+    createdAt: asOf - 2 * DAY,
     sentAt: null,
   });
-  audit({ actorType: "anonymous", actorId: null, action: "team.code_reminder_requested", targetType: "team", targetId: String(reminderTeam.id), ip: SEED_IP, createdAt: devNow - 2 * DAY });
+  audit({ actorType: "anonymous", actorId: null, action: "team.code_reminder_requested", targetType: "team", targetId: String(reminderTeam.id), ip: SEED_IP, createdAt: asOf - 2 * DAY });
 
   // Settings (architecture section 5): JSON values, times as Unix ms
   const setting = (key: string, value: unknown, updatedBy: number | null, updatedAt: number) =>
@@ -362,15 +365,13 @@ export function buildSeedData(): SeedData {
   setting("prototype_due_at", prototypeDue, superAdmin.id, registrationOpens - 10 * DAY);
   setting("shortlist_state", "finalised", superAdmin.id, finalisedAt);
   setting("last_sheet_export_at", null, null, registrationOpens - 10 * DAY);
-  // Development only: the moment the app treats as "now". Ignored in production
-  setting("dev_now", devNow, null, devNow);
 
   data.auditLog.sort((a, b) => a.createdAt - b.createdAt);
   data.emailOutbox.sort((a, b) => a.createdAt - b.createdAt);
   return data;
 }
 
-/** Team codes for the dev switcher's quick login, in team order */
+/** Team codes for `pnpm db:seed` to print, in team order */
 export function seedTeamLogins(data: SeedData) {
   return data.teams.map((team) => ({ code: team.code, name: team.name, stage: team.stage as TeamStage }));
 }

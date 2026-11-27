@@ -1,10 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { portalRing } from "@/assets";
 import HeroAvatar from "@/components/HeroAvatar";
 import { Button } from "@/components/ui/button";
 import { HeroNebula } from "@/components/site/hero-nebula";
+import { HeroPortalRings } from "@/components/site/hero-rings";
 import { HeroScroll } from "@/components/site/hero-scroll";
 import { hero, site } from "@/content/site";
 import { routes } from "@/content/navigation";
@@ -60,11 +59,16 @@ export function Hero() {
             </div>
             <p className="intro-rise max-w-[46ch] text-pretty text-body text-foam/85 max-sm:order-2 sm:text-body-lg [--delay:0.55s]">{hero.lead}</p>
 
-            <div className="intro-rise flex flex-wrap items-center justify-center gap-3 max-sm:order-1 [--delay:0.7s]">
-              <Button asChild size="lg" trailingIcon={<ArrowUpRight className="size-[1.125rem]" strokeWidth={1.75} />}>
+            <div className="intro-rise flex flex-wrap items-center justify-center gap-2.5 max-sm:order-1 sm:gap-3 [--delay:0.7s]">
+              <Button
+                asChild
+                size="lg"
+                className="max-sm:h-11 max-sm:px-4 max-sm:text-small max-sm:[&>span:last-child]:-mr-2 max-sm:[&>span:last-child]:size-8"
+                trailingIcon={<ArrowUpRight className="size-4 sm:size-[1.125rem]" strokeWidth={1.75} />}
+              >
                 <Link href={routes.register}>Register</Link>
               </Button>
-              <Button asChild size="lg" variant="secondary">
+              <Button asChild size="lg" variant="secondary" className="max-sm:h-11 max-sm:px-4 max-sm:text-small">
                 <a href="#how-it-works">How it works</a>
               </Button>
             </div>
@@ -87,16 +91,6 @@ const TRACES: [a: number, b: number][] = [
   [0, 2], [2, 4], [4, 6], [6, 8], [8, 10], [3, 4], [7, 9], [1, 3],
 ];
 
-/** The portal that fills a ring's opening (about 51% of the ring box): a deep cyan well with
- *  a soft light breathing at the centre. */
-function PortalVortex() {
-  return (
-    <div className="portal-core">
-      <div className="portal-eye" />
-    </div>
-  );
-}
-
 function Backdrop() {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
@@ -112,14 +106,7 @@ function Backdrop() {
       <HeroNebula />
       {/* Portal rings: one centred on each side edge, so half of each shows, turning slowly in
           opposite directions, each with a glowing portal in its opening */}
-      {(["left", "right"] as const).map((side) => (
-        <div key={side} className={cn("portal-ring", side === "left" ? "portal-ring--left" : "portal-ring--right")}>
-          <div data-portal-side={side} className="intro-fade relative size-full [--delay:0.4s]">
-            <PortalVortex />
-            <Image src={portalRing} alt="" width={1200} height={1200} sizes="(min-width: 640px) 46rem, 70vw" className="portal-spin size-full" />
-          </div>
-        </div>
-      ))}
+      <HeroPortalRings />
       <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 100 100">
         {TRACES.map(([a, b]) => (
           <line

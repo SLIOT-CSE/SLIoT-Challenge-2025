@@ -9,10 +9,11 @@ import { categories, type Category } from "@/content/categories";
 import { routes } from "@/content/navigation";
 import { TEAM_SIZE } from "@/lib/team-rules";
 import { Button } from "@/components/ui/button";
-import { gsap, useGSAP, ScrollTrigger, PIN_QUERY, FULL_MOTION_QUERY } from "@/lib/motion/gsap";
+import { gsap, useGSAP, ScrollTrigger, FULL_MOTION_QUERY } from "@/lib/motion/gsap";
 import { useLenis } from "@/lib/motion/smooth-scroll";
 import { cn } from "@/lib/utils";
 
+const STICKY_QUERY = "(min-width: 1280px) and (prefers-reduced-motion: no-preference)";
 const pad = (n: number) => String(n).padStart(2, "0");
 
 /**
@@ -61,8 +62,8 @@ export function Categories() {
         });
       });
 
-      // Earlier cards sink back as the next one slides over them
-      mm.add(PIN_QUERY, () => {
+      // Earlier cards sink back as the next one slides over them (desktop 1280px+)
+      mm.add(STICKY_QUERY, () => {
         const cards = gsap.utils.toArray<HTMLElement>("[data-category-card]");
         // Cards stay opaque (so the card below never shows through); a shade inside darkens them
         cards.slice(0, -1).forEach((card, i) => {
@@ -112,7 +113,7 @@ export function Categories() {
       </div>
 
       <div ref={scope} className="mx-auto max-w-7xl px-4 sm:px-8">
-        <header className="flex max-w-3xl flex-col gap-4">
+        <header className="mx-auto flex w-full max-w-3xl flex-col gap-4 xl:mx-0">
           <h2 id="categories-title" className="font-display text-display-lg text-foam">
             Pick your category
           </h2>
@@ -122,8 +123,8 @@ export function Categories() {
           </p>
         </header>
 
-        <div className="mt-12 grid grid-cols-[minmax(0,1fr)] gap-6 md:mt-16 md:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] md:gap-10 lg:gap-16">
-          <nav aria-label="Categories" className="hidden md:block">
+        <div className="mt-12 grid grid-cols-[minmax(0,1fr)] gap-6 xl:mt-16 xl:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] xl:gap-16">
+          <nav aria-label="Categories" className="hidden xl:block">
             <div className="sticky top-32">
               <ul className="relative flex flex-col gap-2">
                 {/* Progress rail: fills to the active category */}
@@ -171,7 +172,7 @@ export function Categories() {
                         <span
                           aria-hidden="true"
                           className={cn(
-                            "relative hidden h-12 w-20 shrink-0 overflow-hidden rounded-lg ring-1 transition-all duration-300 ease-out-quart lg:block",
+                            "relative hidden h-12 w-20 shrink-0 overflow-hidden rounded-lg ring-1 transition-all duration-300 ease-out-quart xl:block",
                             isActive ? "opacity-100 ring-aqua/70" : "opacity-40 ring-ocean group-hover:opacity-70",
                           )}
                         >
@@ -185,7 +186,7 @@ export function Categories() {
             </div>
           </nav>
 
-          <div className="flex flex-col gap-6 md:gap-0">
+          <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 xl:mx-0 xl:max-w-none xl:gap-0">
             {categories.map((c, i) => (
               <CategoryCard key={c.id} category={c} index={i} />
             ))}
@@ -205,28 +206,28 @@ function CategoryCard({ category: c, index }: { category: Category; index: numbe
       className={cn(
         // Single shell: the gateway image runs right to the border, with no inner frame gap
         "relative origin-top rounded-[1.75rem] bg-night ring-1 ring-edge/45 shadow-[0_18px_40px_-16px_rgb(1_6_16/0.95),0_10px_48px_-12px_rgb(133_255_240/0.28)]",
-        // Every card, the last included, keeps the same margin: a sticky card's margin must fit inside
-        // the column, so equal margins hold the second card until the last one has covered it
-        "md:sticky md:top-28 md:mb-[28vh]",
+        // Every card, the last included, keeps the same margin on desktop: a sticky card's margin must
+        // fit inside the column, so equal margins hold the second card until the last one has covered it
+        "xl:sticky xl:top-28 xl:mb-[28vh]",
       )}
     >
-      <div className="relative flex flex-col overflow-hidden rounded-[1.75rem] bg-night shadow-[inset_0_1px_0_rgb(221_247_239/0.16)] md:min-h-[28rem]">
-        {/* Gateway image: a banner on phones, the whole card behind the text from md up */}
-        <div aria-hidden="true" className="relative aspect-[16/9] overflow-hidden md:absolute md:inset-0 md:aspect-auto">
+      <div className="relative flex flex-col overflow-hidden rounded-[1.75rem] bg-night shadow-[inset_0_1px_0_rgb(221_247_239/0.16)] xl:min-h-[28rem]">
+        {/* Gateway image: a banner on phones/tablets, the whole card behind the text from xl up */}
+        <div aria-hidden="true" className="relative aspect-[16/9] overflow-hidden xl:absolute xl:inset-0 xl:aspect-auto">
           <div data-card-art className="absolute inset-[-8%_0]">
             <Image
               src={categoryArt[c.id]}
               alt=""
               fill
-              sizes="(min-width: 768px) 56vw, 100vw"
+              sizes="(min-width: 1280px) 56vw, (min-width: 640px) 48rem, 100vw"
               quality={75}
               className="object-cover object-[70%_50%]"
             />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-night via-night/20 to-transparent md:hidden" />
+          <div className="absolute inset-0 bg-gradient-to-t from-night via-night/20 to-transparent xl:hidden" />
           {/* Solid behind the text column, clearing towards the gateway on the right */}
-          <div className="absolute inset-0 hidden bg-[linear-gradient(to_right,var(--color-night)_20%,rgb(1_18_37/0.78)_46%,rgb(1_18_37/0.1)_78%)] md:block" />
-          <div className="absolute inset-0 hidden bg-gradient-to-t from-night/70 via-transparent to-transparent md:block" />
+          <div className="absolute inset-0 hidden bg-[linear-gradient(to_right,var(--color-night)_20%,rgb(1_18_37/0.78)_46%,rgb(1_18_37/0.1)_78%)] xl:block" />
+          <div className="absolute inset-0 hidden bg-gradient-to-t from-night/70 via-transparent to-transparent xl:block" />
         </div>
 
         {/* Outlined index, as on the step cards */}
@@ -237,7 +238,7 @@ function CategoryCard({ category: c, index }: { category: Category; index: numbe
           {pad(index + 1)}
         </span>
 
-        <div className="relative z-[1] -mt-10 flex flex-1 flex-col gap-5 p-6 sm:p-8 md:mt-0 md:max-w-[34rem] md:gap-6 md:p-10">
+        <div className="relative z-[1] -mt-10 flex flex-1 flex-col gap-5 p-6 sm:-mt-12 sm:p-8 xl:mt-0 xl:max-w-[34rem] xl:gap-6 xl:p-10">
           <p className="inline-flex w-fit items-center gap-2 rounded-full bg-deep/90 px-3 py-1 text-caption text-foam ring-1 ring-edge/40">
             Category {pad(index + 1)} / {pad(categories.length)}
           </p>

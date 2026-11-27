@@ -23,6 +23,3 @@ export const hero = {
   titleLines: [["Build the"], ["connected", "island"]],
   lead: "Sri Lanka's national IoT competition for school students, undergraduates and innovators. Find a real problem, design a device that senses, connects and acts, and build it with mentors from industry.",
 };
-
-/** Words in the kinetic band between the callout and About */
-export const bandWords = ["Sense", "Connect", "Act", "Build"];
