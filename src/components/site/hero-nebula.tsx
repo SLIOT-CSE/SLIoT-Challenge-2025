@@ -13,8 +13,11 @@ type HeroNebulaProps = {
   density?: number;
   /** Brightness multiplier, 0 to 1. Default 1 (the hero's look) */
   intensity?: number;
+  /** The hero's dim top-and-bottom fade (`nebula-mask`). Default true; turn it off when the
+   *  caller brings its own fade and opacity */
+  mask?: boolean;
 };
 
-export function HeroNebula({ className, density, intensity }: HeroNebulaProps) {
-  return <QuantumNebula className={cn("nebula-mask", className)} density={density} intensity={intensity} />;
+export function HeroNebula({ className, density, intensity, mask = true }: HeroNebulaProps) {
+  return <QuantumNebula className={cn(mask && "nebula-mask", className)} density={density} intensity={intensity} />;
 }

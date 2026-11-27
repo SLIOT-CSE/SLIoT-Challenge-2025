@@ -19,9 +19,14 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   return (
     // isolate: the particle layer sits at -z-10 inside this box, above the page background
     <div className="relative isolate">
-      {/* The home hero's particle field, sparser and dimmer so the form stays the focus */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[min(44rem,100svh)] overflow-hidden">
-        <HeroNebula density={0.7} intensity={0.75} />
+      {/* The home hero's particle field, sparser and dimmer so the form stays the focus. Fixed to
+          the viewport, so it stays behind the form all the way down while costing no more than
+          one screen of canvas */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden opacity-75 [mask-image:linear-gradient(to_bottom,transparent,#000_8%,#000_92%,transparent)]"
+      >
+        <HeroNebula density={0.7} intensity={0.75} mask={false} />
       </div>
       <AppHeader />
       <main className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 pt-4 pb-24 sm:px-8 sm:pt-8">
