@@ -56,6 +56,9 @@ export function UniversityField({
         {(control) => (
           <Select
             {...control}
+            searchable
+            searchPlaceholder="Search universities…"
+            pinnedValues={[OTHER]}
             value={isOther ? OTHER : name}
             onChange={(e) =>
               e.target.value === OTHER

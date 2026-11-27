@@ -79,7 +79,7 @@ export function MemberCard({
 
         <Field
           label="Email"
-          helper={isLeader ? "We email the team code here, so use an address you check" : "Each person can only be in one team"}
+          helper={isLeader ? "We email the team code here" : "Each person can only be in one team"}
           error={error("email")}
           required
         >
@@ -135,7 +135,7 @@ export function MemberCard({
       {asksNic(category, member) && (
         <Field
           label="NIC"
-          helper="Old format 123456789V or the 12-digit number. Only university students are asked."
+          helper="Old format 123456789V or the 12-digit number."
           error={error("nic")}
           required
         >
