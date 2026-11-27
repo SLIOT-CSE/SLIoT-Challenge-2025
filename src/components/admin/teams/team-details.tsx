@@ -2,6 +2,7 @@ import { ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatBytes } from "@/components/team/portal";
 import type { AuditEntryView, Member, Submission, TeamDetail } from "@/lib/data";
+import { formatWhatsappDisplay } from "@/lib/member-display";
 import { CATEGORY_LABELS } from "@/lib/team-rules";
 import { StageBadge } from "../badges";
 import { describeAudit } from "../describe-audit";
@@ -97,17 +98,41 @@ function Item({ label, children }: { label: string; children: React.ReactNode })
 
 function MemberItem({ member: m }: { member: Member }) {
   return (
-    <li className="rounded-control bg-deep/40 p-4 text-small ring-1 ring-edge ring-inset">
-      <p className="font-semibold text-foam">
-        {m.fullName}
-        {m.position === 1 && <span className="ml-2 text-caption font-normal text-mint">Team leader</span>}
-      </p>
-      <p className="break-all text-haze">{m.email}</p>
-      <p className="text-haze">{m.whatsapp}</p>
-      <p className="text-haze">
-        {m.institutionName} · {m.institutionType === "school" ? "School student" : "University student"}
-      </p>
-      {m.nic && <p className="font-mono text-caption text-haze">NIC {m.nic}</p>}
+    <li className="flex flex-col gap-3 rounded-control bg-deep/40 p-4 text-small ring-1 ring-edge ring-inset">
+      <div className="flex flex-wrap items-center gap-2.5">
+        <span className="min-w-0 wrap-break-word text-body font-semibold text-foam">{m.fullName}</span>
+        {m.position === 1 && (
+          <span className="rounded-full bg-mint/15 px-2.5 py-0.5 text-caption font-semibold text-mint ring-1 ring-mint/30 ring-inset">
+            Team leader
+          </span>
+        )}
+      </div>
+
+      <dl className="grid grid-cols-1 gap-x-6 gap-y-2.5 sm:grid-cols-2">
+        <div className="min-w-0">
+          <dt className="text-caption font-medium text-haze">WhatsApp</dt>
+          <dd className="mt-0.5 font-medium tabular-nums text-foam">{formatWhatsappDisplay(m.whatsapp)}</dd>
+        </div>
+
+        {m.nic && (
+          <div className="min-w-0">
+            <dt className="text-caption font-medium text-haze">NIC</dt>
+            <dd className="mt-0.5 font-mono font-medium tabular-nums text-foam">{m.nic}</dd>
+          </div>
+        )}
+
+        <div className="min-w-0 sm:col-span-2">
+          <dt className="text-caption font-medium text-haze">Email</dt>
+          <dd className="mt-0.5 break-all font-medium text-foam">{m.email}</dd>
+        </div>
+
+        <div className="min-w-0 sm:col-span-2">
+          <dt className="text-caption font-medium text-haze">Affiliation</dt>
+          <dd className="mt-0.5 wrap-break-word font-medium text-foam">
+            {m.institutionType === "school" ? "School student" : "University student"} · {m.institutionName}
+          </dd>
+        </div>
+      </dl>
     </li>
   );
 }

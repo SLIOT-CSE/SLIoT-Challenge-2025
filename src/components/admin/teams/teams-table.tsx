@@ -15,6 +15,7 @@ import {
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Member, TeamRow } from "@/lib/data";
+import { formatWhatsappDisplay } from "@/lib/member-display";
 import { CATEGORY_LABELS, TEAM_STAGES } from "@/lib/team-rules";
 import { cn } from "@/lib/utils";
 import { StageBadge } from "../badges";
@@ -264,17 +265,37 @@ export function TeamsTable({
 
 function MemberList({ team }: { team: TeamRow }) {
   return (
-    <ul aria-label={`Members of ${team.name}`} className="grid gap-x-8 gap-y-3 px-5 py-4 sm:grid-cols-2 xl:grid-cols-3">
+    <ul aria-label={`Members of ${team.name}`} className="grid gap-x-8 gap-y-4 px-5 py-4 sm:grid-cols-2 xl:grid-cols-3">
       {team.members.map((m) => (
-        <li key={m.id} className="min-w-0 text-small">
-          <p className="font-semibold text-foam">
-            {m.fullName}
-            {m.position === 1 && <span className="ml-2 text-caption font-normal text-mint">Team leader</span>}
-          </p>
-          <p className="truncate text-haze">{m.email}</p>
-          <p className="text-haze">{m.whatsapp}</p>
-          <p className="text-haze">{m.institutionName}</p>
-          {m.nic && <p className="font-mono text-caption text-haze">NIC {m.nic}</p>}
+        <li key={m.id} className="flex min-w-0 flex-col gap-2 text-small">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="min-w-0 wrap-break-word font-semibold text-foam">{m.fullName}</span>
+            {m.position === 1 && (
+              <span className="rounded-full bg-mint/15 px-2.5 py-0.5 text-caption font-semibold text-mint ring-1 ring-mint/30 ring-inset">
+                Team leader
+              </span>
+            )}
+          </div>
+          <dl className="grid grid-cols-1 gap-y-1.5">
+            <div className="min-w-0">
+              <dt className="text-caption font-medium text-haze">Email</dt>
+              <dd className="break-all text-foam">{m.email}</dd>
+            </div>
+            <div className="min-w-0">
+              <dt className="text-caption font-medium text-haze">WhatsApp</dt>
+              <dd className="tabular-nums text-foam">{formatWhatsappDisplay(m.whatsapp)}</dd>
+            </div>
+            <div className="min-w-0">
+              <dt className="text-caption font-medium text-haze">Institution</dt>
+              <dd className="wrap-break-word text-foam">{m.institutionName}</dd>
+            </div>
+            {m.nic && (
+              <div className="min-w-0">
+                <dt className="text-caption font-medium text-haze">NIC</dt>
+                <dd className="font-mono tabular-nums text-foam">{m.nic}</dd>
+              </div>
+            )}
+          </dl>
         </li>
       ))}
     </ul>

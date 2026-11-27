@@ -156,6 +156,27 @@ describe("requestCodeReminder", () => {
   });
 });
 
+describe("requestCodeReminder cooldown", () => {
+  it("sends one email per team in five minutes, even from different addresses", async () => {
+    const team = teamByName(db, "Kite Runners");
+    const leader = db.select().from(schema.members).where(and(eq(schema.members.teamId, team.id), eq(schema.members.position, 1))).get()!;
+    const queued = () => outboxFor(team.id).filter((e) => e.template === "code_reminder" && e.status === "pending").length;
+
+    const start = Date.now();
+    const first = browser(db, fake, "10.0.0.1");
+    const second = browser(db, fake, "10.0.0.2");
+    first.ctx.appClock = () => start;
+    await first.requestCodeReminder(leader.email);
+    second.ctx.appClock = () => start + 4 * 60 * 1000;
+    expect(await second.requestCodeReminder(leader.email)).toEqual({ ok: true, data: null });
+    expect(queued()).toBe(1);
+
+    second.ctx.appClock = () => start + 6 * 60 * 1000;
+    await second.requestCodeReminder(leader.email);
+    expect(queued()).toBe(2);
+  });
+});
+
 describe("uploadProposal", () => {
   async function loggedInRegisteredTeam() {
     setStage(db, "registration");

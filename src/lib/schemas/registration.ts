@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { universities } from "@/content/universities";
 import { TEAM_SIZE, type CategoryId, type InstitutionType } from "@/lib/team-rules";
-import { emailSchema, normaliseNic, text, whatsappSchema } from "./fields";
+import { emailSchema, normaliseNic, text, whatsappSchema, teamNameSchema } from "./fields";
 
 // The registration form's rules (docs/architecture.md, sections 5 and 6.1) that can be
 // checked from one submission alone. Rules that need other teams (a repeated email or
@@ -122,7 +122,7 @@ export function teamRuleIssues(team: TeamRuleInput): RuleIssue[] {
 
 export const registrationInputSchema = z
   .object({
-    name: text("Team name", 2, 60),
+    name: teamNameSchema,
     category: categorySchema,
     /** School and University teams only: one institution for the whole team */
     institutionName: z.string().trim().optional(),

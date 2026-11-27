@@ -43,6 +43,9 @@ export const RATE_LIMIT = { attempts: 5, windowMs: 15 * 60 * 1000 };
 /** Registrations per IP: looser, since a whole school lab can register from one address */
 export const REGISTRATION_LIMIT = { attempts: 20, windowMs: 60 * 60 * 1000 };
 
+/** At most one "forgot your code" email per team in this time, whatever address asks */
+export const CODE_REMINDER_COOLDOWN_MS = 5 * 60 * 1000;
+
 export const BEFORE_DECISION: Team["stage"][] = ["registered", "proposal_submitted"];
 export const SHORTLISTED: Team["stage"][] = ["shortlisted", "prototype_submitted"];
 
@@ -313,4 +316,21 @@ export function auditView(tx: Tx, entries: AuditEntry[]) {
             ? "System"
             : null,
   }));
+}
+
+/** True when a "forgot your code" email was queued for this team within the cooldown */
+export function codeReminderSentRecently(tx: Tx, teamId: number, now: number): boolean {
+  return Boolean(
+    tx
+      .select({ id: schema.auditLog.id })
+      .from(schema.auditLog)
+      .where(
+        and(
+          eq(schema.auditLog.action, "team.code_reminder"),
+          eq(schema.auditLog.targetId, String(teamId)),
+          gt(schema.auditLog.createdAt, now - CODE_REMINDER_COOLDOWN_MS),
+        ),
+      )
+      .get(),
+  );
 }

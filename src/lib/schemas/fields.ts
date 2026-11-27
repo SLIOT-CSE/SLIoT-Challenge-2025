@@ -66,3 +66,22 @@ export function text(label: string, min: number, max: number) {
     min > 1 ? required.min(min, { error: `${label} must be at least ${min} characters` }) : required;
   return ranged.max(max, { error: `${label} must be at most ${max} characters` });
 }
+
+/** A scheme or "www.", or a dot running straight into two or more letters, as in `bad.example` */
+const LINK = /:\/\/|www\.|[\p{L}\p{N}-][.。](?=\p{L}{2})/iu;
+/** Control characters and line or paragraph breaks. Not format characters: Sinhala needs the zero-width joiner */
+const BREAKS = /[\p{Cc}\p{Zl}\p{Zp}]/u;
+
+/** True when a mail app could turn part of the text into a link */
+export function looksLikeLink(value: string): boolean {
+  // Fold full-width look-alikes and drop invisible characters before looking
+  return LINK.test(value.normalize("NFKC").replace(/\p{Cf}/gu, ""));
+}
+
+/** The one name that goes into emails, which anyone can type for any address: no links, one line */
+export const teamNameSchema = text("Team name", 2, 60)
+  .refine((value) => !BREAKS.test(value), { error: "Team name must be on one line" })
+  .refine((value) => !looksLikeLink(value), {
+    error: "Team name can't contain a link or web address. Put a space after any dot",
+  });
+

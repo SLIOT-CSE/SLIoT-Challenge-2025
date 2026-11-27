@@ -409,21 +409,43 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
           </motion.div>
         </AnimatePresence>
 
-        <div className="flex items-center justify-between gap-3 border-t border-edge pt-6">
+        <div
+          className={cn(
+            "flex gap-3 border-t border-edge pt-6",
+            isReview || fromReview
+              ? "flex-col-reverse items-stretch sm:flex-row sm:items-center sm:justify-between"
+              : "items-center justify-between",
+          )}
+        >
           {step !== "team" ? (
-            <Button type="button" variant="ghost" onClick={back}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={back}
+              className={cn((isReview || fromReview) && "w-full sm:w-auto")}
+            >
               <ArrowLeft aria-hidden="true" className="size-4" />
               Back
             </Button>
           ) : (
-            <span />
+            <span aria-hidden="true" className="hidden sm:block" />
           )}
           {isReview ? (
-            <Button type="submit" size="lg" loading={submitting} disabled={!turnstileOk && !submitting}>
+            <Button
+              type="submit"
+              size="lg"
+              loading={submitting}
+              disabled={!turnstileOk && !submitting}
+              className="w-full sm:w-auto"
+            >
               {submitting ? "Registering…" : banner?.tone === "network" ? "Try again" : "Register your team"}
             </Button>
           ) : (
-            <Button type="submit" trailingIcon={<ArrowRight aria-hidden="true" className="size-4" />}>
+            <Button
+              type="submit"
+              trailingIcon={<ArrowRight aria-hidden="true" className="size-4" />}
+              className={cn(fromReview && "w-full sm:w-auto", step === "team" && !fromReview && "ml-auto")}
+            >
               {fromReview ? "Back to review" : "Next"}
             </Button>
           )}

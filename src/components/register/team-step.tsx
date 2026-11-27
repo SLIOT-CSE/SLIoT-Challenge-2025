@@ -9,7 +9,7 @@ export function TeamStep({ values, error, touch, update }: StepProps) {
     <div className="flex flex-col gap-8">
       <Field
         label="Team name"
-        helper="Shown to the organizers and on the shortlist. You can pick anything."
+        helper=""
         error={error("name")}
         required
       >

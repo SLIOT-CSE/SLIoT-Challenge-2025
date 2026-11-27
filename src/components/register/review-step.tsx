@@ -1,5 +1,6 @@
 import { Pencil } from "lucide-react";
 import { categories } from "@/content/categories";
+import { formatWhatsappDisplay } from "@/lib/member-display";
 import { registrationInputSchema } from "@/lib/schemas";
 import { memberType, toInput, type FormValues, type StepId } from "./form";
 
@@ -20,7 +21,7 @@ export function ReviewStep({ values, onEdit }: { values: FormValues; onEdit: (st
     <div className="flex flex-col gap-5">
       <p className="text-body text-haze">
         Check everything before you register. We&apos;ll email the team code to{" "}
-        <strong className="font-semibold text-foam">{leader.email}</strong>.
+        <strong className="break-all font-semibold text-foam">{leader.email}</strong>.
       </p>
 
       <Section title="Team" onEdit={() => onEdit("team")}>
@@ -35,28 +36,51 @@ export function ReviewStep({ values, onEdit }: { values: FormValues; onEdit: (st
       )}
 
       <Section title={`Members (${members.length})`} onEdit={() => onEdit("members")}>
-        <ol className="flex flex-col divide-y divide-edge/60">
+        <ol className="flex flex-col divide-y divide-edge/50">
           {members.map((m, i) => {
             const type = memberType(values.category, m);
+            const affiliation =
+              values.category === "open"
+                ? `${type === "university" ? "University student" : "School student"} · ${m.institutionName}`
+                : null;
             return (
-              <li key={i} className="flex flex-col gap-1 py-3 first:pt-0 last:pb-0">
-                <p className="flex items-center gap-2 font-semibold text-foam">
-                  {m.fullName}
+              <li key={i} className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <span className="min-w-0 wrap-break-word text-body font-semibold text-foam">{m.fullName}</span>
                   {i === 0 && (
-                    <span className="rounded-full bg-mint/15 px-2.5 py-0.5 text-caption text-mint ring-1 ring-mint/30 ring-inset">
+                    <span className="rounded-full bg-mint/15 px-2.5 py-0.5 text-caption font-semibold text-mint ring-1 ring-mint/30 ring-inset">
                       Team leader
                     </span>
                   )}
-                </p>
-                <p className="text-small text-haze">
-                  {m.whatsapp} · {m.email}
-                </p>
-                {values.category === "open" && (
-                  <p className="text-small text-haze">
-                    {type === "university" ? "University student" : "School student"}, {m.institutionName}
-                  </p>
-                )}
-                {m.nic && <p className="text-small text-haze">NIC {m.nic}</p>}
+                </div>
+
+                <dl className="grid grid-cols-1 gap-x-6 gap-y-2.5 sm:grid-cols-2">
+                  <div className="min-w-0">
+                    <dt className="text-caption font-medium text-haze">WhatsApp</dt>
+                    <dd className="mt-0.5 text-small font-medium tabular-nums text-foam">
+                      {formatWhatsappDisplay(m.whatsapp)}
+                    </dd>
+                  </div>
+
+                  {m.nic && (
+                    <div className="min-w-0">
+                      <dt className="text-caption font-medium text-haze">NIC</dt>
+                      <dd className="mt-0.5 font-mono text-small font-medium tabular-nums text-foam">{m.nic}</dd>
+                    </div>
+                  )}
+
+                  <div className="min-w-0 sm:col-span-2">
+                    <dt className="text-caption font-medium text-haze">Email</dt>
+                    <dd className="mt-0.5 break-all text-small font-medium text-foam">{m.email}</dd>
+                  </div>
+
+                  {affiliation && (
+                    <div className="min-w-0 sm:col-span-2">
+                      <dt className="text-caption font-medium text-haze">Affiliation</dt>
+                      <dd className="mt-0.5 wrap-break-word text-small font-medium text-foam">{affiliation}</dd>
+                    </div>
+                  )}
+                </dl>
               </li>
             );
           })}
@@ -90,7 +114,7 @@ function Row({ label, value }: { label: string; value: string }) {
   return (
     <p className="flex flex-col gap-0.5 py-1 sm:flex-row sm:gap-4">
       <span className="text-small text-haze sm:w-32 sm:shrink-0">{label}</span>
-      <span className="font-semibold text-foam">{value}</span>
+      <span className="min-w-0 wrap-break-word font-semibold text-foam">{value}</span>
     </p>
   );
 }

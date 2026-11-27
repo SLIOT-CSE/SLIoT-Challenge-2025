@@ -360,6 +360,7 @@ Indexes: `created_at`, (`target_type`, `target_id`).
    - the input passes zod: 1–5 members, WhatsApp numbers are Sri Lankan mobiles, NICs are in a valid format, NIC is present for every university student
    - no email or NIC appears twice in the form, or in any existing team. If one does, the form says which member to fix
    - school and university teams carry the team's institution on every member
+   - the team name is one line with no link or web address, since it goes into emails and anyone can enter any leader address (added 2026-11-27)
 3. The server generates the team code: `SL27-` + 8 random characters from the Crockford base-32 alphabet (no I, L, O, U, so it's easy to read aloud), e.g. `SL27-7KQ4-M9XD`. That's about a trillion possibilities. Generated with `crypto.randomInt`, retried on the rare collision.
 4. The team and members are saved in one transaction (the unique indexes on email and NIC catch two teams registering the same person at the same moment). A "registration confirmed" email with the code is queued for the leader, and the action is written to the audit log.
 5. The confirmation screen shows the team code too, with a copy button, in case the email is slow.
@@ -372,7 +373,7 @@ Indexes: `created_at`, (`target_type`, `target_id`).
   - **Rate limit:** 5 attempts per 15 minutes per IP in the app, plus nginx `limit_req` on the login endpoint.
   - **Email on every upload:** the leader hears about each proposal or prototype submission, so misuse is noticed quickly.
   - **Audit log:** every login and upload is logged with its IP.
-- **"Forgot your code?":** the team enters the leader email. If it matches a team, the code is emailed to that address only. The screen gives the same reply whether or not the email exists.
+- **"Forgot your code?":** the team enters the leader email. If it matches a team, the code is emailed to that address only. The screen gives the same reply whether or not the email exists. Besides the 5 requests per 15 minutes per IP, each team gets at most one reminder email every 5 minutes (added 2026-11-27); an organizer's "resend code" isn't limited by this.
 - **Session:** a random token in an `httpOnly`, `Secure`, `SameSite=Lax` cookie, valid 7 days and stored hashed in `sessions`. Logging out deletes it.
 
 ### 6.3 Proposal upload

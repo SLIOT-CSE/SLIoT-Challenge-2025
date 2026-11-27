@@ -8,6 +8,7 @@ import { createSession, deleteSession, SESSION_COOKIE, SESSION_TTL_MS } from "..
 import * as schema from "../db/schema";
 import { readDeadlines, readSetting, readShortlistState, SETTING_KEYS } from "../settings";
 import {
+  codeReminderSentRecently,
   BEFORE_DECISION,
   REGISTRATION_LIMIT,
   SHORTLISTED,
@@ -172,7 +173,8 @@ export function teamBackend(ctx: RequestContext, verifyTurnstile: TurnstileVerif
           .where(and(eq(schema.members.email, parsed.data), eq(schema.members.position, 1)))
           .get();
         const team = leader && tx.select().from(schema.teams).where(eq(schema.teams.id, leader.teamId)).get();
-        if (leader && team) {
+        // Per team too, so requests from many addresses can't flood the leader. The reply stays the same
+        if (leader && team && !codeReminderSentRecently(tx, team.id, at)) {
           queueEmail(tx, at, team.id, leader.email, "code_reminder", { code: team.code, teamName: team.name });
           record(tx, ctx, at, { type: "anonymous", id: null }, "team.code_reminder", { type: "team", id: team.id });
         }
