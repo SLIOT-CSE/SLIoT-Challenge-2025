@@ -10,7 +10,7 @@ import { socials } from "@/content/socials";
 const footerPartners = partnerTiers.flatMap((tier) => tier.partners);
 
 export function SiteFooter() {
-  const year = new Date().getFullYear();
+  const year = 2027;
 
   return (
     <footer className="relative isolate overflow-hidden border-t border-ocean/70 bg-abyss">
