@@ -93,22 +93,22 @@ export function Layout({
                     <table width="100%" cellPadding={0} cellSpacing={0} role="presentation">
                       <tbody>
                         <tr>
-                          <td style={{ width: 106, verticalAlign: "middle" }}>
+                          <td style={{ width: 126, verticalAlign: "middle" }}>
                             <div
                               style={{
                                 display: "inline-block",
                                 backgroundColor: colors.surface,
                                 border: `1px solid ${colors.borderInner}`,
                                 borderRadius: 10,
-                                padding: "6px 8px",
+                                padding: "7px 8px",
                               }}
                             >
                               <Img
                                 src={`${siteUrl}/images/email/sliot-logo.png`}
                                 alt="SLIoT Challenge 2027"
-                                width={88}
-                                height={42}
-                                style={{ display: "block", width: 88, height: 42 }}
+                                width={108}
+                                height={36}
+                                style={{ display: "block", width: 108, height: "auto" }}
                               />
                             </div>
                           </td>
