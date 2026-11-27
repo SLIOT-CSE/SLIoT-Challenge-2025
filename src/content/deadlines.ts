@@ -3,8 +3,8 @@
 // are overridden from the database settings.
 
 export const deadlines = {
-  registrationOpens: "2026-11-26T09:00:00+05:30",
-  registrationCloses: "2027-01-06T23:59:00+05:30",
+  registrationOpens: "2026-11-27T09:00:00+05:30",
+  registrationCloses: "2026-12-18T23:59:00+05:30",
   proposalDue: "2027-01-11T23:59:00+05:30",
   shortlistAnnounced: "2027-01-20T18:00:00+05:30",
   prototypeDue: "2027-02-06T23:59:00+05:30",

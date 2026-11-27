@@ -41,7 +41,7 @@ export default async function HomePage() {
         <LiveCallout stage={stage} now={now} deadlines={deadlines} />
         <About />
         <Categories />
-        <HowItWorks deadlines={deadlines} />
+        <HowItWorks />
         <Timeline now={now} deadlines={deadlines} />
         <Prizes />
         <Memories />

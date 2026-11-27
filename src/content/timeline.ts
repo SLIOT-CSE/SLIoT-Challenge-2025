@@ -5,7 +5,7 @@ import { formatTime } from "@/lib/competition";
 // passed in: on the public page they are the ones saved in /admin/settings (falling back to
 // src/content/deadlines.ts), so the timeline, the callout and the deadline locks never disagree.
 
-export type TimelineEvent = { title: string; body: string; at: string };
+export type TimelineEvent = { title: string; body: string; at: string; dateTba?: boolean };
 
 /** Every milestone in date order, so a moved deadline lands in the right place */
 export function timelineFor(deadlines: Deadlines): TimelineEvent[] {
@@ -17,12 +17,12 @@ export function timelineFor(deadlines: Deadlines): TimelineEvent[] {
     },
     {
       title: "Official awareness session",
-      body: "Kickoff session covering the competition roadmap, categories, rules, Semi-Finals, Finale, and Shark Tank Q&A.",
+      body: "Kickoff session covering the competition roadmap, categories, rules, Semi-Finals, Finale, and Q&A.",
       at: "2026-12-12T19:00:00+05:30",
     },
     {
       title: "Proposal submissions open",
-      body: "The team portal opens for registered teams to upload their project proposal PDF while registrations continue.",
+      body: "The team portal opens for registered teams to upload their project proposal PDF.",
       at: "2026-12-21T09:00:00+05:30",
     },
     {
@@ -36,18 +36,13 @@ export function timelineFor(deadlines: Deadlines): TimelineEvent[] {
       at: deadlines.registrationCloses,
     },
     {
-      title: "Proposals due",
+      title: "Proposal submissions close",
       body: `Upload your completed proposal as one PDF from the team portal before ${formatTime(deadlines.proposalDue)}.`,
       at: deadlines.proposalDue,
     },
     {
-      title: "Proposal results announced",
-      body: "Shortlisted teams advancing to the prototype video round are notified by email.",
-      at: deadlines.shortlistAnnounced,
-    },
-    {
       title: "Video submissions open",
-      body: "Shortlisted teams gain portal access to submit their prototype demo video, with guidance on the Shark Tank round.",
+      body: "Shortlisted teams gain portal access to submit their prototype demo video.",
       at: "2027-01-21T09:00:00+05:30",
     },
     {
@@ -66,24 +61,9 @@ export function timelineFor(deadlines: Deadlines): TimelineEvent[] {
       at: "2027-02-21T09:00:00+05:30",
     },
     {
-      title: "Semi-finalist briefing",
-      body: "Mandatory event briefing covering semi-final rules, judging sequence, and event-day logistics.",
-      at: "2027-02-25T19:00:00+05:30",
-    },
-    {
-      title: "Semi-finals & finalist reveal",
-      body: "Semi-finalists compete live, with Grand Finalists advancing to Finale weekend announced on the same day.",
+      title: "Semi-finals",
+      body: "Semi-finalists pitch live prototypes; judges score the round and announce Grand Finalists the same day.",
       at: "2027-02-27T09:00:00+05:30",
-    },
-    {
-      title: "Shark Tank coaching — Session 1",
-      body: "First in-person pitch coaching for Grand Finalists covering business models, pricing, and mock investor Q&A.",
-      at: "2027-03-06T09:00:00+05:30",
-    },
-    {
-      title: "Shark Tank coaching — Session 2",
-      body: "Full investor pitch dress rehearsal and commercial ask polish ahead of Finale weekend.",
-      at: "2027-03-13T09:00:00+05:30",
     },
     {
       title: "SLIoT '27 Grand Finale",
@@ -91,9 +71,10 @@ export function timelineFor(deadlines: Deadlines): TimelineEvent[] {
       at: deadlines.finale,
     },
     {
-      title: "SLIoT '27 Shark Tank",
-      body: "Grand Finalists pitch their IoT products and commercial models directly to industry leaders and investors.",
+      title: "SLIoT '27 Awarding Ceremony",
+      body: "Category champions and award winners from the School, University, and Open tracks are honored and presented with their awards. Time TBA.",
       at: "2027-03-28T09:00:00+05:30",
+      dateTba: true,
     },
   ];
   return events.sort((a, b) => Date.parse(a.at) - Date.parse(b.at));

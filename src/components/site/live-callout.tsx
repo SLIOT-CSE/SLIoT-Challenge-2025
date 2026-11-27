@@ -37,7 +37,7 @@ export function calloutContent(stage: LaterStage, d: Deadlines): CalloutContent 
       return {
         status: "Proposal round is live",
         date: d.proposalDue,
-        headline: `Proposals due ${formatDayMonth(d.proposalDue)}, ${formatTime(d.proposalDue)}`,
+        headline: `Proposal submissions close ${formatDayMonth(d.proposalDue)}, ${formatTime(d.proposalDue)}`,
         body: "Upload your proposal as one PDF from the team portal. You can replace it until the deadline; the latest version is the one judged.",
         actions: [{ label: "Submit proposal", href: routes.teamPortal, kind: "primary", icon: "arrow" }, template],
       };
@@ -62,7 +62,7 @@ export function calloutContent(stage: LaterStage, d: Deadlines): CalloutContent 
         status: "Finalists announced",
         date: d.finale,
         headline: `Grand finale on ${formatDayMonth(d.finale)}`,
-        body: "Grand finalists present their prototypes to the judges on 27 March and pitch at Shark Tank on 28 March at the University of Moratuwa.",
+        body: "Grand finalists present their finished IoT innovations to the judges at the University of Moratuwa, followed by the awarding ceremony.",
         actions: [whatsapp],
       };
     case "over":

@@ -168,7 +168,7 @@ Removed on 2026-11-26: `LiveCallout` now flows directly into `About`.
 
 ### 5.8 Timeline: alternating chronology spine
 
-- **Desktop:** Pinned over a generated dark architectural light-corridor backdrop (`timeline-corridor.webp`). Vertical scroll moves the horizontal track sideways (`TimelineScene`), with Double-Bezel milestone cards (`01`–`17` ghosted step numerals, Bebas dates) alternating above and below a graduated central telemetry spine, linked by curved box-to-box SVG arrows and a bottom scrub progress bar.
+- **Desktop:** Pinned over a generated dark architectural light-corridor backdrop (`timeline-corridor.webp`). Vertical scroll moves the horizontal track sideways (`TimelineScene`), with Double-Bezel milestone cards (`01`–`13` ghosted step numerals, Bebas dates) alternating above and below a graduated central telemetry spine, linked by curved box-to-box SVG arrows and a bottom scrub progress bar.
 - **Skip timeline:** A pill link jumps past the pinned length.
 - **Phone and reduced motion:** Collapses into a clean left-rail vertical stack of the same Double-Bezel cards with no pin.
 - **Data:** The registration, proposal and prototype dates come from settings, so the timeline and the deadline locks never disagree.

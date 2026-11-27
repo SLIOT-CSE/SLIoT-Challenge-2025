@@ -20,7 +20,7 @@ type Status = "past" | "next" | "future";
  */
 export function Timeline({ now, deadlines }: { now: Date; deadlines: Deadlines }) {
   const timeline = timelineFor(deadlines);
-  const nextIndex = timeline.findIndex((e) => Date.parse(e.at) >= now.getTime());
+  const nextIndex = timeline.findIndex((e) => e.dateTba || Date.parse(e.at) >= now.getTime());
   const status = (i: number): Status => (nextIndex === -1 || i < nextIndex ? "past" : i === nextIndex ? "next" : "future");
 
   return (
@@ -52,9 +52,6 @@ export function Timeline({ now, deadlines }: { now: Date; deadlines: Deadlines }
             >
               The road to the finale
             </h2>
-            <p className="max-w-[56ch] text-pretty text-body-lg text-haze diag:text-[clamp(0.8125rem,1.8svh,1rem)] diag:leading-snug scene:text-[clamp(0.875rem,1.8svh,1.0625rem)] scene:leading-snug">
-              {timeline.length} dates from registration to Shark Tank. All times are Sri Lanka time.
-            </p>
           </div>
           <a
             href="#prizes"
@@ -276,24 +273,35 @@ function MilestoneCard({
         </p>
 
         <p className="flex items-baseline gap-2 pr-12 font-display leading-[0.88]">
-          <time dateTime={event.at} className="flex flex-wrap items-baseline gap-x-2">
+          {event.dateTba ? (
             <span
               className={cn(
                 "text-[clamp(2.5rem,4.4vw,3.5rem)] diag:text-[2.25rem] scene:text-[clamp(2rem,4.4svh,3.25rem)]",
                 isPast ? "text-haze" : isNext ? "text-aqua" : "text-foam",
               )}
             >
-              {day}
+              TBA
             </span>
-            <span
-              className={cn(
-                "text-[clamp(1.25rem,2.1vw,1.75rem)] diag:text-[1.15rem] scene:text-[clamp(1.05rem,2.2svh,1.55rem)]",
-                isPast ? "text-haze" : "text-mint",
-              )}
-            >
-              {month}
-            </span>
-          </time>
+          ) : (
+            <time dateTime={event.at} className="flex flex-wrap items-baseline gap-x-2">
+              <span
+                className={cn(
+                  "text-[clamp(2.5rem,4.4vw,3.5rem)] diag:text-[2.25rem] scene:text-[clamp(2rem,4.4svh,3.25rem)]",
+                  isPast ? "text-haze" : isNext ? "text-aqua" : "text-foam",
+                )}
+              >
+                {day}
+              </span>
+              <span
+                className={cn(
+                  "text-[clamp(1.25rem,2.1vw,1.75rem)] diag:text-[1.15rem] scene:text-[clamp(1.05rem,2.2svh,1.55rem)]",
+                  isPast ? "text-haze" : "text-mint",
+                )}
+              >
+                {month}
+              </span>
+            </time>
+          )}
         </p>
 
         <h3 className="text-body-lg font-semibold leading-snug text-foam diag:text-body scene:text-[clamp(1rem,2.1svh,1.225rem)]">
