@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
  * - Highlights the section in view (a mint pill slides between links).
  * - Slides away while scrolling down, returns on scroll up.
  * - Below 1280px the links move into a full-screen menu.
- * - "Team login" appears only when `showTeamLogin` is set (see `showsTeamLogin`).
+ * - "Team login" appears only when `showTeamLogin` is set (see `teamPortalOpen`).
  */
 export function SiteNav({ showTeamLogin }: { showTeamLogin: boolean }) {
   const active = useActiveSection();

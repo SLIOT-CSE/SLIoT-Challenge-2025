@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { and, eq, max } from "drizzle-orm";
-import { stageAt } from "@/lib/competition";
+import { stageAt, teamPortalOpen } from "@/lib/competition";
 import { emailSchema, hasPdfHeader, prototypeLinkSchema, proposalFileSchema, registrationInputSchema, teamCodeSchema } from "@/lib/schemas";
 import { generateTeamCode } from "@/lib/team-code";
 import type { CompetitionState, Result, Settings, TeamDetail } from "@/lib/data/types";
@@ -42,6 +42,10 @@ export type TurnstileVerifier = (token: string | undefined, ip: string | null) =
 export function teamBackend(ctx: RequestContext, verifyTurnstile: TurnstileVerifier) {
   const now = () => nowFor(ctx);
   const stageNow = () => stageAt(new Date(now()), readDeadlines(ctx.db));
+  const portalOpen = () => teamPortalOpen(new Date(now()), readDeadlines(ctx.db));
+  const portalClosed = () => fail("portal_not_open", "The team portal opens when proposal submissions open.");
+  /** The logged-in team, or null: nobody is while the portal is locked */
+  const portalTeam = () => (portalOpen() ? currentTeam(ctx) : null);
 
   return {
     async getCompetitionState(): Promise<CompetitionState> {
@@ -123,6 +127,7 @@ export function teamBackend(ctx: RequestContext, verifyTurnstile: TurnstileVerif
     },
 
     async loginWithCode(code: string): Promise<Result<{ teamId: number }>> {
+      if (!portalOpen()) return portalClosed();
       const at = now();
       const wait = retryAfterSeconds(ctx.db, "team.login_failed", ctx.ip, at);
       if (wait !== null) return rateLimited(wait);
@@ -151,7 +156,7 @@ export function teamBackend(ctx: RequestContext, verifyTurnstile: TurnstileVerif
 
     /** The team that is logged in, or null */
     async getCurrentTeam(): Promise<TeamDetail | null> {
-      const team = currentTeam(ctx);
+      const team = portalTeam();
       return team ? teamDetail(ctx.db, team, "team") : null;
     },
 
@@ -187,6 +192,7 @@ export function teamBackend(ctx: RequestContext, verifyTurnstile: TurnstileVerif
      * and `%PDF-` signature, uploads to Drive, then records the new version in one transaction.
      */
     async uploadProposal(file: { fileName: string; bytes: Uint8Array }): Promise<Result<{ version: number }>> {
+      if (!portalOpen()) return portalClosed();
       const team = currentTeam(ctx);
       if (!team) return fail("not_logged_in", "Log in with your team code first.");
       if (!BEFORE_DECISION.includes(team.stage)) return fail("not_allowed", "This team can't submit a proposal any more.");
@@ -272,6 +278,7 @@ export function teamBackend(ctx: RequestContext, verifyTurnstile: TurnstileVerif
     },
 
     async submitPrototype(link: string): Promise<Result<{ version: number; youtubeUrl: string }>> {
+      if (!portalOpen()) return portalClosed();
       const team = currentTeam(ctx);
       if (!team) return fail("not_logged_in", "Log in with your team code first.");
       // Only teams with a published "shortlisted" result, even while the list is reopened. Finalists are locked

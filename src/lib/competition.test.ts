@@ -3,7 +3,7 @@ import { deadlines } from "@/content/deadlines";
 import {
   countsDownToRegistrationClose,
   progressBetween,
-  showsTeamLogin,
+  teamPortalOpen,
   stageAt,
   STAGES,
 } from "@/lib/competition";
@@ -26,15 +26,11 @@ describe("stageAt", () => {
   });
 });
 
-describe("showsTeamLogin", () => {
-  it("is hidden until the proposal round and shown from then on", () => {
-    expect(STAGES.filter(showsTeamLogin)).toEqual(["proposal", "shortlisting", "prototype", "finale", "over"]);
-  });
-
-  it("appears the moment registration closes", () => {
-    const closes = Date.parse(deadlines.registrationCloses);
-    expect(showsTeamLogin(stageAt(new Date(closes), deadlines))).toBe(false);
-    expect(showsTeamLogin(stageAt(new Date(closes + 1), deadlines))).toBe(true);
+describe("teamPortalOpen", () => {
+  it("is locked until the moment proposal submissions open", () => {
+    const opens = Date.parse(deadlines.proposalOpens);
+    expect(teamPortalOpen(new Date(opens - 1), deadlines)).toBe(false);
+    expect(teamPortalOpen(new Date(opens), deadlines)).toBe(true);
   });
 });
 

@@ -177,14 +177,36 @@ describe("requestCodeReminder cooldown", () => {
   });
 });
 
+describe("team portal lock", () => {
+  it("refuses login and uploads until proposal submissions open", async () => {
+    setStage(db, "registration");
+    const b = browser(db, fake);
+    const r = await b.registerTeam(newTeam());
+    if (!r.ok) throw new Error("registration failed");
+    const closed = { ok: false, error: { code: "portal_not_open" } };
+
+    expect(await b.loginWithCode(r.data.code)).toMatchObject(closed);
+    expect(await b.uploadProposal({ fileName: "ours.pdf", bytes: PDF })).toMatchObject(closed);
+    expect(await b.submitPrototype("https://youtu.be/dQw4w9WgXcQ")).toMatchObject(closed);
+    expect(fake.uploads).toHaveLength(0);
+
+    setStage(db, "proposal");
+    expect((await b.loginWithCode(r.data.code)).ok).toBe(true);
+    // A session left over from an open portal doesn't get in while it's locked
+    setStage(db, "registration");
+    expect(await b.getCurrentTeam()).toBeNull();
+    expect(await b.uploadProposal({ fileName: "ours.pdf", bytes: PDF })).toMatchObject(closed);
+  });
+});
+
 describe("uploadProposal", () => {
   async function loggedInRegisteredTeam() {
     setStage(db, "registration");
     const b = browser(db, fake);
     const r = await b.registerTeam(newTeam());
     if (!r.ok) throw new Error("registration failed");
-    await b.loginWithCode(r.data.code);
     setStage(db, "proposal");
+    await b.loginWithCode(r.data.code);
     return b;
   }
 

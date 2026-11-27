@@ -36,10 +36,10 @@ export function stageAt(now: Date, d: Deadlines): Stage {
   return "over";
 }
 
-/** The navigation offers "Team login" from the start of the proposal round onwards.
- *  (The portal itself already accepts uploads from registered teams before that.) */
-export function showsTeamLogin(stage: Stage): boolean {
-  return STAGES.indexOf(stage) >= STAGES.indexOf("proposal");
+/** The team portal (login and uploads) is locked until proposal submissions open. The
+ *  navigation offers "Team login" from the same moment. */
+export function teamPortalOpen(now: Date, d: Deadlines): boolean {
+  return now.getTime() >= Date.parse(d.proposalOpens);
 }
 
 /** While registration is still to close, the live callout counts down to that moment */

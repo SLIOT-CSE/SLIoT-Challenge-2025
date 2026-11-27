@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { deadlines as contentDeadlines } from "@/content/deadlines";
 import { text } from "./fields";
 
 // Organizer accounts and the deadline settings (docs/architecture.md, 5 and 6.5).
@@ -38,6 +39,9 @@ export const deadlineSettingsSchema = z
     const prototype = Date.parse(d.prototypeDue);
     if (proposal <= closes) {
       ctx.addIssue({ code: "custom", path: ["proposalDue"], message: "Proposals must be due after registration closes" });
+    }
+    if (proposal <= Date.parse(contentDeadlines.proposalOpens)) {
+      ctx.addIssue({ code: "custom", path: ["proposalDue"], message: "Proposals must be due after submissions open" });
     }
     if (prototype <= proposal) {
       ctx.addIssue({ code: "custom", path: ["prototypeDue"], message: "Prototypes must be due after proposals" });

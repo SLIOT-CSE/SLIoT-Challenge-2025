@@ -367,6 +367,7 @@ Indexes: `created_at`, (`target_type`, `target_id`).
 
 ### 6.2 Team login (`/team`)
 
+- **Locked until proposal submissions open** (added 2026-11-27): before `proposalOpens` (`src/content/deadlines.ts`, 21 December) the server refuses login, uploads and prototype links, `/team` shows only the opening date, and the navigation hides "Team login". Registration itself is not affected.
 - Teams log in with the **team code only** (decision D2-A).
 - Because the code is the only secret, these protections come with it:
   - **Long random code:** about a trillion possibilities.

@@ -11,11 +11,13 @@ export function SuccessScreen({
   teamName,
   leaderEmail,
   deadlines,
+  portalOpen,
 }: {
   code: string;
   teamName: string;
   leaderEmail: string;
   deadlines: Deadlines;
+  portalOpen: boolean;
 }) {
   return (
     <div className="flex flex-col gap-8">
@@ -43,7 +45,17 @@ export function SuccessScreen({
         <ol className="flex flex-col gap-3 text-body text-foam">
           <li className="flex gap-3">
             <Step n={1} />
-            Log in to the team portal with your code.
+            {portalOpen ? (
+              "Log in to the team portal with your code."
+            ) : (
+              <span>
+                The team portal opens on{" "}
+                <strong className="font-semibold">
+                  {formatDayMonth(deadlines.proposalOpens)} at {formatTime(deadlines.proposalOpens)}
+                </strong>
+                . Log in then with your code.
+              </span>
+            )}
           </li>
           <li className="flex gap-3">
             <Step n={2} />
@@ -66,10 +78,12 @@ export function SuccessScreen({
       </section>
 
       <div className="flex flex-wrap gap-3">
-        <Button asChild size="lg">
-          <Link href={routes.teamPortal}>Go to the team portal</Link>
-        </Button>
-        <Button asChild variant="ghost" size="lg">
+        {portalOpen && (
+          <Button asChild size="lg">
+            <Link href={routes.teamPortal}>Go to the team portal</Link>
+          </Button>
+        )}
+        <Button asChild variant={portalOpen ? "ghost" : "primary"} size="lg">
           <Link href="/">Back to the home page</Link>
         </Button>
       </div>

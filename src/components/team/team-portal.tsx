@@ -9,8 +9,10 @@ import {
   type CompetitionState,
   type TeamDetail,
 } from "@/lib/data";
+import { teamPortalOpen } from "@/lib/competition";
 import { Dashboard } from "./dashboard";
 import { LoginForm } from "./login-form";
+import { PortalClosed } from "./portal-closed";
 
 type Loaded = { team: TeamDetail | null; comp: CompetitionState };
 
@@ -54,6 +56,10 @@ export function TeamPortal() {
     ) : (
       <Skeleton />
     );
+  }
+
+  if (!teamPortalOpen(new Date(loaded.comp.now), loaded.comp.deadlines)) {
+    return <PortalClosed deadlines={loaded.comp.deadlines} />;
   }
 
   if (!loaded.team) {

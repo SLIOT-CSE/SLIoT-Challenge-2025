@@ -12,7 +12,7 @@ import { Sponsors } from "@/components/site/sponsors";
 import { Faq } from "@/components/site/faq";
 import { Contact } from "@/components/site/contact";
 import { SiteFooter } from "@/components/site/site-footer";
-import { showsTeamLogin, stageAt } from "@/lib/competition";
+import { stageAt, teamPortalOpen } from "@/lib/competition";
 import { publicDeadlines } from "@/server/public-deadlines";
 
 // The stage, the navigation buttons and every date are worked out on the server for each visit,
@@ -31,7 +31,7 @@ export default async function HomePage() {
       >
         Skip to content
       </a>
-      <SiteNav showTeamLogin={showsTeamLogin(stage)} />
+      <SiteNav showTeamLogin={teamPortalOpen(now, deadlines)} />
       <main id="main" tabIndex={-1} className="outline-hidden">
         <Hero />
         <LiveCallout stage={stage} now={now} deadlines={deadlines} />

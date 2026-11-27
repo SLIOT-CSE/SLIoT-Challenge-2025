@@ -23,7 +23,7 @@ export function faqsFor(deadlines: Deadlines): Faq[] {
     },
     {
       q: "How do we submit the proposal?",
-      a: `Log in to the team portal with your team code and upload one PDF of up to 10 MB before ${formatDayMonth(deadlines.proposalDue)}, ${formatTime(deadlines.proposalDue)}.`,
+      a: `The team portal opens on ${formatDayMonth(deadlines.proposalOpens)}. Log in with your team code and upload one PDF of up to 10 MB before ${formatDayMonth(deadlines.proposalDue)}, ${formatTime(deadlines.proposalDue)}.`,
     },
     {
       q: "Can we change our proposal after uploading it?",

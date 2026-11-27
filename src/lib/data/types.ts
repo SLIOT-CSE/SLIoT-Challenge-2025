@@ -218,6 +218,7 @@ export type ErrorCode =
   | "invalid_code"
   | "not_logged_in"
   | "not_allowed"
+  | "portal_not_open"
   | "proposal_deadline_passed"
   | "prototype_deadline_passed"
   | "shortlist_finalised"

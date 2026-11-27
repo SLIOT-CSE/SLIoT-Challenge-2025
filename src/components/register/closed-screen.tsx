@@ -5,7 +5,7 @@ import type { Deadlines } from "@/content/deadlines";
 import { routes } from "@/content/navigation";
 
 /** Replaces the form before registration opens and after it closes, with the date that matters */
-export function ClosedScreen({ stage, deadlines }: { stage: Stage; deadlines: Deadlines }) {
+export function ClosedScreen({ stage, deadlines, portalOpen }: { stage: Stage; deadlines: Deadlines; portalOpen: boolean }) {
   const notYetOpen = stage === "before-registration";
 
   return (
@@ -29,18 +29,21 @@ export function ClosedScreen({ stage, deadlines }: { stage: Stage; deadlines: De
               <strong className="font-semibold text-foam">
                 {formatDayMonth(deadlines.registrationCloses)} at {formatTime(deadlines.registrationCloses)}
               </strong>
-              . If your team is already registered, log in to the team portal with your team code.
+              . If your team is already registered,{" "}
+              {portalOpen
+                ? "log in to the team portal with your team code."
+                : `the team portal opens on ${formatDayMonth(deadlines.proposalOpens)}.`}
             </>
           )}
         </p>
       </div>
       <div className="flex flex-wrap gap-3">
-        {!notYetOpen && (
+        {!notYetOpen && portalOpen && (
           <Button asChild size="lg">
             <Link href={routes.teamPortal}>Team login</Link>
           </Button>
         )}
-        <Button asChild variant={notYetOpen ? "primary" : "ghost"} size="lg">
+        <Button asChild variant={notYetOpen || !portalOpen ? "primary" : "ghost"} size="lg">
           <Link href="/">Back to the home page</Link>
         </Button>
       </div>

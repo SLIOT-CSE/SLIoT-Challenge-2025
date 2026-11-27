@@ -23,7 +23,7 @@ export function timelineFor(deadlines: Deadlines): TimelineEvent[] {
     {
       title: "Proposal submissions open",
       body: "The team portal opens for registered teams to upload their project proposal PDF.",
-      at: "2026-12-21T09:00:00+05:30",
+      at: deadlines.proposalOpens,
     },
     {
       title: "Proposal awareness session",
@@ -32,7 +32,7 @@ export function timelineFor(deadlines: Deadlines): TimelineEvent[] {
     },
     {
       title: "Registrations close",
-      body: "Final day to register a team for SLIoT '27. Registered teams can keep refining proposals until the submission cutoff.",
+      body: "Final day to register a team for SLIoT '27. Registered teams submit their proposals from the team portal until the submission cutoff.",
       at: deadlines.registrationCloses,
     },
     {

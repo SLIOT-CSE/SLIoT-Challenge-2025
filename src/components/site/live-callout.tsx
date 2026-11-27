@@ -14,6 +14,7 @@ import {
   daysUntil,
   formatDayMonth,
   formatTime,
+  teamPortalOpen,
   type Stage,
 } from "@/lib/competition";
 
@@ -31,9 +32,18 @@ const whatsapp: Action = {
 const template: Action = { label: "Download proposal template", href: proposalTemplateUrl, kind: "secondary", icon: "download" };
 
 /** What the callout says once registration has closed (before that it is a countdown) */
-export function calloutContent(stage: LaterStage, d: Deadlines): CalloutContent {
+export function calloutContent(stage: LaterStage, d: Deadlines, portalOpen = true): CalloutContent {
   switch (stage) {
     case "proposal":
+      if (!portalOpen) {
+        return {
+          status: "Registration has closed",
+          date: d.proposalOpens,
+          headline: `Proposal submissions open ${formatDayMonth(d.proposalOpens)}, ${formatTime(d.proposalOpens)}`,
+          body: "Registered teams can then log in to the team portal and upload their proposal. Get it ready with the template.",
+          actions: [whatsapp, template],
+        };
+      }
       return {
         status: "Proposal round is live",
         date: d.proposalDue,
@@ -97,7 +107,7 @@ export function LiveCallout({ stage, now, deadlines }: { stage: Stage; now: Date
     );
   }
 
-  const c = calloutContent(stage, deadlines);
+  const c = calloutContent(stage, deadlines, teamPortalOpen(now, deadlines));
   const { day, month } = dateParts(c.date);
   const days = daysUntil(now, c.date);
   const isLive = stage !== "over";

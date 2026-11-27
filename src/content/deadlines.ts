@@ -5,6 +5,8 @@
 export const deadlines = {
   registrationOpens: "2026-11-27T09:00:00+05:30",
   registrationCloses: "2026-12-18T23:59:00+05:30",
+  /** The team portal is locked until this moment: no login and no proposal upload */
+  proposalOpens: "2026-12-21T09:00:00+05:30",
   proposalDue: "2027-01-11T23:59:00+05:30",
   shortlistAnnounced: "2027-01-20T18:00:00+05:30",
   prototypeDue: "2027-02-06T23:59:00+05:30",

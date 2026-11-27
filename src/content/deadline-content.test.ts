@@ -37,5 +37,6 @@ describe("content built from the deadlines", () => {
   it("shows the new date in the FAQ", () => {
     const answer = faqsFor(moved).find((f) => f.q === "How do we submit the proposal?")!.a;
     expect(answer).toContain("25 January, 5:00 pm");
+    expect(answer).toContain("21 December");
   });
 });

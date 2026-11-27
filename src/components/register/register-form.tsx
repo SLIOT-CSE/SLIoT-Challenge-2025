@@ -11,6 +11,7 @@ import {
   dataVersion,
   type CompetitionState,
 } from "@/lib/data";
+import { teamPortalOpen } from "@/lib/competition";
 import { generateTeamCode } from "@/lib/team-code";
 import type { CategoryId } from "@/lib/team-rules";
 import { EASE_OUT_EXPO } from "@/lib/motion/ease";
@@ -292,7 +293,11 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
   if (phase.kind === "closed" && comp) {
     return (
       <Panel>
-        <ClosedScreen stage={comp.stage} deadlines={comp.deadlines} />
+        <ClosedScreen
+          stage={comp.stage}
+          deadlines={comp.deadlines}
+          portalOpen={teamPortalOpen(new Date(comp.now), comp.deadlines)}
+        />
       </Panel>
     );
   }
@@ -304,6 +309,7 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
           code={phase.code}
           teamName={phase.teamName}
           leaderEmail={phase.leaderEmail}
+          portalOpen={teamPortalOpen(new Date(comp.now), comp.deadlines)}
           deadlines={comp.deadlines}
         />
       </Panel>

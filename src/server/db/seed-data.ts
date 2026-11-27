@@ -135,6 +135,7 @@ export function buildSeedData(): SeedData {
 
   const registrationOpens = t(d.registrationOpens);
   const registrationCloses = t(d.registrationCloses);
+  const proposalOpens = t(d.proposalOpens);
   const proposalDue = t(d.proposalDue);
   const prototypeDue = t(d.prototypeDue);
   const finalisedAt = t(d.shortlistAnnounced) - HOUR;
@@ -273,7 +274,7 @@ export function buildSeedData(): SeedData {
         // Spread across the proposal window, later versions later
         const at = Math.max(
           createdAt + HOUR,
-          Math.round(registrationCloses + ((v + (i % 4)) / (versions + 5)) * (proposalDue - registrationCloses)),
+          Math.round(proposalOpens + ((v + (i % 4)) / (versions + 5)) * (proposalDue - proposalOpens)),
         );
         const driveFileId = `seed${rng.hex(28)}`;
         data.submissions.push({
