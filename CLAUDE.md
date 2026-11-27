@@ -13,6 +13,7 @@ The `docs/` folder holds the plan, and the code follows it. Read the relevant fi
 - `docs/workload.md`: every step A–Z with substeps and status, and what is done or waiting for review. Start here to find the current step and what it includes. Update it when a step or substep changes status.
 - `docs/architecture.md`: the target backend (SQLite + Litestream, data model, email outbox, Google Drive/Sheets, security, backups, deployment), the feature flows (registration, team login, uploads, shortlisting, finalists, exports), the decisions log and open questions.
 - `docs/frontend-plan.md`: design direction, tokens, motion system, a spec for each section of the one-page site, the app screen specs (§6) and accessibility rules.
+- `docs/operations.md`: running the live site: milestones, manual tasks, monitoring and fixes. Update it when an organizer-facing behaviour changes.
 - `PRODUCT.md`: audience, brand personality, anti-references and design principles. Read it before any UI or copy work.
 
 If a change alters a documented flow or decision, update the matching doc in the same change.
