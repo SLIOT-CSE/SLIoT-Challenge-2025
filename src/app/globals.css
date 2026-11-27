@@ -478,22 +478,25 @@ html[data-hero-loading="true"] .intro-fade {
   --dot: color-mix(in srgb, var(--color-lagoon) 42%, transparent);
 }
 
-/* The same nodes lit aqua, seen only through a soft band that crosses the word */
+/* The same nodes lit aqua, waiting at the leading edge and sweeping right as the footer enters view */
 .dot-signal {
   --dot: var(--color-aqua);
-  -webkit-mask: linear-gradient(100deg, transparent 41%, #000 50%, transparent 59%) 100% 0 / 300% 100% no-repeat;
-  mask: linear-gradient(100deg, transparent 41%, #000 50%, transparent 59%) 100% 0 / 300% 100% no-repeat;
-  animation: dot-sweep 9s linear infinite;
+  -webkit-mask: linear-gradient(100deg, transparent 41%, #000 50%, transparent 59%) 83% 0 / 300% 100% no-repeat;
+  mask: linear-gradient(100deg, transparent 41%, #000 50%, transparent 59%) 83% 0 / 300% 100% no-repeat;
+}
+
+[data-active="true"] .dot-signal {
+  animation: dot-sweep 5.5s linear infinite;
 }
 
 @keyframes dot-sweep {
   from {
-    -webkit-mask-position: 100% 0;
-    mask-position: 100% 0;
+    -webkit-mask-position: 83% 0;
+    mask-position: 83% 0;
   }
   to {
-    -webkit-mask-position: 0% 0;
-    mask-position: 0% 0;
+    -webkit-mask-position: 17% 0;
+    mask-position: 17% 0;
   }
 }
 
@@ -513,6 +516,7 @@ html[data-hero-loading="true"] .intro-fade {
     animation: none;
   }
   /* The light rests over the year instead of crossing */
+  [data-active="true"] .dot-signal,
   .dot-signal {
     animation: none;
     -webkit-mask-position: 38% 0;

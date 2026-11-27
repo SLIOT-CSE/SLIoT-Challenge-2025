@@ -206,7 +206,7 @@ Organizers first (CSE, University of Moratuwa), then partners by tier (SLT-MOBIT
 ### 5.14 Footer
 
 - **Desktop layout:** Three-zone monumental stage — logo and one-line description on the left, centered SLIoT robot figure framed by an SVG concentric IoT circuit ring in the middle, and organizer credit with partner logos on the right — flowing into the giant outlined `SLIoT 2027` wordmark and a bottom hairline bar (copyright and circular social icons).
-- **Wordmark:** The thin outline holds a fine grid of round dots that thins out towards the cut-off bottom. One soft aqua light crosses the dots every 9 seconds; with reduced motion it rests over the year.
+- **Wordmark:** The thin outline holds a fine grid of round dots that thins out towards the cut-off bottom. A soft aqua light sweeps across the dots in 5.5s, starting immediately on `S` when the wordmark scrolls into view; with reduced motion it rests over the year.
 - **Below 1024px:** The robot figure and circuit ring sit centered as a dimmed backdrop, with the logo, description, organizer credit, partner logos, `SLIoT 2027`, copyright/links, and social icons stacked cleanly.
 - **Back to top:** A button with scroll progress shown as a ring around it.
 

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { footerFigure, logo } from "@/assets";
 import { BackToTop } from "@/components/site/back-to-top";
+import { FooterWordmark } from "@/components/site/footer-wordmark";
 import { SocialIcon } from "@/components/site/social-icon";
 import { partnerTiers } from "@/content/people";
 import { edition, site } from "@/content/site";
@@ -89,18 +90,7 @@ export function SiteFooter() {
       </div>
 
       {/* The edition, kept huge as the page's last word */}
-      <p
-        aria-hidden="true"
-        className="pointer-events-none relative z-10 mx-auto -mb-[0.22em] grid max-w-7xl select-none whitespace-nowrap px-4 text-center font-display text-[clamp(3.75rem,16vw,15.5rem)] leading-none sm:px-8 lg:-mt-6"
-      >
-        {/* Three copies stacked in one cell: dots, the light crossing them, then the outline.
-            The dots thin out towards the bottom, where the word runs off the page */}
-        <span className="grid [grid-area:1/1] [mask-image:linear-gradient(to_bottom,#000_40%,rgb(0_0_0/0.2)_80%)]">
-          <span className="dot-fill [grid-area:1/1]">{edition.shortName}</span>
-          <span className="dot-signal [grid-area:1/1]">{edition.shortName}</span>
-        </span>
-        <span className="text-outline opacity-60 [grid-area:1/1]">{edition.shortName}</span>
-      </p>
+      <FooterWordmark label={edition.shortName} />
 
       {/* Bottom hairline bar: extra bottom/right clearance so fixed BackToTop never overlaps socials */}
       <div className="relative z-10 border-t border-ocean/70 bg-abyss/90">
