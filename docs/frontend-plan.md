@@ -230,6 +230,7 @@ These follow the product side of the design system: same tokens and fonts, calme
 - **Progress:** a step rail at the top. Steps slide sideways (Motion), and the form keeps its values if you go back.
 - **Success screen:** the team code is revealed character by character, as large Bebas. Next to it: a copy button, "We've emailed this to {leader email}", and next steps with the proposal deadline.
 - **States:** registration closed (with the next date), submitting, duplicate email or NIC (names the member to fix), network error (keeps everything typed).
+- **Backdrop:** the home hero's drifting particle field (`QuantumNebula` through `HeroNebula`, loaded client-side with `nebula-mask`), behind the header and heading. It sits in the route file, so it also shows behind the closed and success screens. It is sparser and dimmer than on the hero (`density={0.7}`, `intensity={0.75}`, optional props whose defaults keep the hero unchanged) so the form stays the focus. The layer is about 44rem tall, fades out towards the bottom, is `aria-hidden` and `pointer-events-none`, and sits at `-z-10` inside an `isolate` wrapper. It pauses off screen, and reduced motion draws one still frame. Without WebGL there is no backdrop.
 
 ### 6.2 `/team`: team portal
 

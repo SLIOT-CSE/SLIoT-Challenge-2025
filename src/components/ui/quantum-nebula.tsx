@@ -85,9 +85,15 @@ void main() {
   gl_FragColor = vec4(v_color, v_fade * u_intensity);
 }`;
 
-type QuantumNebulaProps = { className?: string };
+type QuantumNebulaProps = {
+  className?: string;
+  /** Share of the default particle count, 0 to 1 (sparser behind forms). Default 1 */
+  density?: number;
+  /** Brightness multiplier on top of the default intensity, 0 to 1. Default 1 */
+  intensity?: number;
+};
 
-export default function QuantumNebula({ className }: QuantumNebulaProps) {
+export default function QuantumNebula({ className, density = 1, intensity = 1 }: QuantumNebulaProps) {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -117,7 +123,7 @@ export default function QuantumNebula({ className }: QuantumNebulaProps) {
     camera.position.z = 5;
 
     // --- Particles ---
-    const count = large ? config.count.large : config.count.small;
+    const count = Math.max(1, Math.round((large ? config.count.large : config.count.small) * density));
     const { x: bx, y: by, z: bz } = config.bounds;
     const positions = new Float32Array(count * 3);
     const velocities = new Float32Array(count * 3);
@@ -145,7 +151,7 @@ export default function QuantumNebula({ className }: QuantumNebulaProps) {
       uniforms: {
         u_size: { value: config.size },
         u_pixelRatio: { value: pixelRatio },
-        u_intensity: { value: config.intensity },
+        u_intensity: { value: config.intensity * intensity },
       },
       vertexShader: VERTEX,
       fragmentShader: FRAGMENT,
@@ -304,7 +310,7 @@ export default function QuantumNebula({ className }: QuantumNebulaProps) {
       renderer.dispose();
       canvas.remove();
     };
-  }, []);
+  }, [density, intensity]);
 
   return <div ref={mountRef} aria-hidden="true" className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)} />;
 }
