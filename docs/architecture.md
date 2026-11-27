@@ -451,6 +451,10 @@ Added during step O. A lighter process than the shortlist, because it is smaller
 4. A finalist sees "Finals" lit in the team portal's status tracker, with the finale date. A finalist can no longer replace the prototype link.
 5. If the shortlist is re-finalised, a finalist who is still ticked stays a finalist; one who is unticked becomes `not_shortlisted`.
 
+### 6.6b Removing test teams
+
+Added 2026-11-27, for test registrations on the live site. The dashboard has no delete. On the server, `pnpm team:delete <code> ...` lists what would go; with `--yes` it saves a copy of the database beside the original, then deletes the teams with their members, submissions, emails and sessions in one transaction, and adds `team.deleted` to the audit log. A team that is in a finalised shortlist is refused. Proposal files in Drive are removed by hand (the script prints the links), and the Sheet is exported again.
+
 ### 6.7 Exports
 
 - **Layout of both exports:** one row per team. Team columns first (code, name, category, institution, stage, proposal and video links, dates), then member columns `M1 name`, `M1 WhatsApp`, `M1 email`, `M1 institution`, `M1 NIC` ... up to `M5`. M1 is the leader. Empty columns for smaller teams.

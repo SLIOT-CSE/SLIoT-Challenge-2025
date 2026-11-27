@@ -311,6 +311,7 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 - [x] Y6. Before merging: set up the backups on the server (`deploy/backup/README.md`, steps 1–6; confirm Ubuntu/systemd, the app and runner user, and that it has no password-free sudo). The deploy stops if a database exists without them. Done 2026-11-26: tools installed, scripts and settings in place, R2 write/read/delete verified, timer installed but not enabled (Y8), sudo rule tested
 - [x] Y5a. Public page reads the deadlines saved in `/admin/settings` (`src/server/public-deadlines.ts`); the home page now renders per visit. Fixed 2026-11-26
 - [ ] Y6a. Before merging: lint, typecheck, tests and build on the combined `full-site`; commit and push; trial build of `full-site` on the server in a temporary folder
+- [x] Y6b. Before the launch (2026-11-27): Next.js 16.4.6 (security fixes), team portal locked until `proposalOpens`, `pnpm team:delete` for test teams
 - [ ] Y7. On the server, replace the nginx `/register` redirect with its rate-limited block (`deploy/nginx.conf.example`), then merge `full-site` into `main`; watch the deploy and health check
 - [ ] Y8. After the first deploy: enable the snapshot timer, start Litestream, run a snapshot, check file ownership and healthchecks, then pass a restore drill **before registration opens** (X1, X2, X6)
 - [ ] Y9. Create the first super admin on the server; set the deadlines

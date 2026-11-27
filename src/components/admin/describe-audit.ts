@@ -75,6 +75,8 @@ export function describeAudit(entry: AuditEntryView): AuditDescription {
       return plain("The team code was emailed to the team leader");
     case "team.code_resent":
       return plain(`${actor} emailed the team code to the team leader again`);
+    case "team.deleted":
+      return plain(`The team${typeof d?.name === "string" ? ` “${d.name}”` : ""} was deleted on the server`);
     case "team.edited":
       return {
         text: `${actor} edited the team's details`,

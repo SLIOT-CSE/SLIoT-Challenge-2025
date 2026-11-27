@@ -34,6 +34,7 @@ pnpm db:migrate          # apply migrations (./data/sliot.db in dev, DATABASE_PA
 pnpm db:seed             # dev only: wipe the local db, write 20 test teams, print the logins
 pnpm db:generate         # write a migration after changing src/server/db/schema.ts
 pnpm admin:create <user> "<Name>" [role]  # make an organizer account, prints its password
+pnpm team:delete <code>... [--yes]  # remove test teams (previews without --yes; saves a db copy first)
 pnpm email:dev           # preview the email templates (port 3200)
 ```
 
