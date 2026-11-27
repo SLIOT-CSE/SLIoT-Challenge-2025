@@ -111,9 +111,10 @@ export function computeMenuPlacement(
   viewport: { width: number; height: number },
   container?: ContainerOffset,
   preferredMaxHeight = DEFAULT_MAX_HEIGHT,
+  preferredMinWidth = 240,
 ): MenuPlacement {
   const maxAllowedWidth = Math.max(0, viewport.width - VIEWPORT_MARGIN * 2);
-  const desiredWidth = Math.max(triggerRect.width, Math.min(240, maxAllowedWidth));
+  const desiredWidth = Math.max(triggerRect.width, Math.min(preferredMinWidth, maxAllowedWidth));
   const width = Math.min(desiredWidth, maxAllowedWidth);
 
   const clampedLeftViewport = Math.min(

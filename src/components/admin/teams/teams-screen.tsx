@@ -263,7 +263,14 @@ export function TeamsScreen() {
                 </option>
               ))}
             </FilterSelect>
-            <FilterSelect label="Institution" value={view.institution} onChange={(v) => setFilter({ institution: v })} wide>
+            <FilterSelect
+              label="Institution"
+              value={view.institution}
+              onChange={(v) => setFilter({ institution: v })}
+              wide
+              searchable
+              searchPlaceholder="Search institutions…"
+            >
               <option value="">All institutions</option>
               {institutions.map((name) => (
                 <option key={name} value={name}>
@@ -318,18 +325,28 @@ function FilterSelect({
   value,
   onChange,
   wide,
+  searchable,
+  searchPlaceholder,
   children,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   wide?: boolean;
+  searchable?: boolean;
+  searchPlaceholder?: string;
   children: React.ReactNode;
 }) {
   return (
     <label className={`flex flex-col gap-1 text-caption font-semibold text-haze ${wide ? "col-span-2 sm:w-60" : "sm:w-44"}`}>
       {label}
-      <Select value={value} onChange={(e) => onChange(e.target.value)} className="h-11">
+      <Select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        searchable={searchable}
+        searchPlaceholder={searchPlaceholder}
+        className="h-11"
+      >
         {children}
       </Select>
     </label>

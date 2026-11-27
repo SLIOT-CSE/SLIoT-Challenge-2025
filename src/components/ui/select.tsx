@@ -146,6 +146,7 @@ export function Select({
         { width: window.innerWidth, height: window.innerHeight },
         containerOffset,
         searchable ? 340 : 280,
+        searchable ? 320 : 240,
       ),
     );
   };
@@ -479,7 +480,7 @@ export function Select({
               aria-activedescendant={activeOptionId}
               onKeyDown={searchable ? undefined : handleMenuKeyDown}
               style={{ maxHeight: listMaxHeight }}
-              className="aurora-scroll flex flex-col gap-0.5 overflow-y-auto overscroll-contain focus:outline-hidden"
+              className="aurora-scroll space-y-0.5 overflow-y-auto overscroll-contain focus:outline-hidden"
             >
               {visibleOptions.length === 0 || (query.trim().length > 0 && regularCount === 0 && pinnedSet.size === 0) ? (
                 <p className="px-3 py-3 text-center text-small text-haze">{emptyMessage}</p>
@@ -518,7 +519,7 @@ export function Select({
                           if (!option.disabled) commitValue(option.value);
                         }}
                         className={cn(
-                          "flex min-h-11 sm:min-h-10 w-full items-center justify-between gap-3 rounded-control px-3 py-2 text-left text-small select-none transition-colors duration-150 motion-reduce:transition-none",
+                          "flex min-h-11 sm:min-h-10 w-full shrink-0 items-center justify-between gap-3 rounded-control px-3 py-2 text-left text-small select-none transition-colors duration-150 motion-reduce:transition-none",
                           option.disabled
                             ? "cursor-not-allowed opacity-45"
                             : "cursor-pointer",
