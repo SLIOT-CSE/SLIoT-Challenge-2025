@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import Script from "next/script";
 import "./globals.css";
 import { fontVariables } from "./fonts";
 import { SmoothScrollProvider } from "@/lib/motion/smooth-scroll";
@@ -25,12 +24,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={fontVariables} suppressHydrationWarning>
+      <head>
+        {/* Synchronous blocking head script sets data-hero-loading before first body paint */}
+        <script dangerouslySetInnerHTML={{ __html: HERO_PREPAINT_SCRIPT }} />
+      </head>
       <body>
-        <Script
-          id="hero-prepaint"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: HERO_PREPAINT_SCRIPT }}
-        />
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
       </body>
     </html>
