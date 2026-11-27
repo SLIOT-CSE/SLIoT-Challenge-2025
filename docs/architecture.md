@@ -410,6 +410,7 @@ Teams can replace the proposal any number of times until the deadline. The newes
 | See each team's shortlist result (after the shortlist is finalised) | ✓ | ✓ |
 | Shortlisting page: mark teams, finalise, reopen (see 6.6) | | ✓ |
 | Resend a team's code email | ✓ | ✓ |
+| Emails page (`/admin/emails`): see emails that failed or are waiting, with the error, and send them again (added 2026-11-27) | ✓ | ✓ |
 | Download CSV | ✓ | ✓ |
 | Export to Google Sheets | ✓ | ✓ |
 | Settings: registration, proposal and prototype deadlines | | ✓ |
@@ -474,7 +475,7 @@ Added 2026-11-27, for test registrations on the live site. The dashboard has no 
 - **Outbox and worker:**
   - Every email is first written to `email_outbox`.
   - A background worker, started once in `instrumentation.ts`, sends pending emails about one every two seconds.
-  - Failures are retried with growing gaps (1 min, 5 min, 30 min, 2 h, 12 h), then marked `failed` and shown in the admin dashboard.
+  - Failures are retried with growing gaps (1 min, 5 min, 30 min, 2 h, 12 h), then marked `failed` and shown in the admin dashboard. An organizer can queue unsent ones again from `/admin/emails`: attempts start from zero, the address and contents stay as first queued, and `email.retried` is audited.
   - At peak the shortlist finalise queues one email per shortlisted team; at one every two seconds, 60 emails go out in about two minutes, well inside Gmail's limits.
 - **Templates (React Email):**
   - Each email is a typed React component in `src/emails/`, built from React Email's components (`Html`, `Container`, `Button` ...) and styled with its `Tailwind` wrapper using the site's colours.

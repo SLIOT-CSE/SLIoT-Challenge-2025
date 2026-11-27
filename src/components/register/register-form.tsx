@@ -309,8 +309,6 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
           code={phase.code}
           teamName={phase.teamName}
           leaderEmail={phase.leaderEmail}
-          portalOpen={teamPortalOpen(new Date(comp.now), comp.deadlines)}
-          deadlines={comp.deadlines}
         />
       </Panel>
     );

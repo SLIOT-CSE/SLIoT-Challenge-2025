@@ -16,6 +16,7 @@ const PREFIX_GROUP: Record<string, AuditActionGroup> = {
   team: "team",
   proposal: "team",
   prototype: "team",
+  email: "team",
   shortlist: "shortlist",
   finalists: "finalists",
   admin: "admin",

@@ -65,6 +65,7 @@ export const announceFinalists = write(actions.announceFinalists);
 export const unmarkFinalists = write(actions.unmarkFinalists);
 export const listShortlistFinalisations = read(actions.listShortlistFinalisations);
 export const listOutbox = read(actions.listOutbox);
+export const retryEmails = write(actions.retryEmails);
 export const getAuditLog = read(actions.getAuditLog);
 export const adminLogin = write(actions.adminLogin);
 export const adminLogout = write(actions.adminLogout);
