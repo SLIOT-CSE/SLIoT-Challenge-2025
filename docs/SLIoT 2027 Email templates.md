@@ -40,11 +40,11 @@ Here is your team's access code:
 
 **{code}**
 
-**Keep this code for future reference** and share it only with your team members. It will serve as your login credential for the team portal. 
+**Keep this code for future reference** and share it only with your team members.
 
 Your journey starts here\!
 
-**CTA:** Join the WhatsApp Delegates Group *(category-specific link: `university` → https://chat.whatsapp.com/C6pPK5gqTK9H84LBK194Hy?s=sw&p=a&iam=2, `school` → https://chat.whatsapp.com/EJ93RlgcO97AnPXGxI5bQI?s=sw&p=a&iam=2, `open` → https://chat.whatsapp.com/BU2R4Zux0l0Lcukl9F0bmg?s=sw&p=a&iam=2; `team portal` is linked inline in body)*
+**CTA:** Join the WhatsApp Delegates Group *(category-specific link: `university` → https://chat.whatsapp.com/C6pPK5gqTK9H84LBK194Hy?s=sw&p=a&iam=2, `school` → https://chat.whatsapp.com/EJ93RlgcO97AnPXGxI5bQI?s=sw&p=a&iam=2, `open` → https://chat.whatsapp.com/BU2R4Zux0l0Lcukl9F0bmg?s=sw&p=a&iam=2)*
 
 ## **2\. Team Code Reminder (`code_reminder`)**
 

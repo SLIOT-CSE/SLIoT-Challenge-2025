@@ -35,7 +35,14 @@ describe("email templates", () => {
       });
       expect(email.subject.length).toBeGreaterThan(5);
       expect(email.html).toContain("Wave Riders");
-      expect(email.html).toContain(`${siteUrl}/team`);
+      expect(email.html).toContain(`${siteUrl}/images/email/sliot-logo.png`);
+      expect(email.html).toContain(`${siteUrl}/images/email/social-whatsapp.png`);
+      if (template === "registration_confirmed") {
+        expect(email.html).toContain(delegatesWhatsappByCategory.open.replaceAll("&", "&amp;"));
+        expect(email.html).not.toContain(`${siteUrl}/team`);
+      } else {
+        expect(email.html).toContain(`${siteUrl}/team`);
+      }
       expect(email.text).toContain("Wave Riders");
     }
   });

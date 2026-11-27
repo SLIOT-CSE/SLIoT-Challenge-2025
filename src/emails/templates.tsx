@@ -1,7 +1,7 @@
-import { Link, Text } from "react-email";
+import { Text } from "react-email";
 import { delegatesWhatsappByCategory } from "@/content/socials";
 import type { CategoryId } from "@/lib/team-rules";
-import { CodeBox, colors, Layout, p, type EmailContext } from "./layout";
+import { CodeBox, Layout, p, type EmailContext } from "./layout";
 
 // The eight templates (docs/SLIoT 2027 Email templates.md; docs/architecture.md, section 7).
 // Each takes the props stored in the outbox row plus the EmailContext added at send time.
@@ -30,12 +30,7 @@ export function RegistrationConfirmed({
       <Text style={p}>Here is your team&rsquo;s access code:</Text>
       <CodeBox code={code} />
       <Text style={p}>
-        <strong>Keep this code for future reference</strong> and share it only with your team members. It will serve as your
-        login credential for the{" "}
-        <Link href={portal(siteUrl)} style={{ color: colors.mint }}>
-          team portal
-        </Link>
-        .
+        <strong>Keep this code for future reference</strong> and share it only with your team members.
       </Text>
       <Text style={p}>Your journey starts here!</Text>
     </Layout>
