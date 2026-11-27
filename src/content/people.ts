@@ -31,8 +31,8 @@ export const partnerTiers: PartnerTier[] = [
   {
     title: "Organized by",
     partners: [
-      { name: "Department of Computer Science & Engineering", logo: "/images/partners/cse.jpg", width: 250, height: 156, url: "https://cse.mrt.ac.lk" },
-      { name: "University of Moratuwa", logo: "/images/partners/uom.gif", width: 526, height: 692, url: "https://uom.lk" },
+      { name: "Department of Computer Science & Engineering", logo: "/images/partners/cse.svg", width: 6532, height: 4083, url: "https://cse.mrt.ac.lk" },
+      { name: "University of Moratuwa", logo: "/images/partners/uom.png", width: 1127, height: 1514, url: "https://uom.lk" },
     ],
   },
   {
@@ -42,7 +42,7 @@ export const partnerTiers: PartnerTier[] = [
   {
     title: "In collaboration with",
     partners: [
-      { name: "The Institution of Engineers, Sri Lanka (IESL)", logo: "/images/partners/iesl.jpg", width: 284, height: 353, url: "https://iesl.lk" },
+      { name: "The Institution of Engineers, Sri Lanka (IESL)", logo: "/images/partners/iesl.svg", width: 69, height: 86, url: "https://iesl.lk" },
     ],
   },
 ];

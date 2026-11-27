@@ -60,6 +60,7 @@ export function SiteFooter() {
                   width={partner.width}
                   height={partner.height}
                   sizes="6rem"
+                  unoptimized={partner.logo.endsWith(".svg")}
                   className="h-8 w-auto max-w-24 object-contain transition-transform duration-200 ease-out-quart group-hover:-translate-y-0.5 motion-reduce:transition-none xl:h-9 xl:max-w-28"
                 />
               );
