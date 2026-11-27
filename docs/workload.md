@@ -304,7 +304,7 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 ## Y. Testing, content and launch
 
 - [ ] Y1. Playwright end to end: register → login → upload → shortlist → finalise → prototype
-- [ ] Y2. Real 2027 content: official dates done (`SLIOT_27_Master_Program_Calendar-v5.xlsx` applied 2026-11-26); still pending: prize amounts, FAQs review, partner tiers, contact people, university list confirmation, proposal template (`TODO(2027)`), and final email copy from editorial panel (`docs/SLIoT-2027-Email-Templates-Review.docx`)
+- [ ] Y2. Real 2027 content: official dates (`SLIOT_27_Master_Program_Calendar-v5.xlsx`, updated 2026-11-27) and category prize amounts (`src/content/prizes.ts`, updated 2026-11-27) done; still pending: special awards, FAQs review, partner tiers, contact people, university list confirmation, proposal template (`TODO(2027)`), and final email copy from editorial panel (`docs/SLIoT-2027-Email-Templates-Review.docx`)
 - [ ] Y3. Metadata and share image for the full site (Open Graph 1200×630), favicon check
 - [ ] Y4. Privacy notice page/text
 - [ ] Y5. Final check on staging data: full run-through on phone and desktop
