@@ -310,7 +310,7 @@ One row per press of **Finalise shortlist**, so every version of the shortlist i
 | id | INTEGER | PK | ✓ | |
 | team_id | INTEGER | FK → teams.id | | The team the email is about, if any |
 | to_email | TEXT | | ✓ | |
-| template | TEXT | | ✓ | `registration_confirmed` \| `code_reminder` \| `proposal_received` \| `shortlisted` \| `prototype_received` \| `finalist` |
+| template | TEXT | | ✓ | `registration_confirmed` \| `code_reminder` \| `proposal_received` \| `shortlisted` \| `prototype_received` \| `prototype_reminder` \| `semifinalist` \| `finalist` |
 | props | TEXT | | ✓ | JSON props for the React Email template, rendered at send time |
 | status | TEXT | | ✓ | `pending` \| `sent` \| `failed` |
 | attempts | INTEGER | | ✓ | Default 0. Gives up after 6 |
@@ -474,7 +474,7 @@ Added during step O. A lighter process than the shortlist, because it is smaller
   - Each email is a typed React component in `src/emails/`, built from React Email's components (`Html`, `Container`, `Button` ...) and styled with its `Tailwind` wrapper using the site's colours.
   - They share one layout: SLIoT logo (loaded from the site by absolute URL), a short heading, the message, one clear button, and a footer with contacts and social links.
   - The worker renders each email with `@react-email/render` to HTML **and** a plain-text version, so it reads well in every client and spam filters trust it.
-  - Templates: registration confirmed (with the team code, large and easy to copy), code reminder, proposal received, shortlisted (with the prototype deadline and a link to the portal), prototype received.
+  - Templates: registration confirmed (team code + category delegates WhatsApp group CTA), code reminder, proposal received, shortlisted (with prototype deadline and portal link), prototype received, prototype submission reminder (**TODO:** trigger not wired yet), semi-finalist selected (**TODO:** stage/trigger not wired yet), and finalist.
   - The outbox stores the template name and its props, not rendered HTML, so a fixed template applies to retries too.
 - **Development:**
   - `pnpm email:dev` opens React Email's preview server to design the templates with sample data.

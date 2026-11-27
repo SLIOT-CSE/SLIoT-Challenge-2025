@@ -2,5 +2,12 @@
 import { RegistrationConfirmed } from "../templates";
 
 export default function Preview() {
-  return <RegistrationConfirmed teamName="Wave Riders" code="SL27-7KQ4-M9XD" siteUrl="https://sliot.cse.mrt.ac.lk" />;
+  return (
+    <RegistrationConfirmed
+      teamName="Wave Riders"
+      code="SL27-7KQ4-M9XD"
+      category="university"
+      siteUrl="https://sliot.cse.mrt.ac.lk"
+    />
+  );
 }

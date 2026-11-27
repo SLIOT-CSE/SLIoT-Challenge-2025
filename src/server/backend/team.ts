@@ -102,7 +102,11 @@ export function teamBackend(ctx: RequestContext, verifyTurnstile: TurnstileVerif
               .returning({ id: schema.teams.id })
               .get();
             tx.insert(schema.members).values(data.members.map((m) => ({ teamId: team.id, ...m }))).run();
-            queueEmail(tx, at, team.id, data.members[0].email, "registration_confirmed", { code, teamName: data.name });
+            queueEmail(tx, at, team.id, data.members[0].email, "registration_confirmed", {
+              code,
+              teamName: data.name,
+              category: data.category,
+            });
             record(tx, ctx, at, { type: "anonymous", id: null }, "team.registered", { type: "team", id: team.id }, { code });
             return { teamId: team.id, code };
           }),

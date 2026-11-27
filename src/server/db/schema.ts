@@ -18,6 +18,8 @@ export const EMAIL_TEMPLATES = [
   "proposal_received",
   "shortlisted",
   "prototype_received",
+  "prototype_reminder",
+  "semifinalist",
   "finalist",
 ] as const;
 export const EMAIL_STATUSES = ["pending", "sent", "failed"] as const;

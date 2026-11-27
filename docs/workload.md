@@ -261,7 +261,7 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 ## T. Email system
 
 - [x] T1. Outbox and background worker started from `src/instrumentation.ts` (`src/server/email/worker.ts`): one email every 2 s; retries at 1 min, 5 min, 30 min, 2 h, 12 h, then `failed`. Schedules by real time (new emails are due at once). Also deletes expired sessions daily
-- [x] T2. React Email templates in `src/emails/` (react-email 6; inline styles from the aurora palette rather than its Tailwind wrapper, for client support): registration confirmed, code reminder, proposal received, shortlisted, prototype received, finalist. The header uses `/icon.png`, since Gmail doesn't show SVG. Editorial review document exported to `docs/SLIoT-2027-Email-Templates-Review.docx` (2026-11-26). TODO(2027): a PNG wordmark and applying final panel-approved email copy
+- [x] T2. React Email templates in `src/emails/` (react-email 6; inline styles from the aurora palette rather than its Tailwind wrapper, for client support): updated 2026-11-27 to all 8 finalized templates (`docs/SLIoT 2027 Email templates.md`), with category-specific WhatsApp Delegates Group CTAs on registration confirmation, plus updated header & footer. **TODO:** wire triggers for #6 (`prototype_reminder`) and #7 (`semifinalist`), and optional PNG wordmark in header.
 - [x] T3. nodemailer over Workspace SMTP (`src/server/email/transport.ts`); `pnpm email:dev` preview on port 3200. **Changed:** no console transport. Decided 2026-11-24: until the SMTP variables are set, emails wait in the outbox as `pending` with `last_error` "SMTP not configured"; production refuses to start without them
 - [ ] T4. Test sends to real Gmail and Outlook inboxes on phone and desktop. Gmail desktop passed 2026-11-25 (inbox; SPF and DKIM pass, DMARC fails because the domain has no record, see R7; logo broken only with a localhost SITE_URL). Outlook skipped for now by the user; Outlook and phone checks still to do
 
@@ -304,7 +304,7 @@ Built in four slices, each checked in the browser before the next: (1) foundatio
 ## Y. Testing, content and launch
 
 - [ ] Y1. Playwright end to end: register → login → upload → shortlist → finalise → prototype
-- [ ] Y2. Real 2027 content: official dates (`SLIOT_27_Master_Program_Calendar-v5.xlsx`, updated 2026-11-27), category prize amounts (`src/content/prizes.ts`, updated 2026-11-27), and contact organizers (`src/content/people.ts`, updated 2026-11-27) done; still pending: special awards, FAQs review, partner tiers, university list confirmation, proposal template (`TODO(2027)`), and final email copy from editorial panel (`docs/SLIoT-2027-Email-Templates-Review.docx`)
+- [ ] Y2. Real 2027 content: official dates (`SLIOT_27_Master_Program_Calendar-v5.xlsx`, updated 2026-11-27), category prize amounts (`src/content/prizes.ts`, updated 2026-11-27), contact organizers (`src/content/people.ts`, updated 2026-11-27), and finalized 2027 email copy (`src/emails/`, updated 2026-11-27) done; still pending: special awards, FAQs review, partner tiers, university list confirmation, proposal template (`TODO(2027)`), and triggers for emails #6 (`prototype_reminder`) and #7 (`semifinalist`).
 - [ ] Y3. Metadata and share image for the full site (Open Graph 1200×630), favicon check
 - [ ] Y4. Privacy notice page/text
 - [ ] Y5. Final check on staging data: full run-through on phone and desktop

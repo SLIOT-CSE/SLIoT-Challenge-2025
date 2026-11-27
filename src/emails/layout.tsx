@@ -45,7 +45,13 @@ export function Layout({
         <Container style={{ maxWidth: 560, margin: "0 auto", backgroundColor: colors.night, borderRadius: 16, padding: "32px 28px" }}>
           {/* PNG, not the SVG wordmark: Gmail and Outlook don't show SVG */}
           <Img src={`${siteUrl}/icon.png`} alt="SLIoT Challenge" width={48} height={48} style={{ borderRadius: 12 }} />
-          <Heading as="h1" style={{ color: colors.foam, fontSize: 24, lineHeight: "32px", margin: "24px 0 16px" }}>
+          <Text style={{ color: colors.mint, fontSize: 13, fontWeight: 700, lineHeight: "18px", margin: "16px 0 2px" }}>
+            SLIoT Challenge 2027
+          </Text>
+          <Text style={{ color: colors.haze, fontSize: 12, lineHeight: "18px", margin: 0 }}>
+            Department of Computer Science &amp; Engineering, University of Moratuwa
+          </Text>
+          <Heading as="h1" style={{ color: colors.foam, fontSize: 24, lineHeight: "32px", margin: "20px 0 16px" }}>
             {heading}
           </Heading>
           <Section style={{ color: colors.foam, fontSize: 16, lineHeight: "26px" }}>{children}</Section>
@@ -69,8 +75,10 @@ export function Layout({
           )}
           <Hr style={{ borderColor: colors.deep, margin: "32px 0 20px" }} />
           <Text style={{ color: colors.haze, fontSize: 13, lineHeight: "20px", margin: 0 }}>
-            SLIoT Challenge · Department of Computer Science &amp; Engineering, University of Moratuwa. Questions? Reply to this
-            email.
+            SLIoT Challenge · Department of Computer Science &amp; Engineering, University of Moratuwa.
+          </Text>
+          <Text style={{ color: colors.haze, fontSize: 13, lineHeight: "20px", margin: "4px 0 0" }}>
+            Questions? Reply to this email and we&rsquo;ll be happy to help.
           </Text>
           <Text style={{ color: colors.haze, fontSize: 13, lineHeight: "20px", margin: "8px 0 0" }}>
             {socials.map((s, i) => (
@@ -81,6 +89,9 @@ export function Layout({
                 </Link>
               </span>
             ))}
+          </Text>
+          <Text style={{ color: colors.mint, fontSize: 12, lineHeight: "18px", margin: "12px 0 0" }}>
+            Reconnecting ideas. Rebuilding the Grid
           </Text>
         </Container>
       </Body>

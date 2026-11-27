@@ -260,7 +260,7 @@ export function buildSeedData(): SeedData {
     }
 
     audit({ actorType: "anonymous", actorId: null, action: "team.registered", targetType: "team", targetId: String(teamId), details: { code }, ip: SEED_IP, createdAt });
-    email(teamId, leaderEmail, "registration_confirmed", { code, teamName: plan.name }, createdAt);
+    email(teamId, leaderEmail, "registration_confirmed", { code, teamName: plan.name, category: plan.category }, createdAt);
 
     if (!plan.noProposal) {
       const versions = plan.proposalVersions ?? 1;

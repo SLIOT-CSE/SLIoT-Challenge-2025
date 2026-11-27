@@ -76,6 +76,8 @@ export type EmailTemplate =
   | "proposal_received"
   | "shortlisted"
   | "prototype_received"
+  | "prototype_reminder"
+  | "semifinalist"
   | "finalist";
 
 export interface OutboxEmail {

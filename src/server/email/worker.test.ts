@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
+import { delegatesWhatsappByCategory } from "@/content/socials";
 import { renderEmail } from "@/emails/render";
 import { EMAIL_TEMPLATES } from "../db/schema";
 import { openTestDatabase } from "../db/client";
@@ -39,9 +40,17 @@ describe("email templates", () => {
     }
   });
 
-  it("show the code large in the registration email", async () => {
-    const email = await renderEmail("registration_confirmed", { teamName: "T", code: "SL27-7KQ4-M9XD" }, { siteUrl, prototypeDue: "", finale: "" });
-    expect(email.text).toContain("SL27-7KQ4-M9XD");
+  it("show the code large in the registration email and link to the category delegates WhatsApp group", async () => {
+    for (const category of ["university", "school", "open"] as const) {
+      const email = await renderEmail(
+        "registration_confirmed",
+        { teamName: "T", code: "SL27-7KQ4-M9XD", category },
+        { siteUrl, prototypeDue: "", finale: "" },
+      );
+      expect(email.text).toContain("SL27-7KQ4-M9XD");
+      expect(email.html).toContain(delegatesWhatsappByCategory[category].replaceAll("&", "&amp;"));
+      expect(email.text).toContain(delegatesWhatsappByCategory[category]);
+    }
   });
 });
 
