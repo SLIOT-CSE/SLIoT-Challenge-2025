@@ -105,6 +105,7 @@ export function MemberCard({
             options={[
               { value: "school", label: "School student" },
               { value: "university", label: "University student" },
+              { value: "independent", label: "Independent / Other" },
             ]}
             error={error("institutionType")}
             onChange={(type) =>

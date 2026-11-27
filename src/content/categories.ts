@@ -47,10 +47,10 @@ export const categories: Category[] = [
     id: "open",
     name: "Open",
     summary: "For cross-campus and independent teams",
-    who: "For mixed teams: school students and undergraduates working together, from any school or university.",
+    who: "For anyone ready to build: mixed teams across schools or universities, independent innovators, and working creators.",
     rules: [
       "Teams of 1 to 5 members",
-      "Members from different schools and universities",
+      "Any mix of students and independent innovators",
       "Project proposal & prototype demo video",
     ],
     cta: "Register an open team",

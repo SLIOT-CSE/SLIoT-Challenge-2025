@@ -26,6 +26,7 @@ import {
   shiftMemberPaths,
   stepOfPath,
   stepsFor,
+  submissionFailureTarget,
   toInput,
   validate,
   type ErrorMap,
@@ -135,10 +136,12 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
     if (bannerTone === "network") bannerRef.current?.focus();
   }, [bannerTone, submitting]);
 
-  // Errors that appeared on the step you're already on: move focus to the first one
+  // Errors that appeared on the step you're already on: move focus to the first invalid field,
+  // or the banner when there is no field control on that step (e.g. Turnstile / rate limit).
   useEffect(() => {
     if (focusErrorTick === 0) return;
-    formRef.current?.querySelector<HTMLElement>(INVALID)?.focus();
+    const target = formRef.current?.querySelector<HTMLElement>(INVALID) ?? bannerRef.current;
+    target?.focus();
   }, [focusErrorTick]);
 
   function goTo(target: StepId, { focusError = false } = {}) {
@@ -214,6 +217,7 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
         return;
       }
 
+      setTurnstileToken(null);
       setTurnstileKey((k) => k + 1);
       const { code } = result.error;
 
@@ -224,16 +228,11 @@ export function RegisterForm({ initialCategory }: { initialCategory: "" | Catego
       }
 
       const fieldErrors = serverErrors(result.error);
+      const failure = submissionFailureTarget(result.error, fieldErrors, values.category);
       setServerErr(fieldErrors);
       showAll();
-      setBanner({
-        tone: "error",
-        text:
-          code === "duplicate_member"
-            ? "Someone in this team is already registered with another team. Fix the marked fields, or remove that member."
-            : "Some details need fixing. The fields are marked.",
-      });
-      goTo(firstStepWithError(fieldErrors, values.category) ?? "members", { focusError: true });
+      setBanner({ tone: "error", text: failure.banner });
+      goTo(failure.target, { focusError: true });
     } catch (e) {
       setTurnstileKey((k) => k + 1);
       if (!(e instanceof NetworkError)) console.error(e);

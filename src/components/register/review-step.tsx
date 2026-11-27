@@ -2,6 +2,7 @@ import { Pencil } from "lucide-react";
 import { categories } from "@/content/categories";
 import { formatWhatsappDisplay } from "@/lib/member-display";
 import { registrationInputSchema } from "@/lib/schemas";
+import { INSTITUTION_TYPE_LABELS } from "@/lib/team-rules";
 import { memberType, toInput, type FormValues, type StepId } from "./form";
 
 /** Everything typed, read-only, with a way back to each part. Shows the values as they'll be saved. */
@@ -39,10 +40,6 @@ export function ReviewStep({ values, onEdit }: { values: FormValues; onEdit: (st
         <ol className="flex flex-col divide-y divide-edge/50">
           {members.map((m, i) => {
             const type = memberType(values.category, m);
-            const affiliation =
-              values.category === "open"
-                ? `${type === "university" ? "University student" : "School student"} · ${m.institutionName}`
-                : null;
             return (
               <li key={i} className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
                 <div className="flex flex-wrap items-center gap-2.5">
@@ -74,11 +71,21 @@ export function ReviewStep({ values, onEdit }: { values: FormValues; onEdit: (st
                     <dd className="mt-0.5 break-all text-small font-medium text-foam">{m.email}</dd>
                   </div>
 
-                  {affiliation && (
-                    <div className="min-w-0 sm:col-span-2">
-                      <dt className="text-caption font-medium text-haze">Affiliation</dt>
-                      <dd className="mt-0.5 wrap-break-word text-small font-medium text-foam">{affiliation}</dd>
-                    </div>
+                  {values.category === "open" && type && (
+                    <>
+                      <div className="min-w-0">
+                        <dt className="text-caption font-medium text-haze">Type</dt>
+                        <dd className="mt-0.5 text-small font-medium text-foam">{INSTITUTION_TYPE_LABELS[type]}</dd>
+                      </div>
+                      {m.institutionName && (
+                        <div className="min-w-0">
+                          <dt className="text-caption font-medium text-haze">
+                            {type === "university" ? "University" : "School"}
+                          </dt>
+                          <dd className="mt-0.5 wrap-break-word text-small font-medium text-foam">{m.institutionName}</dd>
+                        </div>
+                      )}
+                    </>
                   )}
                 </dl>
               </li>

@@ -29,7 +29,7 @@ describe("team edit form values", () => {
     const team = detailOf("Island Edge");
     const values = toFormValues(team);
     expect(values.members[0].institutionType).toBe(team.members[0].institutionType);
-    expect(values.members[0].institutionName).toBe(team.members[0].institutionName);
+    expect(values.members[0].institutionName).toBe(team.members[0].institutionName ?? "");
     expect(editErrors(values)).toEqual({});
   });
 

@@ -1,19 +1,19 @@
 import { z } from "zod";
 import { universities } from "@/content/universities";
-import { TEAM_SIZE, type CategoryId, type InstitutionType } from "@/lib/team-rules";
+import { INSTITUTION_TYPES, TEAM_SIZE, type CategoryId, type InstitutionType } from "@/lib/team-rules";
 import { emailSchema, normaliseNic, text, whatsappSchema, teamNameSchema } from "./fields";
 
 // The registration form's rules (docs/architecture.md, sections 5 and 6.1) that can be
 // checked from one submission alone. Rules that need other teams (a repeated email or
 // NIC across teams) or the clock live in the data layer.
 
-const institutionTypeSchema = z.enum(["school", "university"]);
+const institutionTypeSchema = z.enum(INSTITUTION_TYPES);
 
 export const memberInputSchema = z.object({
   fullName: text("Full name", 2, 80),
   whatsapp: whatsappSchema,
   email: emailSchema,
-  /** Asked of university students only */
+  /** Asked of university students and independent entrants */
   nic: z.string().trim().optional(),
   /** Open teams only: each member picks their own */
   institutionType: institutionTypeSchema.optional(),
@@ -87,20 +87,26 @@ export function teamRuleIssues(team: TeamRuleInput): RuleIssue[] {
     // Which institution type does this member belong to?
     let type: InstitutionType | null = null;
     if (team.category === "open") {
-      if (!m.institutionType) issue(at("institutionType"), "Choose School or University");
+      if (!m.institutionType) issue(at("institutionType"), "Choose School, University, or Independent");
       else {
         type = m.institutionType;
-        checkInstitution(type, m.institutionName?.trim(), m.institutionIsOther, at("institutionName"));
+        if (type === "school" || type === "university") {
+          checkInstitution(type, m.institutionName?.trim(), m.institutionIsOther, at("institutionName"));
+        }
       }
     } else if (team.category) {
       type = team.category;
     }
 
-    // NIC: every university student, nobody else
-    if (type === "university") {
+    // NIC: every university student and independent entrant; school students exempt
+    if (type === "university" || type === "independent") {
       const nic = m.nic?.trim();
-      if (!nic) issue(at("nic"), "NIC is required for university students");
-      else if (!normaliseNic(nic)) issue(at("nic"), "Enter a valid NIC, like 123456789V or 200012345678");
+      if (!nic) {
+        issue(
+          at("nic"),
+          type === "university" ? "NIC is required for university students" : "NIC is required for independent entrants",
+        );
+      } else if (!normaliseNic(nic)) issue(at("nic"), "Enter a valid NIC, like 123456789V or 200012345678");
       else {
         const normal = normaliseNic(nic)!;
         const first = seenNic.get(normal);
@@ -153,9 +159,9 @@ export const registrationInputSchema = z
           whatsapp: m.whatsapp,
           email: m.email,
           institutionType: type,
-          institutionName: fromTeam ? (teamInstitution as string) : (m.institutionName as string),
-          institutionIsOther: fromTeam ? institutionIsOther : Boolean(m.institutionIsOther),
-          nic: type === "university" ? normaliseNic(m.nic as string) : null,
+          institutionName: fromTeam ? (teamInstitution as string) : type === "independent" ? null : (m.institutionName as string),
+          institutionIsOther: fromTeam ? institutionIsOther : type === "independent" ? false : Boolean(m.institutionIsOther),
+          nic: type === "school" ? null : normaliseNic(m.nic as string),
         };
       }),
     };

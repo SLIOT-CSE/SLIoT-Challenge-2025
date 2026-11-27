@@ -65,6 +65,7 @@ export function stepsFor(category: "" | CategoryId): StepId[] {
 export function stepOfPath(path: string): StepId {
   if (path === "name" || path === "category") return "team";
   if (path === "institutionName" || path === "institutionIsOther") return "institution";
+  if (path === "turnstile") return "review";
   return "members";
 }
 
@@ -75,9 +76,11 @@ export function memberType(category: "" | CategoryId, m: MemberValues): Institut
   return null;
 }
 
-/** NIC is asked of university students only */
-export const asksNic = (category: "" | CategoryId, m: MemberValues): boolean =>
-  memberType(category, m) === "university";
+/** NIC is asked of university students and independent entrants */
+export const asksNic = (category: "" | CategoryId, m: MemberValues): boolean => {
+  const type = memberType(category, m);
+  return type === "university" || type === "independent";
+};
 
 /** The form's values as the schema expects them, leaving out anything the category doesn't use */
 export function toInput(v: FormValues): RegistrationInput {
@@ -88,15 +91,18 @@ export function toInput(v: FormValues): RegistrationInput {
     category: v.category as CategoryId,
     institutionName: sharedInstitution ? v.institutionName : undefined,
     institutionIsOther: sharedInstitution ? v.institutionIsOther : undefined,
-    members: v.members.map((m) => ({
-      fullName: m.fullName,
-      whatsapp: m.whatsapp,
-      email: m.email,
-      nic: m.nic,
-      institutionType: open && m.institutionType ? m.institutionType : undefined,
-      institutionName: open ? m.institutionName : undefined,
-      institutionIsOther: open ? m.institutionIsOther : undefined,
-    })),
+    members: v.members.map((m) => {
+      const hasInstitution = open && (m.institutionType === "school" || m.institutionType === "university");
+      return {
+        fullName: m.fullName,
+        whatsapp: m.whatsapp,
+        email: m.email,
+        nic: m.nic,
+        institutionType: open && m.institutionType ? m.institutionType : undefined,
+        institutionName: hasInstitution ? m.institutionName : undefined,
+        institutionIsOther: hasInstitution ? m.institutionIsOther : undefined,
+      };
+    }),
   };
 }
 
@@ -161,6 +167,31 @@ export function serverErrors(error: DataError): ErrorMap {
 export function firstStepWithError(errors: ErrorMap, category: "" | CategoryId): StepId | null {
   const steps = new Set(Object.keys(errors).map(stepOfPath));
   return stepsFor(category).find((s) => steps.has(s)) ?? null;
+}
+
+/** Where to send focus/navigation and what banner to display after registerTeam fails. */
+export function submissionFailureTarget(
+  error: DataError,
+  fieldErrors: ErrorMap,
+  category: "" | CategoryId,
+): { target: StepId; banner: string } {
+  if (error.code === "duplicate_member") {
+    return {
+      target: firstStepWithError(fieldErrors, category) ?? "members",
+      banner: "Someone in this team is already registered with another team. Fix the marked fields, or remove that member.",
+    };
+  }
+  const target = firstStepWithError(fieldErrors, category) ?? "review";
+  if (target === "review") {
+    return {
+      target: "review",
+      banner: fieldErrors.turnstile ?? (error.message || "We couldn't register your team right now. Please try again."),
+    };
+  }
+  return {
+    target,
+    banner: "Some details need fixing. The fields are marked.",
+  };
 }
 
 /** Changing category clears what the new category no longer uses; names and contacts stay */

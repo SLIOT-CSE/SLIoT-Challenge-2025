@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { categories } from "@/content/categories";
+import { formatMemberAffiliation } from "@/lib/member-display";
 import type { TeamDetail } from "@/lib/data";
 
 /** The team at a glance: its code (with a copy button), category and members. No NICs or contact details. */
@@ -70,7 +71,7 @@ export function TeamCard({ team }: { team: TeamDetail }) {
               </p>
               {team.category === "open" && (
                 <p className="text-small text-haze">
-                  {m.institutionType === "university" ? "University student" : "School student"}, {m.institutionName}
+                  {formatMemberAffiliation(m.institutionType, m.institutionName)}
                 </p>
               )}
             </li>

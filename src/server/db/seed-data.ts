@@ -230,13 +230,18 @@ export function buildSeedData(): SeedData {
       const last = rng.pick(LAST_NAMES);
 
       let type: InstitutionType;
-      let institution: string;
+      let institution: string | null;
       let isOther = false;
       if (plan.category === "open") {
-        // Open teams mix university and school students
-        type = position % 2 === 1 ? "university" : "school";
+        // Open teams mix university students, school students and independent entrants
+        const slot = position % 3;
+        type = slot === 1 ? "university" : slot === 2 ? "school" : "independent";
         institution =
-          type === "university" ? universities[(i * 5 + position) % universities.length] : SCHOOLS[(i + position) % SCHOOLS.length];
+          type === "university"
+            ? universities[(i * 5 + position) % universities.length]
+            : type === "school"
+              ? SCHOOLS[(i + position) % SCHOOLS.length]
+              : null;
       } else {
         type = plan.category;
         institution = teamInstitution as string;
@@ -255,7 +260,7 @@ export function buildSeedData(): SeedData {
         institutionType: type,
         institutionName: institution,
         institutionIsOther: isOther,
-        nic: type === "university" ? `2099${String(personNumber).padStart(8, "0")}` : null,
+        nic: type === "school" ? null : `2099${String(personNumber).padStart(8, "0")}`,
       });
     }
 

@@ -33,8 +33,8 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
         <div className="flex flex-col gap-3">
           <h1 className="font-display text-display-lg text-foam">Register your team</h1>
           <p className="max-w-[56ch] text-body-lg text-haze">
-            Four short steps. You need each member&apos;s name, WhatsApp number and email, and a NIC for every
-            university student.
+            Four short steps. You need each member&apos;s name, WhatsApp number and email, and a NIC for university
+            students and independent entrants.
           </p>
         </div>
         <RegisterForm initialCategory={initialCategory} />

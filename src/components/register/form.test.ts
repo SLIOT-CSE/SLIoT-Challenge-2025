@@ -13,6 +13,7 @@ import {
   shiftMemberPaths,
   stepOfPath,
   stepsFor,
+  submissionFailureTarget,
   toInput,
   validate,
   type FormValues,
@@ -47,6 +48,7 @@ describe("stepOfPath", () => {
     ["name", "team"],
     ["category", "team"],
     ["institutionName", "institution"],
+    ["turnstile", "review"],
     ["members", "members"],
     ["members.2.nic", "members"],
   ])("puts %s in %s", (path, step) => {
@@ -90,7 +92,7 @@ describe("validate", () => {
     expect(errors["members.0.nic"]).toBe("NIC is required for university students");
   });
 
-  it("needs a type and name per Open member, and a NIC from university students", () => {
+  it("needs a type per Open member, institution for students, and NIC for university and independent entrants", () => {
     const v: FormValues = {
       ...emptyValues("open"),
       name: "Island Edge",
@@ -98,12 +100,15 @@ describe("validate", () => {
         filledMember(1),
         filledMember(2, { institutionType: "university", institutionName: "SLIIT" }),
         filledMember(3, { institutionType: "school", institutionName: "" }),
+        filledMember(4, { institutionType: "independent" }),
       ],
     };
     const errors = validate(v);
-    expect(errors["members.0.institutionType"]).toBe("Choose School or University");
+    expect(errors["members.0.institutionType"]).toBe("Choose School, University, or Independent");
     expect(errors["members.1.nic"]).toBe("NIC is required for university students");
     expect(errors["members.2.institutionName"]).toBe("Enter the school name");
+    expect(errors["members.3.nic"]).toBe("NIC is required for independent entrants");
+    expect(errors["members.3.institutionName"]).toBeUndefined();
     expect(errors.institutionName).toBeUndefined(); // Open teams have no shared institution
   });
 
@@ -167,11 +172,12 @@ describe("toInput", () => {
 });
 
 describe("asksNic", () => {
-  it("is for university students in any category", () => {
+  it("is for university students and independent entrants", () => {
     expect(asksNic("school", emptyMember())).toBe(false);
     expect(asksNic("university", emptyMember())).toBe(true);
     expect(asksNic("open", emptyMember())).toBe(false);
     expect(asksNic("open", { ...emptyMember(), institutionType: "university" })).toBe(true);
+    expect(asksNic("open", { ...emptyMember(), institutionType: "independent" })).toBe(true);
     expect(asksNic("open", { ...emptyMember(), institutionType: "school" })).toBe(false);
   });
 });
@@ -256,6 +262,28 @@ describe("serverErrors", () => {
   it("picks the earliest step with an error, in the category's order", () => {
     expect(firstStepWithError({ "members.0.email": "x", name: "y" }, "school")).toBe("team");
     expect(firstStepWithError({ "members.0.email": "x" }, "open")).toBe("members");
+    expect(firstStepWithError({ turnstile: "The bot check didn't pass. Please try again." }, "university")).toBe("review");
     expect(firstStepWithError({}, "open")).toBeNull();
+  });
+
+  it("keeps Turnstile and rate-limit failures on review with their real message", () => {
+    const turnstileError = {
+      code: "invalid_input" as const,
+      message: "The bot check didn't pass. Please try again.",
+      issues: [{ path: "turnstile", message: "The bot check didn't pass. Please try again." }],
+    };
+    expect(submissionFailureTarget(turnstileError, serverErrors(turnstileError), "university")).toEqual({
+      target: "review",
+      banner: "The bot check didn't pass. Please try again.",
+    });
+
+    const rateLimitError = {
+      code: "rate_limited" as const,
+      message: "Too many registrations from this connection. Wait a few minutes and try again.",
+    };
+    expect(submissionFailureTarget(rateLimitError, serverErrors(rateLimitError), "school")).toEqual({
+      target: "review",
+      banner: "Too many registrations from this connection. Wait a few minutes and try again.",
+    });
   });
 });

@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatBytes } from "@/components/team/portal";
 import type { AuditEntryView, Member, Submission, TeamDetail } from "@/lib/data";
 import { formatWhatsappDisplay } from "@/lib/member-display";
-import { CATEGORY_LABELS } from "@/lib/team-rules";
+import { CATEGORY_LABELS, INSTITUTION_TYPE_LABELS } from "@/lib/team-rules";
 import { StageBadge } from "../badges";
 import { describeAudit } from "../describe-audit";
 import { formatDateTime, formatDayYear } from "../format";
@@ -126,12 +126,19 @@ function MemberItem({ member: m }: { member: Member }) {
           <dd className="mt-0.5 break-all font-medium text-foam">{m.email}</dd>
         </div>
 
-        <div className="min-w-0 sm:col-span-2">
-          <dt className="text-caption font-medium text-haze">Affiliation</dt>
-          <dd className="mt-0.5 wrap-break-word font-medium text-foam">
-            {m.institutionType === "school" ? "School student" : "University student"} · {m.institutionName}
-          </dd>
+        <div className="min-w-0">
+          <dt className="text-caption font-medium text-haze">Type</dt>
+          <dd className="mt-0.5 font-medium text-foam">{INSTITUTION_TYPE_LABELS[m.institutionType]}</dd>
         </div>
+
+        {m.institutionName && (
+          <div className="min-w-0">
+            <dt className="text-caption font-medium text-haze">
+              {m.institutionType === "university" ? "University" : "School"}
+            </dt>
+            <dd className="mt-0.5 wrap-break-word font-medium text-foam">{m.institutionName}</dd>
+          </div>
+        )}
       </dl>
     </li>
   );

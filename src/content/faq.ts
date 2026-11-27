@@ -11,7 +11,7 @@ export function faqsFor(deadlines: Deadlines): Faq[] {
   return [
     {
       q: "Who can take part?",
-      a: "School students, undergraduates at any Sri Lankan university, and mixed teams of both. Pick the School, University or Open category to match your team.",
+      a: "Anyone in Sri Lanka—school students, university undergraduates, independent innovators, or mixed teams of any combination. Pick the School, University or Open category to match your team.",
     },
     {
       q: "How many members can a team have?",
@@ -19,7 +19,7 @@ export function faqsFor(deadlines: Deadlines): Faq[] {
     },
     {
       q: "Do all members need to be from the same school or university?",
-      a: "Yes for the School and University categories. If your team mixes schools, universities, or school and university students, choose the Open category.",
+      a: "Yes for the School and University categories. If your team mixes schools or universities, or includes independent members, choose the Open category.",
     },
     {
       q: "How do we submit the proposal?",

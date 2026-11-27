@@ -5,7 +5,14 @@ export type CategoryId = "school" | "university" | "open";
 
 export const TEAM_SIZE = { min: 1, max: 5 } as const;
 
-export type InstitutionType = "school" | "university";
+export const INSTITUTION_TYPES = ["school", "university", "independent"] as const;
+export type InstitutionType = (typeof INSTITUTION_TYPES)[number];
+
+export const INSTITUTION_TYPE_LABELS: Record<InstitutionType, string> = {
+  school: "School student",
+  university: "University student",
+  independent: "Independent / Other",
+};
 
 /** One team's progress through the competition (docs/architecture.md, `teams.stage`) */
 export const TEAM_STAGES = [

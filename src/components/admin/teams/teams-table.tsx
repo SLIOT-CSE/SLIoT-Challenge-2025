@@ -16,7 +16,7 @@ import { ArrowDown, ArrowUp, ArrowUpDown, ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Member, TeamRow } from "@/lib/data";
 import { formatWhatsappDisplay } from "@/lib/member-display";
-import { CATEGORY_LABELS, TEAM_STAGES } from "@/lib/team-rules";
+import { CATEGORY_LABELS, INSTITUTION_TYPE_LABELS, TEAM_STAGES } from "@/lib/team-rules";
 import { cn } from "@/lib/utils";
 import { StageBadge } from "../badges";
 import { formatShortDay } from "../format";
@@ -287,7 +287,7 @@ function MemberList({ team }: { team: TeamRow }) {
             </div>
             <div className="min-w-0">
               <dt className="text-caption font-medium text-haze">Institution</dt>
-              <dd className="wrap-break-word text-foam">{m.institutionName}</dd>
+              <dd className="wrap-break-word text-foam">{m.institutionName ?? INSTITUTION_TYPE_LABELS[m.institutionType]}</dd>
             </div>
             {m.nic && (
               <div className="min-w-0">

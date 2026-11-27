@@ -33,7 +33,7 @@ function editFrom(team: TeamRow, over: Partial<TeamEditInput> = {}): TeamEditInp
       email: m.email,
       nic: m.nic ?? undefined,
       institutionType: m.institutionType,
-      institutionName: m.institutionName,
+      institutionName: m.institutionName ?? undefined,
       institutionIsOther: m.institutionIsOther,
     })),
     ...over,

@@ -80,7 +80,7 @@ describe("filterTeams", () => {
   it("finds an Open team by a member's institution", () => {
     const open = all.find((t) => t.category === "open")!;
     expect(open.institutionName).toBeNull();
-    const name = open.members[0].institutionName;
+    const name = open.members.find((m) => m.institutionName !== null)!.institutionName!;
     expect(filterTeams(all, { ...EMPTY_VIEW, institution: name }).map((t) => t.id)).toContain(open.id);
   });
 

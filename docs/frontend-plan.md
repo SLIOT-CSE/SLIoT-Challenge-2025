@@ -220,7 +220,7 @@ These follow the product side of the design system: same tokens and fonts, calme
 |---|---|
 | 1. Team | Team name, category (three large selectable tiles with one-line rules) |
 | 2. Institution | School teams: school name. University teams: university dropdown + **Other** reveals a text field. Skipped for Open teams |
-| 3. Members | Member 1 is labelled **Team leader**. "Add member" up to 5; each member card: full name, WhatsApp number, email, NIC (shown for university students). Open teams: each member picks School / University and names it |
+| 3. Members | Member 1 is labelled **Team leader**. "Add member" up to 5; each member card: full name, WhatsApp number, email, NIC (shown for university students and independent entrants). Open teams: each member picks School student, University student (and names it), or Independent / Other |
 | 4. Review | Read-only summary with "Edit" links per step, Turnstile placeholder (no consent checkbox: removed in step N) |
 
 - **Validation:** zod schemas from `src/lib/schemas/` (shared with the future backend).

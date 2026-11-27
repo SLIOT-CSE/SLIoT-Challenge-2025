@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { check, index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
-import { SUBMISSION_KINDS, TEAM_STAGES } from "@/lib/team-rules";
+import { INSTITUTION_TYPES, SUBMISSION_KINDS, TEAM_STAGES } from "@/lib/team-rules";
 
 // The nine tables from docs/architecture.md, section 5. Change this file, then run
 // `pnpm db:generate` to write a migration and `pnpm db:migrate` to apply it.
@@ -9,7 +9,7 @@ import { SUBMISSION_KINDS, TEAM_STAGES } from "@/lib/team-rules";
 // with a CHECK so bad values can't get in from outside the app either.
 
 export const CATEGORIES = ["school", "university", "open"] as const;
-export const INSTITUTION_TYPES = ["school", "university"] as const;
+export { INSTITUTION_TYPES };
 export const ADMIN_ROLES = ["super_admin", "admin"] as const;
 export const SESSION_SUBJECTS = ["team", "admin"] as const;
 export const EMAIL_TEMPLATES = [
@@ -74,9 +74,10 @@ export const members = sqliteTable(
     /** Lower-case. Unique across all teams: one team per person */
     email: text("email").notNull(),
     institutionType: text("institution_type", { enum: INSTITUTION_TYPES }).notNull(),
-    institutionName: text("institution_name").notNull(),
+    /** School or university name; null for independent members in Open teams */
+    institutionName: text("institution_name"),
     institutionIsOther: integer("institution_is_other", { mode: "boolean" }).notNull().default(false),
-    /** University students only. Upper-case. Unique across all teams (NULLs don't clash) */
+    /** University students and independent entrants. Upper-case. Unique across all teams (NULLs don't clash) */
     nic: text("nic"),
   },
   (table) => [

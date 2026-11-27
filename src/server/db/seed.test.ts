@@ -41,9 +41,11 @@ describe("seed data", () => {
       for (const m of members) {
         expect(m.email).toBe(m.email.toLowerCase());
         expect(m.whatsapp).toMatch(/^\+947\d{8}$/);
-        // NIC exactly for university students, in any category
-        if (m.institutionType === "university") expect(m.nic).toMatch(/^\d{12}$/);
-        else expect(m.nic).toBeNull();
+        // NIC for university students and independent entrants, never for school students
+        if (m.institutionType === "school") expect(m.nic).toBeNull();
+        else expect(m.nic).toMatch(/^\d{12}$/);
+        if (m.institutionType === "independent") expect(m.institutionName).toBeNull();
+        else expect(m.institutionName).toBeTruthy();
         // School and University teams share one institution
         if (team.category !== "open") {
           expect(m.institutionType).toBe(team.category);

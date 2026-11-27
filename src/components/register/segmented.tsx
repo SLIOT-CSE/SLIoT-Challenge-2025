@@ -23,14 +23,14 @@ export function Segmented<T extends string>({
   return (
     <fieldset aria-describedby={error ? errorId : undefined} className="flex flex-col gap-2">
       <legend className="mb-2 text-small font-semibold text-foam">{legend}</legend>
-      <div className="flex gap-2">
+      <div className={cn("grid gap-2", options.length >= 3 ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-2")}>
         {options.map((o) => {
           const selected = value === o.value;
           return (
             <label
               key={o.value}
               className={cn(
-                "flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-control px-4 text-small font-semibold ring-1 ring-inset transition-colors duration-200 motion-reduce:transition-none",
+                "flex min-h-12 cursor-pointer items-center justify-center rounded-control px-4 text-center text-small font-semibold ring-1 ring-inset transition-colors duration-200 motion-reduce:transition-none",
                 "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-mint",
                 selected ? "bg-mint/15 text-mint ring-2 ring-mint" : "bg-deep/60 text-haze ring-edge hover:ring-lagoon",
                 error && !selected && "ring-danger",

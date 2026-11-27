@@ -137,7 +137,7 @@ describe("registrationInputSchema", () => {
   });
 
   describe("open team", () => {
-    it("lets members mix school and university", () => {
+    it("lets members mix school, university and independent entrants", () => {
       const r = registrationInputSchema.parse(
         team({
           category: "open",
@@ -145,24 +145,33 @@ describe("registrationInputSchema", () => {
           members: [
             uniMember(1, { institutionType: "university", institutionName: "SLIIT" }),
             member(2, { institutionType: "school", institutionName: "Ananda College" }),
+            member(3, { institutionType: "independent", nic: "199912345678", institutionName: "Ignored Org" }),
           ],
         }),
       );
       expect(r.institutionName).toBeNull();
-      expect(r.members.map((m) => m.institutionType)).toEqual(["university", "school"]);
+      expect(r.members.map((m) => m.institutionType)).toEqual(["university", "school", "independent"]);
       expect(r.members[0].nic).toBe("200001234561");
       expect(r.members[1].nic).toBeNull();
+      expect(r.members[2].institutionName).toBeNull();
+      expect(r.members[2].nic).toBe("199912345678");
     });
 
-    it("needs a type and a name per member, and a NIC for university students", () => {
+    it("needs a type per member, institution for students, and NIC for university and independent members", () => {
       const paths = issuePaths(
         team({
           category: "open",
-          members: [member(1), member(2, { institutionType: "university", institutionName: "SLIIT" })],
+          members: [
+            member(1),
+            member(2, { institutionType: "university", institutionName: "SLIIT" }),
+            member(3, { institutionType: "independent" }),
+          ],
         }),
       );
       expect(paths).toContain("members.0.institutionType");
       expect(paths).toContain("members.1.nic");
+      expect(paths).toContain("members.2.nic");
+      expect(paths).not.toContain("members.2.institutionName");
     });
   });
 

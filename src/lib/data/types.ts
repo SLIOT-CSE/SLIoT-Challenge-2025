@@ -30,7 +30,7 @@ export interface Member {
   whatsapp: string;
   email: string;
   institutionType: InstitutionType;
-  institutionName: string;
+  institutionName: string | null;
   institutionIsOther: boolean;
   nic: string | null;
 }

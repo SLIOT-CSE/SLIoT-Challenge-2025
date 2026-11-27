@@ -11,7 +11,7 @@ export function toFormValues(team: TeamDetail): FormValues {
     email: m.email,
     nic: m.nic ?? "",
     institutionType: team.category === "open" ? m.institutionType : "",
-    institutionName: team.category === "open" ? m.institutionName : "",
+    institutionName: team.category === "open" ? (m.institutionName ?? "") : "",
     institutionIsOther: team.category === "open" ? m.institutionIsOther : false,
   }));
   return {
