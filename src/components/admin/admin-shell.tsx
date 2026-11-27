@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { logo } from "@/assets";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ToastProvider } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
@@ -97,7 +96,6 @@ function Brand() {
       <Link href="/admin" aria-label="SLIoT Challenge admin, Teams" className="flex shrink-0 items-center rounded-full py-1">
         <img src={logo} alt="" width={1518} height={813} className="h-8 w-auto" />
       </Link>
-      <Badge tone="warning">Sample data</Badge>
     </div>
   );
 }

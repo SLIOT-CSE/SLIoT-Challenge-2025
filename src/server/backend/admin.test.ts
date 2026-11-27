@@ -148,6 +148,34 @@ describe("teams", () => {
     expect(mail).toMatchObject({ template: "code_reminder", status: "pending", props: { code: team.code } });
   });
 
+  it("queues a failed email to go again, and leaves sent ones alone", async () => {
+    const b = await signedIn(ADMIN1);
+    const team = teamByName(db, "Island Edge");
+    await b.resendCode(team.id);
+    const [mail, ...older] = await b.listOutbox(team.id);
+    const sent = older.find((e) => e.status === "sent")!;
+    db.update(schema.emailOutbox)
+      .set({ status: "failed", attempts: 6, nextAttemptAt: 9_999_999_999_999, lastError: "550 rejected" })
+      .where(eq(schema.emailOutbox.id, mail.id))
+      .run();
+
+    expect(await b.retryEmails([mail.id, sent.id])).toEqual({ ok: true, data: { count: 1 } });
+
+    const row = db.select().from(schema.emailOutbox).where(eq(schema.emailOutbox.id, mail.id)).get()!;
+    expect(row).toMatchObject({ status: "pending", attempts: 0, nextAttemptAt: 0, lastError: null });
+    expect((await b.listOutbox(team.id)).find((e) => e.id === sent.id)).toEqual(sent);
+    expect((await b.getAuditLog({ targetType: "team", targetId: String(team.id) }))[0]).toMatchObject({
+      action: "email.retried",
+      actorName: "Sample Admin One",
+    });
+    expect(await b.retryEmails([sent.id])).toMatchObject({ ok: false, error: { code: "not_found" } });
+    expect(await b.retryEmails([])).toMatchObject({ ok: false });
+  });
+
+  it("refuses a retry from someone who isn't signed in", async () => {
+    expect(await browser(db, fake).retryEmails([1])).toMatchObject({ ok: false, error: { code: "forbidden" } });
+  });
+
   it("hides draft ticks from plain admins in a team's audit trail", async () => {
     const sup = await signedIn(SUPER);
     const admin = await signedIn(ADMIN1, "10.1.0.2");

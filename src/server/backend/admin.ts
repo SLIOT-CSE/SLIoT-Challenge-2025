@@ -470,6 +470,42 @@ export function adminBackend(ctx: RequestContext) {
       }
     },
 
+    /**
+     * Queues unsent emails to go out now, with the full set of retries again. Sent emails are
+     * left alone. The address and contents are the ones first queued.
+     */
+    async retryEmails(ids: number[], _actor?: AdminActor): Promise<Result<{ count: number }>> {
+      const auth = authorise(ctx, "any");
+      if (!auth.ok) return auth;
+      const at = now();
+      return ctx.db.transaction((tx) => {
+        const unsent = ids.length
+          ? tx
+              .select({ id: schema.emailOutbox.id, teamId: schema.emailOutbox.teamId })
+              .from(schema.emailOutbox)
+              .where(and(inArray(schema.emailOutbox.id, ids), ne(schema.emailOutbox.status, "sent")))
+              .all()
+          : [];
+        if (unsent.length === 0) return fail("not_found", "There's nothing to send again: those emails have already gone.");
+        tx.update(schema.emailOutbox)
+          // Due at once: the worker schedules by real time
+          .set({ status: "pending", attempts: 0, nextAttemptAt: 0, lastError: null })
+          .where(inArray(schema.emailOutbox.id, unsent.map((e) => e.id)))
+          .run();
+        const teamIds = [...new Set(unsent.flatMap((e) => (e.teamId === null ? [] : [e.teamId])))];
+        record(
+          tx,
+          ctx,
+          at,
+          by(auth.data),
+          "email.retried",
+          teamIds.length ? { type: "team", id: teamIds.join(",") } : undefined,
+          { count: unsent.length, emailIds: unsent.map((e) => e.id) },
+        );
+        return ok({ count: unsent.length });
+      });
+    },
+
     /** Emails the team code to the leader again */
     async resendCode(teamId: number, _actor?: AdminActor): Promise<Result<{ toEmail: string }>> {
       const auth = authorise(ctx, "any");

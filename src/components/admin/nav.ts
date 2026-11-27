@@ -1,4 +1,4 @@
-import { ListChecks, ScrollText, Settings, ShieldCheck, Trophy, Users, type LucideIcon } from "lucide-react";
+import { ListChecks, Mail, ScrollText, Settings, ShieldCheck, Trophy, Users, type LucideIcon } from "lucide-react";
 import type { AdminRole } from "@/lib/data";
 
 // The admin sidebar: one place for the entries, who sees them and which one is current.
@@ -16,6 +16,7 @@ export interface AdminNavItem {
 
 export const ADMIN_NAV: readonly AdminNavItem[] = [
   { href: ADMIN_HOME, label: "Teams", icon: Users, superOnly: false },
+  { href: "/admin/emails", label: "Emails", icon: Mail, superOnly: false },
   { href: "/admin/shortlist", label: "Shortlist", icon: ListChecks, superOnly: true },
   { href: "/admin/finalists", label: "Finalists", icon: Trophy, superOnly: true },
   { href: "/admin/settings", label: "Settings", icon: Settings, superOnly: true },

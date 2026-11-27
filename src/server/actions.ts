@@ -48,6 +48,7 @@ export async function unmarkFinalists(teamIds: number[], actor?: AdminActor) { r
 export async function listShortlistFinalisations() { return (await b()).listShortlistFinalisations(); }
 
 export async function listOutbox(teamId?: number) { return (await b()).listOutbox(teamId); }
+export async function retryEmails(ids: number[], actor?: AdminActor) { return (await b()).retryEmails(ids, actor); }
 export async function getAuditLog(filter?: { targetType?: string; targetId?: string; limit?: number }) {
   return (await b()).getAuditLog(filter);
 }
