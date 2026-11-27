@@ -1,7 +1,6 @@
 import { SiteNav } from "@/components/site/site-nav";
 import { HeroLoader } from "@/components/site/hero-loader";
 import { Hero } from "@/components/site/hero";
-import { HERO_LOADER_KEY } from "@/lib/hero-readiness";
 import { LiveCallout } from "@/components/site/live-callout";
 import { About } from "@/components/site/about";
 import { Categories } from "@/components/site/categories";
@@ -16,8 +15,6 @@ import { SiteFooter } from "@/components/site/site-footer";
 import { showsTeamLogin, stageAt } from "@/lib/competition";
 import { publicDeadlines } from "@/server/public-deadlines";
 
-const HERO_PREPAINT_SCRIPT = `try{if(!window.location.hash&&window.scrollY<40&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches&&window.sessionStorage.getItem('${HERO_LOADER_KEY}')!=='1'){document.documentElement.dataset.heroLoading='true';}}catch{}`;
-
 // The stage, the navigation buttons and every date are worked out on the server for each visit,
 // so a deadline saved in /admin/settings shows here at once.
 export default async function HomePage() {
@@ -27,7 +24,6 @@ export default async function HomePage() {
 
   return (
     <>
-      <script dangerouslySetInnerHTML={{ __html: HERO_PREPAINT_SCRIPT }} />
       <HeroLoader />
       <a
         href="#main"
